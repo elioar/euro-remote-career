@@ -26,12 +26,13 @@ const categories = [
   },
 ] as const;
 
+const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.4, ease: easeCubic },
   }),
 };
 
@@ -43,7 +44,7 @@ export function Categories() {
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: easeCubic }}
           className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-3xl"
         >
           Browse by Category

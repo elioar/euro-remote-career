@@ -4,10 +4,10 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import type { DemoJob } from "../../../lib/demo-jobs";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeCubic } },
 };
 
 function ApplyCard({ job }: { job: DemoJob }) {
@@ -15,7 +15,7 @@ function ApplyCard({ job }: { job: DemoJob }) {
     <motion.aside
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4, delay: 0.2, ease }}
+      transition={{ duration: 0.4, delay: 0.2, ease: easeCubic }}
       className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start"
       aria-label="Apply"
     >
@@ -89,7 +89,7 @@ function DescriptionBlock({
       className="mt-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay, ease }}
+      transition={{ duration: 0.4, delay, ease: easeCubic }}
     >
       <h2 className="text-lg font-semibold text-[#0E1A2B]">{title}</h2>
       <div className="mt-3 max-w-prose space-y-4 text-slate-700 leading-relaxed">
@@ -124,7 +124,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
         className="text-sm text-slate-600"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease }}
+        transition={{ duration: 0.35, ease: easeCubic }}
       >
         <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
           <li>
@@ -176,7 +176,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             className="mt-4 flex flex-wrap gap-2"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.15, ease }}
+            transition={{ duration: 0.35, delay: 0.15, ease: easeCubic }}
           >
             <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
               Remote
@@ -205,7 +205,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, delay: 0.2, ease }}
+            transition={{ duration: 0.35, delay: 0.2, ease: easeCubic }}
           >
             <div>
               <dt className="sr-only">Location</dt>

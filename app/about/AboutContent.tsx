@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-const ease = [0.22, 1, 0.36, 1] as const;
+const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45, ease },
+    transition: { duration: 0.45, ease: easeCubic },
   },
 };
 
@@ -21,7 +21,7 @@ export function AboutContent() {
         className="mb-16 sm:mb-20"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease }}
+        transition={{ duration: 0.5, ease: easeCubic }}
       >
         <h1 className="text-3xl font-semibold tracking-tight text-[#0E1A2B] sm:text-4xl">
           About Euro Remote Career
@@ -30,7 +30,7 @@ export function AboutContent() {
           className="mt-4 text-lg text-slate-600 sm:text-xl"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.1, ease }}
+          transition={{ duration: 0.45, delay: 0.1, ease: easeCubic }}
         >
           A curated platform for high-quality remote & async-friendly roles.
         </motion.p>
@@ -134,7 +134,7 @@ export function AboutContent() {
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.5, ease }}
+        transition={{ duration: 0.5, ease: easeCubic }}
       >
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <h2 id="employers-heading" className="text-xl font-semibold text-[#0E1A2B] sm:text-2xl">
@@ -226,7 +226,7 @@ export function AboutContent() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.5, ease }}
+        transition={{ duration: 0.5, ease: easeCubic }}
       >
         <h2 id="cta-heading" className="text-lg font-semibold text-[#0E1A2B] sm:text-xl">
           Ready to explore curated remote work?
