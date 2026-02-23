@@ -5,7 +5,7 @@ import { Footer } from "../../components/Footer";
 import { getJobBySlug, type DemoJob } from "../../../lib/demo-jobs";
 import { JobDetailContent } from "./JobDetailContent";
 
-const SITE_URL = "https://EuroRemoteCareer.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
 
 function metaDescription(job: DemoJob): string {
   const raw = job.summary ?? job.description;
@@ -28,12 +28,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
+    keywords: [
+      job.title,
+      job.company,
+      job.category,
+      "remote",
+      ...(job.async ? ["async", "async-friendly"] : []),
+      "Euro Remote Career",
+    ],
     alternates: { canonical },
     openGraph: {
       title,
       description,
       url: canonical,
+      siteName: "Euro Remote Career",
+      type: "website",
+      locale: "en_GB",
     },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    robots: { index: true, follow: true },
   };
 }
 

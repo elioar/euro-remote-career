@@ -19,11 +19,23 @@ function ApplyCard({ job }: { job: DemoJob }) {
       className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start"
       aria-label="Apply"
     >
+      {job.companyLogo ? (
+        <div className="mb-3 flex justify-center">
+          <img
+            src={job.companyLogo}
+            alt=""
+            className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        </div>
+      ) : null}
       <h2 className="text-base font-semibold text-[#0E1A2B]">
-        Apply on company site
+        Apply on company site 🚀
       </h2>
       <p className="mt-2 text-sm text-slate-600">
-        You&apos;ll be redirected to the official company site to apply.
+        You&apos;ll be redirected to the official company site to apply. No spam — straight to the source.
       </p>
       <motion.a
         href={job.applyUrl}
@@ -33,13 +45,13 @@ function ApplyCard({ job }: { job: DemoJob }) {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
-        Apply Now
+        Apply Now →
       </motion.a>
       <Link
         href="/jobs"
         className="mt-3 flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
       >
-        Back to Jobs
+        ← Back to Jobs
       </Link>
       <dl className="mt-5 space-y-2 border-t border-slate-100 pt-4 text-sm">
         <div className="flex justify-between gap-2">
@@ -57,7 +69,7 @@ function ApplyCard({ job }: { job: DemoJob }) {
         {job.async && (
           <div className="flex justify-between gap-2">
             <dt className="text-slate-500">Async-friendly</dt>
-            <dd className="font-medium text-slate-800">Yes</dd>
+            <dd className="font-medium text-slate-800">Yes ✓</dd>
           </div>
         )}
         {job.salary && (
@@ -162,15 +174,25 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
           >
             {job.title}
           </motion.h1>
-          <motion.p
-            className="mt-2 text-lg text-slate-600"
+          <motion.div
+            className="mt-2 flex items-center gap-3"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
             transition={{ delay: 0.1 }}
           >
-            {job.company}
-          </motion.p>
+            {job.companyLogo ? (
+              <img
+                src={job.companyLogo}
+                alt=""
+                className="h-10 w-10 shrink-0 rounded object-contain border border-slate-100 bg-white"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : null}
+            <span className="text-lg text-slate-600">{job.company}</span>
+          </motion.div>
 
           <motion.div
             className="mt-4 flex flex-wrap gap-2"
@@ -179,11 +201,11 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             transition={{ duration: 0.35, delay: 0.15, ease: easeCubic }}
           >
             <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
-              Remote
+              🌍 Remote
             </span>
             {job.async && (
               <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
-                Async-friendly
+                ⏰ Async-friendly
               </span>
             )}
             <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
@@ -209,19 +231,19 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
           >
             <div>
               <dt className="sr-only">Location</dt>
-              <dd>Location: {job.location}</dd>
+              <dd>📍 {job.location}</dd>
             </div>
             {job.salary && (
               <div>
                 <dt className="sr-only">Salary</dt>
-                <dd>Salary: {job.salary}</dd>
+                <dd>💰 {job.salary}</dd>
               </div>
             )}
             {job.datePosted && (
               <div>
                 <dt className="sr-only">Posted</dt>
                 <dd>
-                  Posted:{" "}
+                  📅{" "}
                   {new Date(job.datePosted).toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "short",
@@ -237,20 +259,20 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
           </div>
 
           <DescriptionBlock
-            title="About the role"
+            title="✨ About the role"
             content={job.description}
             delay={0.25}
           />
           {job.requirements && (
             <DescriptionBlock
-              title="Requirements"
+              title="📋 What you'll need"
               content={job.requirements}
               delay={0.35}
             />
           )}
           {job.benefits && (
             <DescriptionBlock
-              title="Benefits"
+              title="🎁 What you get"
               content={job.benefits}
               delay={0.45}
             />

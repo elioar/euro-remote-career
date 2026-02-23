@@ -57,7 +57,19 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
           {job.title}
         </Link>
       </h2>
-      <p className="mt-1 text-sm text-slate-600">{job.company}</p>
+      <div className="mt-1 flex items-center gap-2">
+        {job.companyLogo ? (
+          <img
+            src={job.companyLogo}
+            alt=""
+            className="h-6 w-6 shrink-0 rounded object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        ) : null}
+        <p className="text-sm text-slate-600">{job.company}</p>
+      </div>
       {job.salary && (
         <p className="mt-2 text-sm font-medium text-slate-800">{job.salary}</p>
       )}

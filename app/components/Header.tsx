@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
@@ -16,14 +16,25 @@ export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   return (
-    <motion.header
-      initial={{ y: -16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="sticky top-0 z-50 border-b border-gray-100 bg-white shadow-sm"
-    >
-      <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-3 px-4 py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal">
+    <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-gray-100 md:bg-white md:pt-0 md:pb-0 md:shadow-sm">
+      <motion.div
+        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-[1100px] md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal"
+        animate={{
+          boxShadow: mobileOpen
+            ? "0 25px 50px -12px rgb(0 0 0 / 0.2), 0 0 0 1px rgb(0 0 0 / 0.05)"
+            : "0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04)",
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
+      >
         <Link
           href="/"
           className="flex min-w-0 shrink items-center gap-1.5 text-base font-semibold tracking-tight text-navy-primary transition-colors hover:text-navy-hover sm:gap-2 sm:text-lg"
@@ -32,24 +43,36 @@ export function Header() {
           <span className="truncate">Euro Remote Career</span>
         </Link>
 
-        <div className="hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex">
+        <nav
+          className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex"
+          aria-label="Main navigation"
+        >
           {navLinks.map(({ href, label }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-white text-navy-primary shadow-sm"
-                    : "text-navy-primary hover:bg-white/60"
+                className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  isActive ? "text-navy-primary" : "text-navy-primary hover:bg-white/60"
                 }`}
               >
-                {label}
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-capsule-pill"
+                    className="absolute inset-0 rounded-full bg-white shadow-sm"
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 28,
+                    }}
+                  />
+                )}
+                <span className="relative z-10">{label}</span>
               </Link>
             );
           })}
-        </div>
+        </nav>
 
         <div className="flex shrink-0 items-center justify-end gap-2">
           <Link
@@ -67,66 +90,171 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden"
+            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
           >
-            {mobileOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+            <AnimatePresence mode="wait" initial={false}>
+              {mobileOpen ? (
+                <motion.span
+                  key="close"
+                  initial={{ opacity: 0, rotate: -90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 90 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="absolute"
+                >
+                  <CloseIcon className="h-5 w-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="menu"
+                  initial={{ opacity: 0, rotate: 90 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: -90 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  className="absolute"
+                >
+                  <MenuIcon className="h-5 w-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             id="mobile-nav"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="overflow-hidden border-t border-gray-100 bg-white md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
+            className="fixed inset-0 z-[100] md:hidden"
             aria-hidden={!mobileOpen}
           >
-            <nav className="flex flex-col px-4 py-4" aria-label="Mobile navigation">
-              {navLinks.map(({ href, label }) => {
-                const isActive = pathname === href;
-                return (
+            {/* Backdrop */}
+            <motion.button
+              type="button"
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
+              onClick={() => setMobileOpen(false)}
+              className="absolute inset-0 bg-black/40"
+            />
+            {/* Overlay panel - blue background, white text; starts below fixed header */}
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
+              transition={{
+                type: "spring",
+                stiffness: 320,
+                damping: 34,
+                mass: 0.9,
+              }}
+              className="absolute inset-0 flex flex-col overflow-auto bg-navy-primary pt-[72px]"
+            >
+              {/* Main nav - staggered */}
+              <motion.nav
+                className="flex-1 px-6 py-6"
+                aria-label="Mobile navigation"
+                initial="hidden"
+                animate="visible"
+                variants={{
+                  visible: {
+                    transition: { staggerChildren: 0.05, delayChildren: 0.08 },
+                  },
+                  hidden: {},
+                }}
+              >
+                <ul className="space-y-1">
+                  {navLinks.map(({ href, label }) => {
+                    const isActive = pathname === href;
+                    return (
+                      <motion.li
+                        key={href}
+                        variants={{
+                          visible: { opacity: 1, y: 0 },
+                          hidden: { opacity: 0, y: 8 },
+                        }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      >
+                        <Link
+                          href={href}
+                          onClick={() => setMobileOpen(false)}
+                          className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-medium text-white transition-colors ${
+                            isActive
+                              ? "bg-white/15"
+                              : "hover:bg-white/10"
+                          }`}
+                        >
+                          {label}
+                          <ChevronIcon className="h-4 w-4 shrink-0 text-white/70" />
+                        </Link>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+              </motion.nav>
+
+              {/* Secondary links */}
+              <motion.div
+                className="shrink-0 border-t border-white/20 px-6 py-4"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.2 }}
+              >
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                   <Link
-                    key={href}
-                    href={href}
+                    href="/privacy"
                     onClick={() => setMobileOpen(false)}
-                    className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-gray-200 text-navy-primary"
-                        : "text-navy-primary hover:bg-gray-100"
-                    }`}
+                    className="text-white/90 hover:text-white"
                   >
-                    {label}
+                    Privacy
                   </Link>
-                );
-              })}
-              <div className="mt-3 flex flex-col gap-2 border-t border-gray-100 pt-3">
+                  <Link
+                    href="/terms"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-white/90 hover:text-white"
+                  >
+                    Terms
+                  </Link>
+                </div>
+              </motion.div>
+
+              {/* CTAs */}
+              <motion.div
+                className="shrink-0 space-y-2 px-6 pb-8 pt-2"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.28 }}
+              >
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-lg px-4 py-3 text-center text-sm font-medium text-navy-primary transition-colors hover:bg-gray-100"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-white bg-transparent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
                 >
                   Post a Job
                 </Link>
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
-                  className="rounded-full bg-navy-primary px-4 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-medium text-navy-primary shadow-sm transition-colors hover:bg-white/90"
                 >
                   Browse Jobs
+                  <ChevronRightIcon className="h-4 w-4" />
                 </Link>
-              </div>
-            </nav>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 }
 
@@ -152,6 +280,22 @@ function CloseIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  );
+}
+
+function ChevronIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
   );
 }

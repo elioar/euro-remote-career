@@ -17,6 +17,16 @@ const stagger = {
   },
 };
 
+const wordStagger = {
+  animate: {
+    transition: { staggerChildren: 0.06, delayChildren: 0.15 },
+  },
+};
+const wordItem = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+};
+
 export function Hero() {
   return (
     <motion.section
@@ -29,12 +39,34 @@ export function Hero() {
         <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-14 lg:items-center">
           <motion.div className="space-y-4 sm:space-y-6" variants={stagger}>
             <motion.h1
-              variants={fadeUp}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[520px] text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-foreground sm:text-3xl sm:leading-[1.05] md:text-4xl lg:text-[56px]"
+              variants={wordStagger}
+              initial="initial"
+              animate="animate"
             >
-              Find a Dream Job With{" "}
-              <span className="text-navy-primary">Euro Remote Career</span>
+              {"Find a Dream Job With ".split(" ").map((word, i) => (
+                <motion.span
+                  key={i}
+                  variants={wordItem}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="inline-block mr-[0.25em]"
+                >
+                  {word}
+                </motion.span>
+              ))}
+              <motion.span
+                variants={wordItem}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="relative inline-block text-navy-primary"
+              >
+                <span className="relative z-10">Euro Remote Career</span>
+                <motion.span
+                  className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ delay: 0.8, duration: 1, ease: "easeInOut" }}
+                />
+              </motion.span>
             </motion.h1>
             <motion.div variants={fadeUp} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
               <HeroSearch />
@@ -72,17 +104,32 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="relative w-full aspect-[4/3] min-h-[240px] overflow-hidden rounded-2xl shadow-lg bg-gray-100 sm:min-h-[280px] sm:rounded-3xl lg:min-h-[320px]"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={HERO_IMAGE_URL}
-              alt="Calm remote work setup at home"
-              className="absolute inset-0 h-full w-full object-cover"
-              fetchPriority="high"
-            />
+            <motion.div
+              className="absolute inset-0"
+              initial={{ scale: 1.05 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_IMAGE_URL}
+                alt="Calm remote work setup at home"
+                className="h-full w-full object-cover"
+                fetchPriority="high"
+              />
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                y: [0, -6, 0],
+              }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] },
+                x: { duration: 0.4, delay: 0.5, ease: [0.22, 1, 0.36, 1] },
+                y: { repeat: Infinity, duration: 4, ease: "easeInOut" },
+              }}
               className="absolute right-[2%] top-[6%] w-[calc(100%-1rem)] max-w-[260px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-lg sm:right-[4%] sm:top-[8%] sm:max-w-[280px] sm:rounded-2xl sm:p-5"
             >
               <h3 className="text-[#0E1A2B] text-sm font-semibold leading-snug sm:text-base">Senior Product Designer</h3>
@@ -96,8 +143,16 @@ export function Hero() {
             </motion.div>
             <motion.div
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              animate={{
+                opacity: 1,
+                x: 0,
+                y: [0, 5, 0],
+              }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] },
+                x: { duration: 0.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] },
+                y: { repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.3 },
+              }}
               className="absolute bottom-[6%] left-[2%] w-[calc(100%-1rem)] max-w-[240px] rounded-xl border border-slate-200 bg-white p-4 text-left shadow-lg sm:max-w-[260px] sm:rounded-2xl sm:p-5 lg:bottom-[10%]"
             >
               <h3 className="text-[#0E1A2B] text-sm font-semibold leading-snug sm:text-base">Curated & Reviewed</h3>
