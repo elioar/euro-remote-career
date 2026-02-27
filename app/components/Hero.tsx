@@ -123,11 +123,12 @@ export function Hero() {
             className="relative w-full"
           >
             <Image
-              src="/hero_image.png"
+              src="/hero_image.webp"
               alt="Abstract gradient hero background"
               width={800}
               height={520}
               priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
               className="h-auto w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl"
             />
           </motion.div>
