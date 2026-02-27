@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +29,25 @@ function trimDescription(text: string, maxLines = 2): string {
   if (taken.length > 160) return taken.slice(0, 157) + "...";
   if (lines.length > maxLines) return taken + "...";
   return taken;
+}
+
+function CompanyLogoImage({ src, company }: { src: string; company: string }) {
+  const [isVisible, setIsVisible] = useState(true);
+  if (!isVisible) return null;
+
+  return (
+    <Image
+      src={src}
+      alt={`${company} logo`}
+      width={24}
+      height={24}
+      sizes="24px"
+      className="h-6 w-6 shrink-0 rounded object-contain"
+      onError={() => {
+        setIsVisible(false);
+      }}
+    />
+  );
 }
 
 function JobCard({ job }: { job: DemoJob; index?: number }) {
@@ -59,14 +79,7 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
       </h2>
       <div className="mt-1 flex items-center gap-2">
         {job.companyLogo ? (
-          <img
-            src={job.companyLogo}
-            alt=""
-            className="h-6 w-6 shrink-0 rounded object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
+          <CompanyLogoImage src={job.companyLogo} company={job.company} />
         ) : null}
         <p className="text-sm text-slate-600">{job.company}</p>
       </div>
