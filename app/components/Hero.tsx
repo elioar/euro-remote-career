@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { HeroSearch } from "./HeroSearch";
-import { HeroSpline } from "./HeroSpline";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -120,9 +120,16 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]"
+            className="relative w-full"
           >
-            <HeroSpline />
+            <Image
+              src="/hero_image.png"
+              alt="Abstract gradient hero background"
+              width={800}
+              height={520}
+              priority
+              className="h-auto w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl"
+            />
           </motion.div>
         </div>
       </div>
