@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { DemoJob } from "../../../lib/demo-jobs";
@@ -9,6 +11,33 @@ const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeCubic } },
 };
+
+function CompanyLogoImage({
+  src,
+  company,
+  className,
+}: {
+  src: string;
+  company: string;
+  className: string;
+}) {
+  const [isVisible, setIsVisible] = useState(true);
+  if (!isVisible) return null;
+
+  return (
+    <Image
+      src={src}
+      alt={`${company} logo`}
+      width={40}
+      height={40}
+      sizes="40px"
+      className={className}
+      onError={() => {
+        setIsVisible(false);
+      }}
+    />
+  );
+}
 
 function ApplyCard({ job }: { job: DemoJob }) {
   return (
@@ -21,13 +50,10 @@ function ApplyCard({ job }: { job: DemoJob }) {
     >
       {job.companyLogo ? (
         <div className="mb-3 flex justify-center">
-          <img
+          <CompanyLogoImage
             src={job.companyLogo}
-            alt=""
+            company={job.company}
             className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
           />
         </div>
       ) : null}
@@ -182,13 +208,10 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             transition={{ delay: 0.1 }}
           >
             {job.companyLogo ? (
-              <img
+              <CompanyLogoImage
                 src={job.companyLogo}
-                alt=""
-                className="h-10 w-10 shrink-0 rounded object-contain border border-slate-100 bg-white"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
+                company={job.company}
+                className="h-10 w-10 shrink-0 rounded border border-slate-100 bg-white object-contain"
               />
             ) : null}
             <span className="text-lg text-slate-600">{job.company}</span>
