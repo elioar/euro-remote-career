@@ -28,7 +28,7 @@ const wordItem = {
 export function Hero() {
   return (
     <motion.section
-      className="bg-white"
+      className="bg-background"
       initial="initial"
       animate="animate"
       variants={{ animate: { transition: { staggerChildren: 0.1 } } }}
@@ -69,10 +69,11 @@ export function Hero() {
                 >
                   <span className="relative z-10">Euro Remote</span>
                   <motion.span
-                    className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+                    className="absolute inset-0 z-0 w-full bg-gradient-to-r from-transparent via-white/25 to-transparent dark:opacity-0"
                     initial={{ x: "-100%" }}
                     animate={{ x: "100%" }}
                     transition={{ delay: 0.8, duration: 1, ease: "easeInOut" }}
+                    style={{ willChange: "transform" }}
                   />
                 </motion.span>
               </span>
@@ -92,7 +93,7 @@ export function Hero() {
             <motion.p
               variants={fadeUp}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base"
+              className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base dark:text-slate-400"
             >
               Discover thousands of opportunities tailored to your skills. Apply with ease,
               track your progress, and take the next step in your career—all in one place.
@@ -120,7 +121,7 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full"
+            className="relative w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl dark:bg-slate-800 dark:ring-1 dark:ring-slate-700"
           >
             <Image
               src="/hero_image.webp"
@@ -129,7 +130,7 @@ export function Hero() {
               height={520}
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="h-auto w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl"
+              className="h-auto w-full object-cover dark:opacity-95"
             />
           </motion.div>
         </div>
@@ -147,7 +148,7 @@ function TrustAvatars() {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 + i * 0.05, type: "spring", stiffness: 400, damping: 20 }}
-          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 shadow-sm"
+          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 shadow-sm dark:border-slate-700 dark:bg-slate-600 dark:text-slate-200"
           aria-hidden
         >
           {i}

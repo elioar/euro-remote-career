@@ -14,20 +14,20 @@ const employersBullets = [
 
 export function SplitIntent() {
   return (
-    <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20">
+    <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20 dark:border-slate-700 dark:bg-background">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
         <div className="grid gap-6 sm:grid-cols-2">
           <Link
             href="/jobs"
-            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
+            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-slate-600 dark:bg-slate-800"
           >
-            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl">
+            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-slate-100">
               Looking for Remote & Async Work?
             </h2>
             <ul className="mt-4 space-y-2">
               {jobSeekersBullets.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B]" />
+                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-slate-100" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -39,15 +39,15 @@ export function SplitIntent() {
           </Link>
           <Link
             href="/jobs"
-            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
+            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-slate-600 dark:bg-slate-800"
           >
-            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl">
+            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-slate-100">
               Hiring Remote-First Talent?
             </h2>
             <ul className="mt-4 space-y-2">
               {employersBullets.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B]" />
+                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-slate-100" />
                   <span>{item}</span>
                 </li>
               ))}

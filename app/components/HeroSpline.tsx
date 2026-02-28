@@ -10,10 +10,10 @@ const Spline = dynamic(
     ssr: false,
     loading: () => (
       <div
-        className="absolute inset-0 flex items-center justify-center rounded-2xl bg-slate-100 sm:rounded-3xl"
+        className="absolute inset-0 flex items-center justify-center rounded-2xl bg-slate-100 sm:rounded-3xl dark:bg-slate-800"
         aria-hidden
       >
-        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-300" />
+        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-300 dark:bg-slate-600" />
       </div>
     ),
   }
@@ -21,7 +21,7 @@ const Spline = dynamic(
 
 export function HeroSpline() {
   return (
-    <div className="relative w-full aspect-[4/3] min-h-[240px] overflow-hidden rounded-2xl shadow-lg sm:min-h-[280px] sm:rounded-3xl lg:min-h-[320px]">
+    <div className="relative w-full aspect-[4/3] min-h-[240px] overflow-hidden rounded-2xl shadow-lg sm:min-h-[280px] sm:rounded-3xl lg:min-h-[320px] dark:bg-slate-800 dark:ring-1 dark:ring-slate-700">
       <Spline scene={SCENE_URL} className="h-full w-full" style={{ width: "100%", height: "100%" }} />
     </div>
   );

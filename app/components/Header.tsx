@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,6 +16,15 @@ const navLinks = [
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    setIsMobile(!mq.matches);
+    const fn = () => setIsMobile(!mq.matches);
+    mq.addEventListener("change", fn);
+    return () => mq.removeEventListener("change", fn);
+  }, []);
 
   useEffect(() => {
     if (mobileOpen) document.body.style.overflow = "hidden";
@@ -25,26 +35,28 @@ export function Header() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-gray-100 md:bg-white md:pt-0 md:pb-0 md:shadow-sm">
+    <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-gray-100 md:bg-background md:pt-0 md:pb-0 dark:md:border-slate-700">
       <motion.div
-        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-[1100px] md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal"
+        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-background px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-[1100px] md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal dark:border-slate-700"
         animate={{
-          boxShadow: mobileOpen
-            ? "0 25px 50px -12px rgb(0 0 0 / 0.2), 0 0 0 1px rgb(0 0 0 / 0.05)"
-            : "0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04)",
+          boxShadow: isMobile
+            ? mobileOpen
+              ? "0 25px 50px -12px rgb(0 0 0 / 0.2), 0 0 0 1px rgb(0 0 0 / 0.05)"
+              : "0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04)"
+            : "none",
         }}
         transition={{ type: "spring", stiffness: 400, damping: 35 }}
       >
         <Link
           href="/"
-          className="flex min-w-0 shrink items-center gap-1.5 text-base font-semibold tracking-tight text-navy-primary transition-colors hover:text-navy-hover sm:gap-2 sm:text-lg"
+          className="flex min-w-0 shrink items-center gap-1.5 text-base font-semibold tracking-tight text-navy-primary transition-colors hover:text-navy-hover dark:text-white dark:hover:text-slate-200 sm:gap-2 sm:text-lg"
         >
-          <LogoIcon className="h-5 w-5 shrink-0 text-navy-primary sm:h-6 sm:w-6" />
+          <LogoIcon className="h-5 w-5 shrink-0 text-navy-primary dark:text-white sm:h-6 sm:w-6" />
           <span className="truncate">Euro Remote Career</span>
         </Link>
 
         <nav
-          className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex"
+          className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex dark:bg-slate-700"
           aria-label="Main navigation"
         >
           {navLinks.map(({ href, label }) => {
@@ -54,13 +66,13 @@ export function Header() {
                 key={href}
                 href={href}
                 className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive ? "text-navy-primary" : "text-navy-primary hover:bg-white/60"
+                  isActive ? "text-navy-primary dark:text-blue-300" : "text-navy-primary hover:bg-slate-200/60 dark:text-slate-200 dark:hover:bg-slate-600"
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="nav-capsule-pill"
-                    className="absolute inset-0 rounded-full bg-white shadow-sm"
+                    className="absolute inset-0 rounded-full bg-slate-100 shadow-sm dark:bg-slate-500"
                     transition={{
                       type: "spring",
                       stiffness: 380,
@@ -75,9 +87,10 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-end gap-2">
+          <ThemeToggle />
           <Link
             href="/jobs"
-            className="hidden text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block"
+            className="hidden text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-blue-300 dark:hover:text-blue-200"
           >
             Post a Job
           </Link>
@@ -90,7 +103,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden"
+            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden dark:hover:bg-slate-700"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -105,7 +118,7 @@ export function Header() {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className="absolute"
                 >
-                  <CloseIcon className="h-5 w-5" />
+                  <CloseIcon className="h-5 w-5 dark:text-white" />
                 </motion.span>
               ) : (
                 <motion.span
@@ -116,7 +129,7 @@ export function Header() {
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className="absolute"
                 >
-                  <MenuIcon className="h-5 w-5" />
+                  <MenuIcon className="h-5 w-5 dark:text-white" />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -144,9 +157,9 @@ export function Header() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.35, ease: [0.32, 0.72, 0, 1] }}
               onClick={() => setMobileOpen(false)}
-              className="absolute inset-0 bg-black/40"
+              className="absolute inset-0 bg-black/40 dark:bg-black/60"
             />
-            {/* Overlay panel - blue background, white text; starts below fixed header */}
+            {/* Overlay panel - blue in light mode, dark slate in dark mode */}
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -157,7 +170,7 @@ export function Header() {
                 damping: 34,
                 mass: 0.9,
               }}
-              className="absolute inset-0 flex flex-col overflow-auto bg-navy-primary pt-[72px]"
+              className="absolute inset-0 flex flex-col overflow-auto bg-white pt-[72px] dark:bg-slate-900"
             >
               {/* Main nav - staggered */}
               <motion.nav
@@ -187,14 +200,13 @@ export function Header() {
                         <Link
                           href={href}
                           onClick={() => setMobileOpen(false)}
-                          className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-base font-medium text-white transition-colors ${
+                          className={`flex items-center rounded-xl px-4 py-3.5 text-base font-medium transition-colors ${
                             isActive
-                              ? "bg-white/15"
-                              : "hover:bg-white/10"
+                              ? "bg-navy-primary/10 text-navy-primary dark:bg-slate-700 dark:text-white"
+                              : "text-navy-primary hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800"
                           }`}
                         >
                           {label}
-                          <ChevronIcon className="h-4 w-4 shrink-0 text-white/70" />
                         </Link>
                       </motion.li>
                     );
@@ -204,7 +216,7 @@ export function Header() {
 
               {/* Secondary links */}
               <motion.div
-                className="shrink-0 border-t border-white/20 px-6 py-4"
+                className="shrink-0 border-t border-slate-200 px-6 py-4 dark:border-slate-700"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.2 }}
@@ -213,14 +225,14 @@ export function Header() {
                   <Link
                     href="/privacy"
                     onClick={() => setMobileOpen(false)}
-                    className="text-white/90 hover:text-white"
+                    className="text-navy-primary hover:text-navy-hover dark:text-slate-300 dark:hover:text-white"
                   >
                     Privacy
                   </Link>
                   <Link
                     href="/terms"
                     onClick={() => setMobileOpen(false)}
-                    className="text-white/90 hover:text-white"
+                    className="text-navy-primary hover:text-navy-hover dark:text-slate-300 dark:hover:text-white"
                   >
                     Terms
                   </Link>
@@ -237,14 +249,14 @@ export function Header() {
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-white bg-transparent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
+                  className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-white dark:hover:bg-slate-800"
                 >
                   Post a Job
                 </Link>
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-medium text-navy-primary shadow-sm transition-colors hover:bg-white/90"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
                 >
                   Browse Jobs
                   <ChevronRightIcon className="h-4 w-4" />

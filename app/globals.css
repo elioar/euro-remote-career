@@ -1,11 +1,19 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
+  --background: #fafafa;
   --foreground: #171717;
   --navy-primary: #001BB7;
   --navy-hover: #0039cc;
   --section-muted: #f8fafc;
+}
+
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --section-muted: #1e293b;
 }
 
 @theme inline {
@@ -22,4 +30,59 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Custom scrollbar – light (html & body so it applies in all browsers) */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Custom scrollbar – dark mode */
+.dark,
+.dark body {
+  scrollbar-color: #475569 #1e293b;
+}
+
+.dark::-webkit-scrollbar-track,
+.dark body::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.dark::-webkit-scrollbar-thumb,
+.dark body::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 10px;
+  border: 2px solid #1e293b;
+}
+
+.dark::-webkit-scrollbar-thumb:hover,
+.dark body::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }

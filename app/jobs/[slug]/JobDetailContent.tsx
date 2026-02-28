@@ -16,7 +16,7 @@ function ApplyCard({ job }: { job: DemoJob }) {
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: 0.2, ease: easeCubic }}
-      className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start"
+      className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start dark:border-slate-500 dark:bg-slate-800"
       aria-label="Apply"
     >
       {job.companyLogo ? (
@@ -24,24 +24,24 @@ function ApplyCard({ job }: { job: DemoJob }) {
           <img
             src={job.companyLogo}
             alt=""
-            className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain"
+            className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain dark:border-slate-600 dark:bg-slate-700"
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
           />
         </div>
       ) : null}
-      <h2 className="text-base font-semibold text-[#0E1A2B]">
+      <h2 className="text-base font-semibold text-[#0E1A2B] dark:text-slate-100">
         Apply on company site 🚀
       </h2>
-      <p className="mt-2 text-sm text-slate-600">
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
         You&apos;ll be redirected to the official company site to apply. No spam — straight to the source.
       </p>
       <motion.a
         href={job.applyUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+        className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover dark:bg-blue-600 dark:hover:bg-blue-500"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -49,33 +49,33 @@ function ApplyCard({ job }: { job: DemoJob }) {
       </motion.a>
       <Link
         href="/jobs"
-        className="mt-3 flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+        className="mt-3 flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-slate-200 dark:hover:bg-slate-600"
       >
         ← Back to Jobs
       </Link>
-      <dl className="mt-5 space-y-2 border-t border-slate-100 pt-4 text-sm">
+      <dl className="mt-5 space-y-2 border-t border-slate-100 pt-4 text-sm dark:border-slate-600">
         <div className="flex justify-between gap-2">
-          <dt className="text-slate-500">Company</dt>
-          <dd className="font-medium text-slate-800">{job.company}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">Company</dt>
+          <dd className="font-medium text-slate-800 dark:text-slate-200">{job.company}</dd>
         </div>
         <div className="flex justify-between gap-2">
-          <dt className="text-slate-500">Category</dt>
-          <dd className="font-medium text-slate-800">{job.category}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">Category</dt>
+          <dd className="font-medium text-slate-800 dark:text-slate-200">{job.category}</dd>
         </div>
         <div className="flex justify-between gap-2">
-          <dt className="text-slate-500">Remote</dt>
-          <dd className="font-medium text-slate-800">{job.location}</dd>
+          <dt className="text-slate-500 dark:text-slate-400">Remote</dt>
+          <dd className="font-medium text-slate-800 dark:text-slate-200">{job.location}</dd>
         </div>
         {job.async && (
           <div className="flex justify-between gap-2">
-            <dt className="text-slate-500">Async-friendly</dt>
-            <dd className="font-medium text-slate-800">Yes ✓</dd>
+            <dt className="text-slate-500 dark:text-slate-400">Async-friendly</dt>
+            <dd className="font-medium text-slate-800 dark:text-slate-200">Yes ✓</dd>
           </div>
         )}
         {job.salary && (
           <div className="flex justify-between gap-2">
-            <dt className="text-slate-500">Salary</dt>
-            <dd className="font-medium text-slate-800">{job.salary}</dd>
+            <dt className="text-slate-500 dark:text-slate-400">Salary</dt>
+            <dd className="font-medium text-slate-800 dark:text-slate-200">{job.salary}</dd>
           </div>
         )}
       </dl>
@@ -103,8 +103,8 @@ function DescriptionBlock({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: easeCubic }}
     >
-      <h2 className="text-lg font-semibold text-[#0E1A2B]">{title}</h2>
-      <div className="mt-3 max-w-prose space-y-4 text-slate-700 leading-relaxed">
+      <h2 className="text-lg font-semibold text-[#0E1A2B] dark:text-slate-100">{title}</h2>
+      <div className="mt-3 max-w-prose space-y-4 text-slate-700 leading-relaxed dark:text-slate-300">
         {paragraphs.map((p, i) => {
           if (p.startsWith("- ") || p.startsWith("* ")) {
             const items = p
@@ -133,7 +133,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
     <>
       <motion.nav
         aria-label="Breadcrumb"
-        className="text-sm text-slate-600"
+        className="text-sm text-slate-600 dark:text-slate-400"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: easeCubic }}
@@ -142,22 +142,22 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
           <li>
             <Link
               href="/"
-              className="text-navy-primary hover:text-navy-hover"
+              className="text-navy-primary hover:text-navy-hover dark:text-blue-300 dark:hover:text-blue-200"
             >
               Home
             </Link>
           </li>
-          <li aria-hidden="true">/</li>
+          <li aria-hidden="true" className="text-slate-400 dark:text-slate-500">/</li>
           <li>
             <Link
               href="/jobs"
-              className="text-navy-primary hover:text-navy-hover"
+              className="text-navy-primary hover:text-navy-hover dark:text-blue-300 dark:hover:text-blue-200"
             >
               Jobs
             </Link>
           </li>
-          <li aria-hidden="true">/</li>
-          <li className="max-w-[200px] truncate font-medium text-slate-800 sm:max-w-none">
+          <li aria-hidden="true" className="text-slate-400 dark:text-slate-500">/</li>
+          <li className="max-w-[200px] truncate font-medium text-slate-800 sm:max-w-none dark:text-slate-200">
             {job.title}
           </li>
         </ol>
@@ -166,7 +166,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
       <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:gap-10">
         <div className="min-w-0 flex-1">
           <motion.h1
-            className="text-2xl font-semibold tracking-tight text-[#0E1A2B] sm:text-3xl"
+            className="text-2xl font-semibold tracking-tight text-[#0E1A2B] sm:text-3xl dark:text-slate-100"
             variants={fadeUp}
             initial="hidden"
             animate="visible"
@@ -185,13 +185,13 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
               <img
                 src={job.companyLogo}
                 alt=""
-                className="h-10 w-10 shrink-0 rounded object-contain border border-slate-100 bg-white"
+                className="h-10 w-10 shrink-0 rounded object-contain border border-slate-100 bg-white dark:border-slate-600 dark:bg-slate-700"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
               />
             ) : null}
-            <span className="text-lg text-slate-600">{job.company}</span>
+            <span className="text-lg text-slate-600 dark:text-slate-300">{job.company}</span>
           </motion.div>
 
           <motion.div
@@ -200,31 +200,31 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.15, ease: easeCubic }}
           >
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">
               🌍 Remote
             </span>
             {job.async && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">
                 ⏰ Async-friendly
               </span>
             )}
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">
               {job.category}
             </span>
             {job.timezone && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">
                 {job.timezone}
               </span>
             )}
             {job.seniority && (
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">
                 {job.seniority}
               </span>
             )}
           </motion.div>
 
           <motion.dl
-            className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600"
+            className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600 dark:text-slate-300"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.2, ease: easeCubic }}
