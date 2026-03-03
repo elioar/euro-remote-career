@@ -5,22 +5,22 @@ import { motion } from "framer-motion";
 
 const categories = [
   {
-    slug: "tech",
+    slug: "Tech",
     title: "Tech",
     description: "Engineering, development, and technical roles.",
   },
   {
-    slug: "design",
+    slug: "Design",
     title: "Design",
     description: "Product, UX, and visual design positions.",
   },
   {
-    slug: "marketing",
+    slug: "Marketing",
     title: "Marketing",
     description: "Growth, content, and brand marketing roles.",
   },
   {
-    slug: "product",
+    slug: "Product",
     title: "Product",
     description: "Product management and strategy positions.",
   },

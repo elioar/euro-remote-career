@@ -215,6 +215,7 @@ export function JobsPageContent() {
 
   const query = searchParams.get("query") ?? "";
   const category = (searchParams.get("category") as JobCategory) ?? "";
+  const location = searchParams.get("location") ?? "";
   const remoteOnly = searchParams.get("remote") === "true";
   const asyncOnly = searchParams.get("async") === "true";
   const page = Math.max(
@@ -270,6 +271,15 @@ export function JobsPageContent() {
     if (category) {
       list = list.filter((j) => j.category === category);
     }
+    if (location === "athens" || location === "thessaloniki") {
+      list = list.filter(
+        (j) => j.timezone?.toLowerCase().includes("greece") || j.timezone?.toLowerCase().includes("eu")
+      );
+    } else if (location === "abroad") {
+      list = list.filter(
+        (j) => !j.timezone?.toLowerCase().includes("greece")
+      );
+    }
     if (remoteOnly) {
       list = list.filter((j) => j.location === "Remote");
     }
@@ -277,7 +287,7 @@ export function JobsPageContent() {
       list = list.filter((j) => j.async === true);
     }
     return list;
-  }, [query, category, remoteOnly, asyncOnly]);
+  }, [query, category, location, remoteOnly, asyncOnly]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const safePage = Math.min(page, totalPages);
@@ -297,7 +307,7 @@ export function JobsPageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: easeCubic }}
         >
-          <h1 className="text-2xl font-semibold tracking-tight text-[#0E1A2B] sm:text-3xl dark:text-slate-100">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Browse Remote & Async Jobs
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">

@@ -65,7 +65,7 @@ export function Hero() {
                 <motion.span
                   variants={wordItem}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative inline-block text-navy-primary"
+                  className="relative inline-block text-navy-primary dark:text-blue-400"
                 >
                   <span className="relative z-10">Euro Remote</span>
                   <motion.span
@@ -81,7 +81,7 @@ export function Hero() {
                 <motion.span
                   variants={wordItem}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative inline-block text-navy-primary"
+                  className="relative inline-block text-navy-primary dark:text-blue-400"
                 >
                   <span className="relative z-10">Career</span>
                 </motion.span>
@@ -95,8 +95,8 @@ export function Hero() {
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base dark:text-slate-400"
             >
-              Discover thousands of opportunities tailored to your skills. Apply with ease,
-              track your progress, and take the next step in your career—all in one place.
+              Curated remote & async-friendly roles across Europe. Every listing is
+              manually reviewed — apply directly on the company site, no middleman.
             </motion.p>
             <motion.div
               variants={fadeUp}
