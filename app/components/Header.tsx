@@ -272,10 +272,15 @@ export function Header() {
 
 function LogoIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M21 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6" />
-      <path d="M21 3H3v10h18V3z" />
-      <path d="M7 17v-4M12 17v-4M17 17v-4" />
+    <svg className={className} viewBox="0 0 24 24" aria-hidden>
+      {/* Briefcase body — solid fill */}
+      <rect fill="currentColor" x="2" y="11" width="20" height="11" rx="2.5" />
+      {/* Handle — solid fill, overlaps body top */}
+      <rect fill="currentColor" x="9.5" y="8" width="5" height="4" rx="1.5" />
+      {/* Wifi outer arc */}
+      <path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" d="M6.5 5.5Q12 0.5 17.5 5.5" />
+      {/* Wifi inner arc */}
+      <path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M9 4Q12 1.5 15 4" />
     </svg>
   );
 }
