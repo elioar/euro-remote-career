@@ -1,56 +1,58 @@
 import type { MetadataRoute } from "next";
 import { DEMO_JOBS } from "../lib/demo-jobs";
+import { routing } from "@/i18n/routing";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
+
+function alternates(path: string) {
+  const languages: Record<string, string> = {};
+  for (const locale of routing.locales) {
+    languages[locale] =
+      locale === routing.defaultLocale
+        ? `${SITE_URL}${path}`
+        : `${SITE_URL}/${locale}${path}`;
+  }
+  return { languages };
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: SITE_URL,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/jobs`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.95,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/contact`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/privacy`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/terms`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+  const staticRoutes = [
+    { path: "/", freq: "weekly" as const, priority: 1 },
+    { path: "/jobs", freq: "daily" as const, priority: 0.95 },
+    { path: "/about", freq: "monthly" as const, priority: 0.8 },
+    { path: "/contact", freq: "monthly" as const, priority: 0.8 },
+    { path: "/privacy", freq: "yearly" as const, priority: 0.3 },
+    { path: "/terms", freq: "yearly" as const, priority: 0.3 },
   ];
 
-  const jobPages: MetadataRoute.Sitemap = DEMO_JOBS.map((job) => ({
-    url: `${SITE_URL}/jobs/${job.slug}`,
-    lastModified: job.datePosted ? new Date(job.datePosted) : now,
-    changeFrequency: "weekly" as const,
-    priority: 0.9,
-  }));
+  const staticPages: MetadataRoute.Sitemap = staticRoutes.flatMap(
+    ({ path, freq, priority }) =>
+      routing.locales.map((locale) => ({
+        url:
+          locale === routing.defaultLocale
+            ? `${SITE_URL}${path === "/" ? "" : path}`
+            : `${SITE_URL}/${locale}${path === "/" ? "" : path}`,
+        lastModified: now,
+        changeFrequency: freq,
+        priority,
+        alternates: alternates(path === "/" ? "" : path),
+      }))
+  );
+
+  const jobPages: MetadataRoute.Sitemap = DEMO_JOBS.flatMap((job) =>
+    routing.locales.map((locale) => ({
+      url:
+        locale === routing.defaultLocale
+          ? `${SITE_URL}/jobs/${job.slug}`
+          : `${SITE_URL}/${locale}/jobs/${job.slug}`,
+      lastModified: job.datePosted ? new Date(job.datePosted) : now,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+      alternates: alternates(`/jobs/${job.slug}`),
+    }))
+  );
 
   return [...staticPages, ...jobPages];
 }

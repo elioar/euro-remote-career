@@ -1,19 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
-
-const LOCATIONS = [
-  { value: "", label: "All locations" },
-  { value: "athens", label: "Athens" },
-  { value: "thessaloniki", label: "Thessaloniki" },
-  { value: "abroad", label: "Abroad" },
-] as const;
 
 export function HeroSearch() {
   const router = useRouter();
+  const t = useTranslations("HeroSearch");
   const formRef = useRef<HTMLFormElement>(null);
   const [location, setLocation] = useState("");
+
+  const LOCATIONS = [
+    { value: "", label: t("allLocations") },
+    { value: "athens", label: t("athens") },
+    { value: "thessaloniki", label: t("thessaloniki") },
+    { value: "abroad", label: t("abroad") },
+  ] as const;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -46,12 +48,12 @@ export function HeroSearch() {
       </div>
       <div className="flex flex-col gap-1.5 rounded-2xl bg-slate-100 p-1.5 sm:flex-row sm:rounded-full sm:items-center sm:gap-1 dark:bg-slate-700">
         <label className="relative flex-1 rounded-xl focus-within:bg-white focus-within:shadow-sm sm:rounded-full dark:focus-within:bg-slate-600">
-          <span className="sr-only">Job title or company</span>
+          <span className="sr-only">{t("srLabel")}</span>
           <SearchIcon className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-300" />
           <input
             type="search"
             name="q"
-            placeholder="e.g. Engineer, Designer"
+            placeholder={t("placeholder")}
             className="w-full rounded-full border-0 bg-transparent py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-slate-500 focus:outline-none focus:ring-0 sm:py-2.5 dark:placeholder:text-slate-400"
           />
         </label>
@@ -59,10 +61,10 @@ export function HeroSearch() {
         <button
           type="submit"
           className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-navy-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-navy-hover sm:rounded-full sm:px-5"
-          aria-label="Search jobs"
+          aria-label={t("searchJobs")}
         >
           <SearchIcon className="h-4 w-4 text-white" />
-          <span>Search</span>
+          <span>{t("search")}</span>
         </button>
       </div>
     </form>

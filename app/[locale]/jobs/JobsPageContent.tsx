@@ -1,21 +1,25 @@
 "use client";
 
 import { useCallback, useMemo, useState, useRef, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { Header } from "../components/Header";
-import { Footer } from "../components/Footer";
-import { DEMO_JOBS, type DemoJob, type JobCategory } from "../../lib/demo-jobs";
+import { DEMO_JOBS, type DemoJob, type JobCategory } from "../../../lib/demo-jobs";
 
 function CategoryDropdown({
   value,
   options,
   onChange,
+  allLabel,
+  ariaLabel,
 }: {
   value: JobCategory | "";
   options: JobCategory[];
   onChange: (v: JobCategory | "") => void;
+  allLabel: string;
+  ariaLabel: string;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -30,7 +34,7 @@ function CategoryDropdown({
     }
   }, [open]);
 
-  const label = value || "All categories";
+  const label = value || allLabel;
 
   return (
     <div className="relative w-full sm:w-40" ref={ref}>
@@ -39,7 +43,7 @@ function CategoryDropdown({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label="Category filter"
+        aria-label={ariaLabel}
         className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-left text-sm text-slate-800 shadow-sm transition-shadow focus:border-navy-primary focus:outline-none focus:ring-2 focus:ring-navy-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-2 dark:focus:ring-blue-400/30"
       >
         <span className="truncate">{label}</span>
@@ -60,27 +64,21 @@ function CategoryDropdown({
             <li role="option" aria-selected={value === ""}>
               <button
                 type="button"
-                onClick={() => {
-                  onChange("");
-                  setOpen(false);
-                }}
+                onClick={() => { onChange(""); setOpen(false); }}
                 className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
                   value === ""
                     ? "bg-navy-primary/10 font-medium text-navy-primary dark:bg-blue-400/20 dark:text-blue-300"
                     : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
-                All categories
+                {allLabel}
               </button>
             </li>
             {options.map((c) => (
               <li key={c} role="option" aria-selected={value === c}>
                 <button
                   type="button"
-                  onClick={() => {
-                    onChange(c);
-                    setOpen(false);
-                  }}
+                  onClick={() => { onChange(c); setOpen(false); }}
                   className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
                     value === c
                       ? "bg-navy-primary/10 font-medium text-navy-primary dark:bg-blue-400/20 dark:text-blue-300"
@@ -101,11 +99,7 @@ function CategoryDropdown({
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: easeCubic },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeCubic } },
   exit: { opacity: 0, y: -8, transition: { duration: 0.2 } },
 };
 
@@ -139,7 +133,7 @@ function trimDescription(text: string, maxLines = 2): string {
   return taken;
 }
 
-function JobCard({ job }: { job: DemoJob; index?: number }) {
+function JobCard({ job, t, tc }: { job: DemoJob; t: ReturnType<typeof useTranslations>; tc: ReturnType<typeof useTranslations> }) {
   const accent = CATEGORY_COLORS[job.category];
   return (
     <motion.article
@@ -151,11 +145,11 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:border-emerald-500/50 dark:bg-emerald-500/10 dark:text-emerald-300">
-          Remote
+          {tc("remote")}
         </span>
         {job.async && (
           <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-0.5 text-xs font-medium text-cyan-800 dark:border-cyan-500/50 dark:bg-cyan-500/10 dark:text-cyan-300">
-            Async-friendly
+            {tc("asyncFriendly")}
           </span>
         )}
         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${accent.pill}`}>
@@ -172,19 +166,12 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
       </h2>
       <div className="mt-1 flex items-center gap-2">
         {job.companyLogo ? (
-          <img
-            src={job.companyLogo}
-            alt=""
-            className="h-6 w-6 shrink-0 rounded object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
+          <img src={job.companyLogo} alt="" className="h-6 w-6 shrink-0 rounded object-contain" onError={(e) => { e.currentTarget.style.display = "none"; }} />
         ) : null}
         <p className="text-sm text-slate-600 dark:text-slate-300">{job.company}</p>
       </div>
       {job.salary && (
-        <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-slate-200 dark:text-emerald-300">{job.salary}</p>
+        <p className="mt-2 text-sm font-medium text-emerald-700 dark:text-emerald-300">{job.salary}</p>
       )}
       <p className="mt-2 line-clamp-2 text-sm text-slate-600 dark:text-slate-300">
         {trimDescription(job.description)}
@@ -194,7 +181,7 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
           href={`/jobs/${job.slug}`}
           className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-400 hover:bg-slate-50 dark:border-slate-500 dark:text-slate-200 dark:hover:bg-slate-600"
         >
-          View more
+          {tc("viewMore")}
         </Link>
         <a
           href={job.applyUrl}
@@ -202,7 +189,7 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
           rel="noopener noreferrer"
           className="inline-flex items-center rounded-lg border border-navy-primary px-4 py-2 text-sm font-medium text-navy-primary transition-colors hover:bg-navy-primary hover:text-white dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-500 dark:hover:border-blue-500 dark:hover:text-white"
         >
-          Apply
+          {tc("apply")}
         </a>
       </div>
     </motion.article>
@@ -212,46 +199,24 @@ function JobCard({ job }: { job: DemoJob; index?: number }) {
 export function JobsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("JobsPage");
+  const tc = useTranslations("Common");
 
   const query = searchParams.get("query") ?? "";
   const category = (searchParams.get("category") as JobCategory) ?? "";
   const location = searchParams.get("location") ?? "";
   const remoteOnly = searchParams.get("remote") === "true";
   const asyncOnly = searchParams.get("async") === "true";
-  const page = Math.max(
-    1,
-    parseInt(searchParams.get("page") ?? "1", 10) || 1
-  );
+  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
   const updateUrl = useCallback(
-    (updates: {
-      query?: string;
-      category?: string;
-      remote?: boolean;
-      async?: boolean;
-      page?: number;
-    }) => {
+    (updates: { query?: string; category?: string; remote?: boolean; async?: boolean; page?: number }) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (updates.query !== undefined) {
-        if (updates.query) params.set("query", updates.query);
-        else params.delete("query");
-      }
-      if (updates.category !== undefined) {
-        if (updates.category) params.set("category", updates.category);
-        else params.delete("category");
-      }
-      if (updates.remote !== undefined) {
-        if (updates.remote) params.set("remote", "true");
-        else params.delete("remote");
-      }
-      if (updates.async !== undefined) {
-        if (updates.async) params.set("async", "true");
-        else params.delete("async");
-      }
-      if (updates.page !== undefined) {
-        if (updates.page > 1) params.set("page", String(updates.page));
-        else params.delete("page");
-      }
+      if (updates.query !== undefined) { if (updates.query) params.set("query", updates.query); else params.delete("query"); }
+      if (updates.category !== undefined) { if (updates.category) params.set("category", updates.category); else params.delete("category"); }
+      if (updates.remote !== undefined) { if (updates.remote) params.set("remote", "true"); else params.delete("remote"); }
+      if (updates.async !== undefined) { if (updates.async) params.set("async", "true"); else params.delete("async"); }
+      if (updates.page !== undefined) { if (updates.page > 1) params.set("page", String(updates.page)); else params.delete("page"); }
       const qs = params.toString();
       router.push(qs ? `/jobs?${qs}` : "/jobs", { scroll: false });
     },
@@ -261,45 +226,23 @@ export function JobsPageContent() {
   const filtered = useMemo(() => {
     let list = [...DEMO_JOBS];
     const q = query.trim().toLowerCase();
-    if (q) {
-      list = list.filter(
-        (j) =>
-          j.title.toLowerCase().includes(q) ||
-          j.company.toLowerCase().includes(q)
-      );
-    }
-    if (category) {
-      list = list.filter((j) => j.category === category);
-    }
+    if (q) list = list.filter((j) => j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q));
+    if (category) list = list.filter((j) => j.category === category);
     if (location === "athens" || location === "thessaloniki") {
-      list = list.filter(
-        (j) => j.timezone?.toLowerCase().includes("greece") || j.timezone?.toLowerCase().includes("eu")
-      );
+      list = list.filter((j) => j.timezone?.toLowerCase().includes("greece") || j.timezone?.toLowerCase().includes("eu"));
     } else if (location === "abroad") {
-      list = list.filter(
-        (j) => !j.timezone?.toLowerCase().includes("greece")
-      );
+      list = list.filter((j) => !j.timezone?.toLowerCase().includes("greece"));
     }
-    if (remoteOnly) {
-      list = list.filter((j) => j.location === "Remote");
-    }
-    if (asyncOnly) {
-      list = list.filter((j) => j.async === true);
-    }
+    if (remoteOnly) list = list.filter((j) => j.location === "Remote");
+    if (asyncOnly) list = list.filter((j) => j.async === true);
     return list;
   }, [query, category, location, remoteOnly, asyncOnly]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const safePage = Math.min(page, totalPages);
-  const paginated = useMemo(
-    () =>
-      filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE),
-    [filtered, safePage]
-  );
+  const paginated = useMemo(() => filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE), [filtered, safePage]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
         <motion.header
           className="mb-8"
@@ -308,24 +251,13 @@ export function JobsPageContent() {
           transition={{ duration: 0.4, ease: easeCubic }}
         >
           <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-            Browse Remote & Async Jobs
+            {t("title")}
           </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-400">
-            Curated high-quality roles. Apply directly on the company site.
-          </p>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">{t("subtitle")}</p>
           <ul className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-slate-500 dark:text-slate-400 sm:gap-x-8" aria-hidden>
-            <li className="flex items-center gap-1.5">
-              <span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>
-              Manually reviewed
-            </li>
-            <li className="flex items-center gap-1.5">
-              <span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>
-              No spam
-            </li>
-            <li className="flex items-center gap-1.5">
-              <span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>
-              Apply on company site
-            </li>
+            <li className="flex items-center gap-1.5"><span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>{t("manuallyReviewed")}</li>
+            <li className="flex items-center gap-1.5"><span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>{t("noSpam")}</li>
+            <li className="flex items-center gap-1.5"><span className="text-navy-primary dark:text-blue-400" aria-hidden>✓</span>{t("applyOnCompanySite")}</li>
           </ul>
         </motion.header>
 
@@ -337,103 +269,57 @@ export function JobsPageContent() {
         >
           <input
             type="search"
-            placeholder="Keyword (title or company)"
+            placeholder={t("keywordPlaceholder")}
             value={query}
-            onChange={(e) => {
-              updateUrl({ query: e.target.value, page: 1 });
-            }}
+            onChange={(e) => updateUrl({ query: e.target.value, page: 1 })}
             className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 shadow-sm transition-shadow focus:border-navy-primary focus:outline-none focus:ring-2 focus:ring-navy-primary/20 sm:w-56 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:shadow-none dark:focus:border-blue-400 dark:focus:ring-2 dark:focus:ring-blue-400/30"
           />
           <CategoryDropdown
             value={category}
             options={CATEGORIES}
             onChange={(v) => updateUrl({ category: v, page: 1 })}
+            allLabel={t("allCategories")}
+            ariaLabel={t("categoryFilter")}
           />
           <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-blue-400 dark:has-[:checked]:bg-blue-400/10 dark:has-[:checked]:text-blue-300">
-            <input
-              type="checkbox"
-              checked={remoteOnly}
-              onChange={(e) => {
-                updateUrl({ remote: e.target.checked, page: 1 });
-              }}
-              className="peer sr-only"
-            />
+            <input type="checkbox" checked={remoteOnly} onChange={(e) => updateUrl({ remote: e.target.checked, page: 1 })} className="peer sr-only" />
             <span className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-slate-300 bg-white transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-navy-primary/40 peer-focus-visible:ring-offset-2 peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-blue-400 dark:peer-checked:bg-blue-400" aria-hidden>
               <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity duration-200">
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
               </span>
             </span>
-            <span className="pointer-events-none select-none">Remote only</span>
+            <span className="pointer-events-none select-none">{t("remoteOnly")}</span>
           </label>
           <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-blue-400 dark:has-[:checked]:bg-blue-400/10 dark:has-[:checked]:text-blue-300">
-            <input
-              type="checkbox"
-              checked={asyncOnly}
-              onChange={(e) => {
-                updateUrl({ async: e.target.checked, page: 1 });
-              }}
-              className="peer sr-only"
-            />
+            <input type="checkbox" checked={asyncOnly} onChange={(e) => updateUrl({ async: e.target.checked, page: 1 })} className="peer sr-only" />
             <span className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 border-slate-300 bg-white transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-navy-primary/40 peer-focus-visible:ring-offset-2 peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-blue-400 dark:peer-checked:bg-blue-400" aria-hidden>
               <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity duration-200">
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
               </span>
             </span>
-            <span className="pointer-events-none select-none">Async-friendly</span>
+            <span className="pointer-events-none select-none">{tc("asyncFriendly")}</span>
           </label>
         </motion.div>
 
         {paginated.length > 0 && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3, delay: 0.15 }}
-            className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400"
-          >
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3, delay: 0.15 }} className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400">
             <span className="h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-500" aria-hidden />
-            {filtered.length === 1 ? "1 open position" : `${filtered.length} open positions`}
+            {t("openPositions", { count: filtered.length })}
           </motion.p>
         )}
 
         <AnimatePresence mode="wait">
           {paginated.length === 0 ? (
-            <motion.div
-              key="empty"
-              className="flex flex-col items-center justify-center py-16 text-center"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3, ease: easeCubic }}
-            >
-              <p className="text-lg font-medium text-slate-800 dark:text-slate-200">
-                No matching jobs found.
-              </p>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Try adjusting your filters.
-              </p>
+            <motion.div key="empty" className="flex flex-col items-center justify-center py-16 text-center" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: easeCubic }}>
+              <p className="text-lg font-medium text-slate-800 dark:text-slate-200">{t("noResults")}</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("noResultsHint")}</p>
             </motion.div>
           ) : (
-            <motion.div
-              key="list"
-              className="grid gap-4 sm:gap-5"
-              initial="hidden"
-              animate="visible"
-              variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
-            >
+            <motion.div key="list" className="grid gap-4 sm:gap-5" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.07 } } }}>
               <AnimatePresence mode="popLayout">
                 {paginated.map((job, i) => (
-                  <motion.div
-                    key={job.id}
-                    layout
-                    variants={cardVariants}
-                    custom={i}
-                    exit="exit"
-                  >
-                    <JobCard job={job} />
+                  <motion.div key={job.id} layout variants={cardVariants} custom={i} exit="exit">
+                    <JobCard job={job} t={t} tc={tc} />
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -441,60 +327,21 @@ export function JobsPageContent() {
           )}
         </AnimatePresence>
 
-        {paginated.length > 0 && (
-          <>
-            {filtered.length > PER_PAGE && (
-              <motion.nav
-                className="mt-8 flex flex-wrap items-center justify-center gap-2"
-                aria-label="Pagination"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.3 }}
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateUrl({ page: Math.max(1, safePage - 1) });
-                  }}
-                  disabled={safePage <= 1}
-                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                >
-                  Previous
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => {
-                        updateUrl({ page: p });
-                      }}
-                      className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
-                        p === safePage
-                          ? "border-navy-primary bg-navy-primary text-white"
-                          : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  )
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    updateUrl({ page: Math.min(totalPages, safePage + 1) });
-                  }}
-                  disabled={safePage >= totalPages}
-                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                >
-                  Next
-                </button>
-              </motion.nav>
-            )}
-          </>
+        {paginated.length > 0 && filtered.length > PER_PAGE && (
+          <motion.nav className="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label={t("pagination")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}>
+            <button type="button" onClick={() => updateUrl({ page: Math.max(1, safePage - 1) })} disabled={safePage <= 1} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+              {t("previous")}
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button key={p} type="button" onClick={() => updateUrl({ page: p })} className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${p === safePage ? "border-navy-primary bg-navy-primary text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"}`}>
+                {p}
+              </button>
+            ))}
+            <button type="button" onClick={() => updateUrl({ page: Math.min(totalPages, safePage + 1) })} disabled={safePage >= totalPages} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+              {t("next")}
+            </button>
+          </motion.nav>
         )}
       </main>
-      <Footer />
-    </div>
   );
 }

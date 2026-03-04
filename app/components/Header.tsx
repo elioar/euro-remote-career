@@ -1,22 +1,26 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/app/components/ThemeToggle";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/jobs", label: "Jobs" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-] as const;
+import { LanguageSwitcher } from "@/app/components/LanguageSwitcher";
 
 export function Header() {
   const pathname = usePathname();
+  const t = useTranslations("Header");
+  const tc = useTranslations("Common");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(true);
+
+  const navLinks = [
+    { href: "/" as const, label: t("home") },
+    { href: "/jobs" as const, label: t("jobs") },
+    { href: "/about" as const, label: t("about") },
+    { href: "/contact" as const, label: t("contact") },
+  ];
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -57,7 +61,7 @@ export function Header() {
 
         <nav
           className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex dark:bg-slate-700"
-          aria-label="Main navigation"
+          aria-label={t("mainNav")}
         >
           {navLinks.map(({ href, label }) => {
             const isActive = pathname === href;
@@ -87,18 +91,19 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-end gap-2">
+          <LanguageSwitcher />
           <ThemeToggle />
           <Link
             href="/jobs"
             className="hidden text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-blue-300 dark:hover:text-blue-200"
           >
-            Post a Job
+            {tc("postAJob")}
           </Link>
           <Link
             href="/jobs"
             className="hidden rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
           >
-            Browse Jobs
+            {tc("browseJobs")}
           </Link>
           <button
             type="button"
@@ -106,7 +111,7 @@ export function Header() {
             className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden dark:hover:bg-slate-700"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
           >
             <AnimatePresence mode="wait" initial={false}>
               {mobileOpen ? (
@@ -148,10 +153,9 @@ export function Header() {
             className="fixed inset-0 z-[100] md:hidden"
             aria-hidden={!mobileOpen}
           >
-            {/* Backdrop */}
             <motion.button
               type="button"
-              aria-label="Close menu"
+              aria-label={t("closeMenu")}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -159,7 +163,6 @@ export function Header() {
               onClick={() => setMobileOpen(false)}
               className="absolute inset-0 bg-black/40 dark:bg-black/60"
             />
-            {/* Overlay panel - blue in light mode, dark slate in dark mode */}
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -172,10 +175,9 @@ export function Header() {
               }}
               className="absolute inset-0 flex flex-col overflow-auto bg-white pt-[72px] dark:bg-slate-900"
             >
-              {/* Main nav - staggered */}
               <motion.nav
                 className="flex-1 px-6 py-6"
-                aria-label="Mobile navigation"
+                aria-label={t("mobileNav")}
                 initial="hidden"
                 animate="visible"
                 variants={{
@@ -214,7 +216,6 @@ export function Header() {
                 </ul>
               </motion.nav>
 
-              {/* Secondary links */}
               <motion.div
                 className="shrink-0 border-t border-slate-200 px-6 py-4 dark:border-slate-700"
                 initial={{ opacity: 0, y: 8 }}
@@ -227,19 +228,18 @@ export function Header() {
                     onClick={() => setMobileOpen(false)}
                     className="text-navy-primary hover:text-navy-hover dark:text-slate-300 dark:hover:text-white"
                   >
-                    Privacy
+                    {t("privacy")}
                   </Link>
                   <Link
                     href="/terms"
                     onClick={() => setMobileOpen(false)}
                     className="text-navy-primary hover:text-navy-hover dark:text-slate-300 dark:hover:text-white"
                   >
-                    Terms
+                    {t("terms")}
                   </Link>
                 </div>
               </motion.div>
 
-              {/* CTAs */}
               <motion.div
                 className="shrink-0 space-y-2 px-6 pb-8 pt-2"
                 initial={{ opacity: 0, y: 8 }}
@@ -251,14 +251,14 @@ export function Header() {
                   onClick={() => setMobileOpen(false)}
                   className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-white dark:hover:bg-slate-800"
                 >
-                  Post a Job
+                  {tc("postAJob")}
                 </Link>
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
                   className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
                 >
-                  Browse Jobs
+                  {tc("browseJobs")}
                   <ChevronRightIcon className="h-4 w-4" />
                 </Link>
               </motion.div>
@@ -292,14 +292,6 @@ function CloseIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  );
-}
-
-function ChevronIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { DEMO_JOBS, type DemoJob } from "@/lib/demo-jobs";
 
@@ -24,6 +25,9 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
+  const t = useTranslations("FeaturedJobs");
+  const tc = useTranslations("Common");
+
   return (
     <section className="border-b border-gray-100 bg-section-muted py-12 sm:py-16 lg:py-20 dark:border-slate-700">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
@@ -34,7 +38,7 @@ export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
           transition={{ duration: 0.4, ease: easeCubic }}
           className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-3xl"
         >
-          Featured Jobs
+          {t("title")}
         </motion.h2>
         <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {jobs.map((job, i) => (
@@ -50,11 +54,11 @@ export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:border-emerald-500/50 dark:bg-emerald-500/10 dark:text-emerald-300">
-                  Remote
+                  {tc("remote")}
                 </span>
                 {job.async && (
                   <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-0.5 text-xs font-medium text-cyan-800 dark:border-cyan-500/50 dark:bg-cyan-500/10 dark:text-cyan-300">
-                    Async-friendly
+                    {tc("asyncFriendly")}
                   </span>
                 )}
                 <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${CATEGORY_COLORS[job.category] ?? ""}`}>
@@ -88,7 +92,7 @@ export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
                   href={`/jobs/${job.slug}`}
                   className="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                 >
-                  View more
+                  {tc("viewMore")}
                 </Link>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <a
@@ -97,7 +101,7 @@ export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center rounded-lg border border-navy-primary px-4 py-2 text-sm font-medium text-navy-primary transition-colors hover:bg-navy-primary hover:text-white dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-500 dark:hover:border-blue-500 dark:hover:text-white"
                   >
-                    Apply
+                    {tc("apply")}
                   </a>
                 </motion.div>
               </div>
@@ -109,7 +113,7 @@ export function FeaturedJobs({ jobs = FEATURED_JOBS }: { jobs?: DemoJob[] }) {
             href="/jobs"
             className="inline-flex items-center gap-2 rounded-lg border border-navy-primary px-5 py-2.5 text-sm font-medium text-navy-primary transition-colors hover:bg-navy-primary hover:text-white dark:border-blue-400 dark:text-blue-300 dark:hover:bg-blue-500 dark:hover:border-blue-500 dark:hover:text-white"
           >
-            View more jobs
+            {t("viewMoreJobs")}
           </Link>
         </div>
       </div>

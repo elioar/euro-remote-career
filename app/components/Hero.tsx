@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { HeroSearch } from "./HeroSearch";
 
@@ -26,6 +27,9 @@ const wordItem = {
 };
 
 export function Hero() {
+  const t = useTranslations("Hero");
+  const tc = useTranslations("Common");
+
   return (
     <motion.section
       className="bg-background"
@@ -43,7 +47,7 @@ export function Hero() {
               animate="animate"
             >
               <span className="block">
-                {"Find a Dream Job".split(" ").map((word, i) => (
+                {`${t("findA")} ${t("dreamJob")}`.split(" ").map((word, i) => (
                   <motion.span
                     key={i}
                     variants={wordItem}
@@ -60,14 +64,14 @@ export function Hero() {
                   transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                   className="inline-block mr-[0.25em]"
                 >
-                  With
+                  {t("with")}
                 </motion.span>
                 <motion.span
                   variants={wordItem}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="relative inline-block text-navy-primary dark:text-blue-400"
                 >
-                  <span className="relative z-10">Euro Remote</span>
+                  <span className="relative z-10">{t("euroRemote")}</span>
                   <motion.span
                     className="absolute inset-0 z-0 w-full bg-gradient-to-r from-transparent via-white/25 to-transparent dark:opacity-0"
                     initial={{ x: "-100%" }}
@@ -83,7 +87,7 @@ export function Hero() {
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="relative inline-block text-navy-primary dark:text-blue-400"
                 >
-                  <span className="relative z-10">Career</span>
+                  <span className="relative z-10">{t("career")}</span>
                 </motion.span>
               </span>
             </motion.h1>
@@ -95,8 +99,7 @@ export function Hero() {
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base dark:text-slate-400"
             >
-              Curated remote & async-friendly roles across Europe. Every listing is
-              manually reviewed — apply directly on the company site, no middleman.
+              {t("subtitle")}
             </motion.p>
             <motion.div
               variants={fadeUp}
@@ -108,7 +111,7 @@ export function Hero() {
                   href="/jobs"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-5 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover sm:w-auto"
                 >
-                  Browse Jobs
+                  {tc("browseJobs")}
                   <motion.span initial={false} whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
                     <ArrowRightIcon className="h-4 w-4" />
                   </motion.span>
@@ -125,7 +128,7 @@ export function Hero() {
           >
             <Image
               src="/hero_image.webp"
-              alt="Abstract gradient hero background"
+              alt={t("heroImageAlt")}
               width={800}
               height={520}
               priority

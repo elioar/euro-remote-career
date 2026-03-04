@@ -1,27 +1,19 @@
-const steps = [
-  {
-    title: "Discover",
-    text: "Browse curated remote & async roles.",
-    icon: DiscoverIcon,
-  },
-  {
-    title: "Review",
-    text: "View job details and company information.",
-    icon: ReviewIcon,
-  },
-  {
-    title: "Apply",
-    text: "Apply directly on the official company site.",
-    icon: ApplyIcon,
-  },
-];
+import { getTranslations } from "next-intl/server";
 
-export function HowItWorks() {
+export async function HowItWorks() {
+  const t = await getTranslations("HowItWorks");
+
+  const steps = [
+    { title: t("step1Title"), text: t("step1Text"), icon: DiscoverIcon },
+    { title: t("step2Title"), text: t("step2Text"), icon: ReviewIcon },
+    { title: t("step3Title"), text: t("step3Text"), icon: ApplyIcon },
+  ];
+
   return (
     <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20 dark:border-slate-700 dark:bg-background">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
         <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-3xl">
-          How It Works
+          {t("title")}
         </h2>
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((step) => (
@@ -33,7 +25,7 @@ export function HowItWorks() {
           ))}
         </div>
         <p className="mt-8 text-center text-xs text-gray-500 dark:text-slate-400">
-          Employers submit roles → Admin review → Published
+          {t("footer")}
         </p>
       </div>
     </section>

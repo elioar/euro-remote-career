@@ -1,30 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-
-const categories = [
-  {
-    slug: "Tech",
-    title: "Tech",
-    description: "Engineering, development, and technical roles.",
-  },
-  {
-    slug: "Design",
-    title: "Design",
-    description: "Product, UX, and visual design positions.",
-  },
-  {
-    slug: "Marketing",
-    title: "Marketing",
-    description: "Growth, content, and brand marketing roles.",
-  },
-  {
-    slug: "Product",
-    title: "Product",
-    description: "Product management and strategy positions.",
-  },
-] as const;
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
@@ -37,6 +15,15 @@ const cardVariants = {
 };
 
 export function Categories() {
+  const t = useTranslations("Categories");
+
+  const categories = [
+    { slug: "Tech", title: t("techTitle"), description: t("techDesc") },
+    { slug: "Design", title: t("designTitle"), description: t("designDesc") },
+    { slug: "Marketing", title: t("marketingTitle"), description: t("marketingDesc") },
+    { slug: "Product", title: t("productTitle"), description: t("productDesc") },
+  ];
+
   return (
     <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20 dark:border-slate-700 dark:bg-background">
       <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
@@ -47,7 +34,7 @@ export function Categories() {
           transition={{ duration: 0.4, ease: easeCubic }}
           className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-3xl"
         >
-          Browse by Category
+          {t("title")}
         </motion.h2>
         <div className="mt-8 grid gap-4 sm:mt-10 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((cat, i) => (

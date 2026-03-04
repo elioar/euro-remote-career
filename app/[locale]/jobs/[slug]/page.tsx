@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { Header } from "../../components/Header";
-import { Footer } from "../../components/Footer";
-import { getJobBySlug, type DemoJob } from "../../../lib/demo-jobs";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Header } from "../../../components/Header";
+import { Footer } from "../../../components/Footer";
+import { getJobBySlug, type DemoJob } from "../../../../lib/demo-jobs";
 import { JobDetailContent } from "./JobDetailContent";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
@@ -14,15 +15,17 @@ function metaDescription(job: DemoJob): string {
   return plain.slice(0, 152) + "...";
 }
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const job = getJobBySlug(slug);
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+
   if (!job) {
-    return { title: "Job Not Found | Euro Remote Career" };
+    return { title: t("jobNotFoundTitle") };
   }
-  const title = `${job.title} – ${job.company} | Euro Remote Career`;
+  const title = t("jobDetailTitle", { title: job.title, company: job.company });
   const description = metaDescription(job);
   const canonical = `${SITE_URL}/jobs/${slug}`;
   return {
@@ -43,13 +46,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: canonical,
       siteName: "Euro Remote Career",
       type: "website",
-      locale: "en_GB",
+      locale: locale === "el" ? "el_GR" : "en_GB",
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    twitter: { card: "summary_large_image", title, description },
     robots: { index: true, follow: true },
   };
 }
@@ -61,40 +60,30 @@ function jobPostingSchema(job: DemoJob, slug: string) {
     "@type": "JobPosting",
     title: job.title,
     description: job.description,
-    hiringOrganization: {
-      "@type": "Organization",
-      name: job.company,
-    },
+    hiringOrganization: { "@type": "Organization", name: job.company },
     jobLocation: {
       "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "EU",
-      },
+      address: { "@type": "PostalAddress", addressCountry: "EU" },
     },
     jobLocationType: "TELECOMMUTE",
     url: canonical,
     directApply: true,
   };
-  if (job.datePosted) {
-    schema.datePosted = job.datePosted;
-  }
+  if (job.datePosted) schema.datePosted = job.datePosted;
   if (job.salary) {
     schema.baseSalary = {
       "@type": "MonetaryAmount",
       currency: "EUR",
-      value: {
-        "@type": "QuantitativeValue",
-        value: job.salary,
-        unitText: "YEAR",
-      },
+      value: { "@type": "QuantitativeValue", value: job.salary, unitText: "YEAR" },
     };
   }
   return schema;
 }
 
 export default async function JobPage({ params }: Props) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+
   const job = getJobBySlug(slug);
   if (!job) notFound();
 
