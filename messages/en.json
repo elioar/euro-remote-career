@@ -20,7 +20,8 @@
     "mainNav": "Main navigation",
     "mobileNav": "Mobile navigation",
     "closeMenu": "Close menu",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "language": "Language"
   },
   "Footer": {
     "about": "About",

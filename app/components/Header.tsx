@@ -91,7 +91,9 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-end gap-2">
-          <LanguageSwitcher />
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
           <ThemeToggle />
           <Link
             href="/jobs"
@@ -246,6 +248,12 @@ export function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.28 }}
               >
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
+                  <span className="text-sm font-medium text-navy-primary dark:text-slate-200">
+                    {t("language")}
+                  </span>
+                  <LanguageSwitcher />
+                </div>
                 <Link
                   href="/jobs"
                   onClick={() => setMobileOpen(false)}
