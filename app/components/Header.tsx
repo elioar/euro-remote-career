@@ -95,13 +95,13 @@ export function Header() {
           <ThemeToggle />
           <Link
             href="/jobs"
-            className="hidden text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-blue-300 dark:hover:text-blue-200"
+            className="hidden whitespace-nowrap text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-blue-300 dark:hover:text-blue-200"
           >
             {tc("postAJob")}
           </Link>
           <Link
             href="/jobs"
-            className="hidden rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
+            className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
           >
             {tc("browseJobs")}
           </Link>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -88,6 +89,10 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   setRequestLocale(locale);
 
+  const cookieStore = await cookies();
+  const themeCookie = cookieStore.get("theme")?.value;
+  const isDark = themeCookie === "dark";
+
   const t = await getTranslations({ locale, namespace: "Metadata" });
   const description = t("homeDescription");
 
@@ -110,13 +115,13 @@ export default async function LocaleLayout({ children, params }: Props) {
   ];
 
   return (
-    <html lang={locale} className="scroll-smooth" suppressHydrationWarning>
+    <html lang={locale} className={`scroll-smooth${isDark ? " dark" : ""}`} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');})();`,
+            __html: `(function(){var c=document.cookie.match(/(?:^|; )theme=([^;]*)/);var s=c?c[1]:localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;var dark=s==='dark'||(!s&&d);if(dark){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}if(!c){document.cookie='theme='+(dark?'dark':'light')+'; path=/; max-age=31536000; SameSite=Lax';}})();`,
           }}
         />
         <script
