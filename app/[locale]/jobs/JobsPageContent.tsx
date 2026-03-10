@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -20,10 +20,10 @@ const CATEGORIES: JobCategory[] = ["Tech", "Design", "Marketing", "Product"];
 const PER_PAGE = 8;
 
 const CATEGORY_COLORS: Record<JobCategory, { pill: string }> = {
-  Tech: { pill: "border-blue-200 bg-blue-50 text-blue-700 dark:border-transparent dark:bg-blue-500/20 dark:text-blue-300" },
-  Design: { pill: "border-violet-200 bg-violet-50 text-violet-700 dark:border-transparent dark:bg-violet-500/20 dark:text-violet-300" },
-  Marketing: { pill: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-transparent dark:bg-emerald-500/20 dark:text-emerald-300" },
-  Product: { pill: "border-amber-200 bg-amber-50 text-amber-700 dark:border-transparent dark:bg-amber-500/20 dark:text-amber-300" },
+  Tech: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
+  Design: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
+  Marketing: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
+  Product: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -85,12 +85,12 @@ function JobCard({
           {job.location === "Remote" ? tc("remote") : job.location}
         </span>
         {job.employmentType && (
-          <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">
+          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">
             {job.employmentType}
           </span>
         )}
         {job.async && (
-          <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-0.5 text-xs font-medium text-cyan-700 dark:border-cyan-500/40 dark:bg-cyan-500/10 dark:text-cyan-300">
+          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">
             {tc("asyncFriendly")}
           </span>
         )}
@@ -120,7 +120,7 @@ function JobCard({
   );
 }
 
-function JobDetailInner({ job, tc, onClose, showCloseOnDesktop }: { job: DemoJob; tc: ReturnType<typeof useTranslations>; onClose: () => void; showCloseOnDesktop?: boolean }) {
+function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { job: DemoJob; tc: ReturnType<typeof useTranslations>; onClose: () => void; showCloseOnDesktop?: boolean; hideHeader?: boolean }) {
   const t = useTranslations("JobDetail");
   const locale = useLocale();
   const accent = CATEGORY_COLORS[job.category];
@@ -129,7 +129,7 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop }: { job: DemoJob
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="shrink-0 border-b border-slate-100 p-5 dark:border-slate-700">
+      {!hideHeader && <div className="shrink-0 border-b border-slate-100 p-5 dark:border-slate-700">
         <div className="flex items-start gap-3">
           {job.companyLogo && (
             <img
@@ -164,10 +164,10 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop }: { job: DemoJob
         {/* Tags */}
         <div className="mt-3 flex flex-wrap gap-1.5">
           <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${accent.pill}`}>{job.category}</span>
-          {job.employmentType && <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">{job.employmentType}</span>}
-          {job.seniority && <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300">{job.seniority}</span>}
-          {job.async && <span className="rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-0.5 text-xs font-medium text-cyan-700 dark:border-cyan-500/40 dark:bg-cyan-500/10 dark:text-cyan-300">{tc("asyncFriendly")}</span>}
-          {job.urgent && <span className="rounded-md bg-red-50 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-red-500 dark:bg-red-500/10 dark:text-red-400">Urgent</span>}
+          {job.employmentType && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.employmentType}</span>}
+          {job.seniority && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.seniority}</span>}
+          {job.async && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{tc("asyncFriendly")}</span>}
+          {job.urgent && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">Urgent</span>}
         </div>
 
         {/* Apply buttons */}
@@ -187,10 +187,36 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop }: { job: DemoJob
             {t("fullDetails")}
           </Link>
         </div>
-      </div>
+      </div>}
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto space-y-6 p-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <div className={`space-y-6 p-5 text-sm leading-relaxed text-slate-700 dark:text-slate-300 ${hideHeader ? "" : "flex-1 overflow-y-auto"}`}>
+        {/* Mobile-only: title, company, meta, tags (rendered in scroll flow, not sticky) */}
+        {hideHeader && (
+          <div className="mb-2">
+            <div className="flex items-start gap-3">
+              {job.companyLogo && (
+                <img src={job.companyLogo} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-slate-100 object-contain p-1 dark:border-slate-700 dark:bg-slate-700" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              )}
+              <div className="min-w-0 flex-1">
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{job.title}</h2>
+                <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{job.company}</p>
+              </div>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1"><MapPin size={13} aria-hidden />{job.location}</span>
+              {job.salary && <span className="flex items-center gap-1"><Banknote size={13} aria-hidden />{job.salary}/yr</span>}
+              {job.datePosted && <span className="flex items-center gap-1"><CalendarDays size={13} aria-hidden />{new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${accent.pill}`}>{job.category}</span>
+              {job.employmentType && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.employmentType}</span>}
+              {job.seniority && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.seniority}</span>}
+              {job.async && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{tc("asyncFriendly")}</span>}
+              {job.urgent && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">Urgent</span>}
+            </div>
+          </div>
+        )}
         <section>
           <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">{t("aboutRole")}</h3>
           <div className="space-y-3">{paragraphs(job.description).map((p, i) => <p key={i}>{p}</p>)}</div>
@@ -228,51 +254,104 @@ function JobDetailPanel({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typ
   );
 }
 
+function SheetApplyBar({ job }: { job: DemoJob }) {
+  const t = useTranslations("JobDetail");
+  return (
+    <div className="shrink-0 border-t border-slate-100 p-4 dark:border-slate-700">
+      <div className="flex gap-2">
+        <a
+          href={job.applyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+        >
+          {t("applyNow")} <ExternalLink size={13} aria-hidden />
+        </a>
+        <Link
+          href={`/jobs/${job.slug}`}
+          className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+        >
+          {t("fullDetails")}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 // Mobile bottom sheet
 function MobileBottomSheet({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typeof useTranslations>; onClose: () => void }) {
+  const [expanded, setExpanded] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const dragY = useRef(0);
+
   // Lock body scroll while open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  // Expand when scrolling down inside content
+  const handleScroll = useCallback(() => {
+    if (!expanded && scrollRef.current && scrollRef.current.scrollTop > 10) {
+      setExpanded(true);
+    }
+  }, [expanded]);
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 lg:hidden"
+      className="fixed inset-0 z-[200] lg:hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={expanded ? undefined : onClose} />
 
       {/* Sheet */}
       <motion.div
-        className="absolute inset-x-0 bottom-0 flex max-h-[90dvh] flex-col rounded-t-3xl bg-white dark:bg-slate-900"
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-white dark:bg-slate-900"
+        style={{ borderRadius: expanded ? 0 : "24px 24px 0 0" }}
         initial={{ y: "100%" }}
-        animate={{ y: 0 }}
+        animate={{ y: 0, height: expanded ? "100dvh" : "65dvh" }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 350, damping: 40 }}
       >
-        {/* Drag handle */}
-        <div className="flex shrink-0 items-center justify-between px-5 pb-2 pt-3">
-          <div className="mx-auto h-1 w-10 rounded-full bg-slate-200 dark:bg-slate-700" />
-        </div>
-        <div className="absolute right-4 top-3">
+        {/* Drag handle + close */}
+        <motion.div
+          className="relative shrink-0 cursor-grab pt-3 pb-2 active:cursor-grabbing"
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={0.1}
+          onDragStart={() => { dragY.current = 0; }}
+          onDrag={(_e, info) => { dragY.current = info.offset.y; }}
+          onDragEnd={(_e, info) => {
+            if (info.offset.y < -40) setExpanded(true);
+            else if (info.offset.y > 60) { if (expanded) setExpanded(false); else onClose(); }
+          }}
+        >
+          <div className="mx-auto h-1 w-10 rounded-full bg-slate-200 dark:bg-slate-600" />
           <button
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="absolute right-4 top-2 rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             aria-label="Close"
           >
             <X size={18} />
           </button>
+        </motion.div>
+
+        {/* Scrollable content */}
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="min-h-0 flex-1 overflow-y-auto"
+        >
+          <JobDetailInner job={job} tc={tc} onClose={onClose} hideHeader />
         </div>
 
-        {/* Content */}
-        <div className="min-h-0 flex-1 overflow-hidden">
-          <JobDetailInner job={job} tc={tc} onClose={onClose} />
-        </div>
+        {/* Sticky bottom apply bar */}
+        <SheetApplyBar job={job} />
       </motion.div>
     </motion.div>
   );
@@ -289,18 +368,34 @@ export function JobsPageContent() {
   const location = searchParams.get("location") ?? "";
   const remoteOnly = searchParams.get("remote") === "true";
   const asyncOnly = searchParams.get("async") === "true";
-  const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
-  const [selectedJob, setSelectedJob] = useState<DemoJob | null>(null);
+  const openId = searchParams.get("open") ?? "";
+  const selectedJob = useMemo(() => DEMO_JOBS.find((j) => j.id === openId) ?? null, [openId]);
+
+  const setSelectedJob = useCallback((job: DemoJob | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (job) {
+      params.set("open", job.id);
+    } else {
+      params.delete("open");
+    }
+    const qs = params.toString();
+    if (job) {
+      // push so back button can pop it
+      router.push(qs ? `/jobs?${qs}` : "/jobs", { scroll: false });
+    } else {
+      router.push(qs ? `/jobs?${qs}` : "/jobs", { scroll: false });
+    }
+  }, [router, searchParams]);
 
   const updateUrl = useCallback(
-    (updates: { query?: string; category?: string; remote?: boolean; async?: boolean; page?: number }) => {
+    (updates: { query?: string; category?: string; remote?: boolean; async?: boolean }) => {
       const params = new URLSearchParams(searchParams.toString());
       if (updates.query !== undefined) { if (updates.query) params.set("query", updates.query); else params.delete("query"); }
       if (updates.category !== undefined) { if (updates.category) params.set("category", updates.category); else params.delete("category"); }
       if (updates.remote !== undefined) { if (updates.remote) params.set("remote", "true"); else params.delete("remote"); }
       if (updates.async !== undefined) { if (updates.async) params.set("async", "true"); else params.delete("async"); }
-      if (updates.page !== undefined) { if (updates.page > 1) params.set("page", String(updates.page)); else params.delete("page"); }
+      params.delete("open");
       const qs = params.toString();
       router.push(qs ? `/jobs?${qs}` : "/jobs", { scroll: false });
     },
@@ -327,18 +422,20 @@ export function JobsPageContent() {
     const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
     if (!isDesktop) return;
     if (filtered.length > 0) {
-      setSelectedJob((prev) => {
-        const stillExists = prev && filtered.find((j) => j.id === prev.id);
-        return stillExists ? prev : filtered[0];
-      });
+      const stillExists = selectedJob && filtered.find((j) => j.id === selectedJob.id);
+      if (!stillExists) setSelectedJob(filtered[0]);
     } else {
       setSelectedJob(null);
     }
-  }, [filtered]);
+  }, [filtered]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = useMemo(() => filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE), [filtered, safePage]);
+  const [visibleCount, setVisibleCount] = useState(PER_PAGE);
+
+  // Reset when filters change
+  useEffect(() => { setVisibleCount(PER_PAGE); }, [filtered]);
+
+  const hasMore = visibleCount < filtered.length;
+  const paginated = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   const filtersRow = (
     <motion.div
@@ -351,12 +448,12 @@ export function JobsPageContent() {
         type="search"
         placeholder={t("keywordPlaceholder")}
         value={query}
-        onChange={(e) => updateUrl({ query: e.target.value, page: 1 })}
+        onChange={(e) => updateUrl({ query: e.target.value })}
         className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 shadow-sm focus:border-navy-primary focus:outline-none focus:ring-2 focus:ring-navy-primary/20 sm:w-48 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-navy-hover dark:focus:ring-navy-hover/30"
       />
       <div className="flex items-center gap-2">
         <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-navy-hover dark:has-[:checked]:bg-navy-hover/10 dark:has-[:checked]:text-navy-hover">
-          <input type="checkbox" checked={remoteOnly} onChange={(e) => updateUrl({ remote: e.target.checked, page: 1 })} className="peer sr-only" />
+          <input type="checkbox" checked={remoteOnly} onChange={(e) => updateUrl({ remote: e.target.checked })} className="peer sr-only" />
           <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-navy-hover dark:peer-checked:bg-navy-hover" aria-hidden>
             <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity">
               <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
@@ -365,7 +462,7 @@ export function JobsPageContent() {
           <span className="pointer-events-none select-none">{t("remoteOnly")}</span>
         </label>
         <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-navy-hover dark:has-[:checked]:bg-navy-hover/10 dark:has-[:checked]:text-navy-hover">
-          <input type="checkbox" checked={asyncOnly} onChange={(e) => updateUrl({ async: e.target.checked, page: 1 })} className="peer sr-only" />
+          <input type="checkbox" checked={asyncOnly} onChange={(e) => updateUrl({ async: e.target.checked })} className="peer sr-only" />
           <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-navy-hover dark:peer-checked:bg-navy-hover" aria-hidden>
             <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity">
               <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
@@ -403,7 +500,7 @@ export function JobsPageContent() {
           <button
             key={cat || "all"}
             type="button"
-            onClick={() => updateUrl({ category: cat, page: 1 })}
+            onClick={() => updateUrl({ category: cat })}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               category === cat
                 ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
@@ -454,21 +551,20 @@ export function JobsPageContent() {
             )}
           </AnimatePresence>
 
-          {/* Pagination */}
-          {paginated.length > 0 && filtered.length > PER_PAGE && (
-            <motion.nav className="mt-6 flex flex-wrap items-center justify-center gap-2" aria-label={t("pagination")} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.3 }}>
-              <button type="button" onClick={() => updateUrl({ page: Math.max(1, safePage - 1) })} disabled={safePage <= 1} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
-                {t("previous")}
+          {/* Load more */}
+          {hasMore && (
+            <div className="mt-6 flex flex-col items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((c) => c + PER_PAGE)}
+                className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              >
+                {t("loadMore")}
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button key={p} type="button" onClick={() => updateUrl({ page: p })} className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${p === safePage ? "border-navy-primary bg-navy-primary text-white" : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"}`}>
-                  {p}
-                </button>
-              ))}
-              <button type="button" onClick={() => updateUrl({ page: Math.min(totalPages, safePage + 1) })} disabled={safePage >= totalPages} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 disabled:opacity-50 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
-                {t("next")}
-              </button>
-            </motion.nav>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                {t("showingCount", { shown: paginated.length, total: filtered.length })}
+              </p>
+            </div>
           )}
         </div>
 

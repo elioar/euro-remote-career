@@ -103,7 +103,9 @@
     "noResultsHint": "Δοκίμασε να αλλάξεις τα φίλτρα.",
     "previous": "Προηγούμενο",
     "next": "Επόμενο",
-    "pagination": "Σελιδοποίηση"
+    "pagination": "Σελιδοποίηση",
+    "loadMore": "Περισσότερες θέσεις",
+    "showingCount": "Εμφάνιση {shown} από {total} θέσεις"
   },
   "JobDetail": {
     "applyOnCompanySite": "Αίτηση στο site εταιρείας 🚀",

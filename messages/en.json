@@ -103,7 +103,9 @@
     "noResultsHint": "Try adjusting your filters.",
     "previous": "Previous",
     "next": "Next",
-    "pagination": "Pagination"
+    "pagination": "Pagination",
+    "loadMore": "Load more jobs",
+    "showingCount": "Showing {shown} of {total} jobs"
   },
   "JobDetail": {
     "applyOnCompanySite": "Apply on company site 🚀",
