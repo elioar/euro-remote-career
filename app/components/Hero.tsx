@@ -69,7 +69,7 @@ export function Hero() {
                 <motion.span
                   variants={wordItem}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative inline-block text-navy-primary dark:text-blue-400"
+                  className="relative inline-block text-navy-primary dark:text-navy-hover"
                 >
                   <span className="relative z-10">{t("euroRemote")}</span>
                   <motion.span
@@ -85,7 +85,7 @@ export function Hero() {
                 <motion.span
                   variants={wordItem}
                   transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative inline-block text-navy-primary dark:text-blue-400"
+                  className="relative inline-block text-navy-primary dark:text-navy-hover"
                 >
                   <span className="relative z-10">{t("career")}</span>
                 </motion.span>
@@ -124,7 +124,7 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl dark:bg-slate-800 dark:ring-1 dark:ring-slate-700"
+            className="relative w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl dark:bg-navy-primary dark:ring-1 dark:ring-navy-hover/30"
           >
             <Image
               src="/hero_image.webp"
@@ -151,7 +151,7 @@ function TrustAvatars() {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 + i * 0.05, type: "spring", stiffness: 400, damping: 20 }}
-          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 shadow-sm dark:border-slate-700 dark:bg-slate-600 dark:text-slate-200"
+          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 shadow-sm dark:border-navy-primary dark:bg-navy-primary dark:text-navy-hover"
           aria-hidden
         >
           {i}

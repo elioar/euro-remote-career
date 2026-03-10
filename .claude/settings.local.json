@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs = require\\(''fs''\\); let c = fs.readFileSync\\(''lib/demo-jobs.ts'', ''utf8''\\); c = c.replace\\(/Drive roadmap.*?why\\\\.\\\\u2019\\\\u201d/, ''Drive roadmap and discovery for a developer tool. Remote, EU \\\\u2014 async updates and clear documentation. Own the what and why.''\\); fs.writeFileSync\\(''lib/demo-jobs.ts'', c\\); console.log\\(''done''\\);\")",
+      "Bash(node -e \":*)"
+    ]
+  }
+}

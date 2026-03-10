@@ -5,15 +5,16 @@
 :root {
   --background: #fafafa;
   --foreground: #171717;
-  --navy-primary: #001BB7;
-  --navy-hover: #0039cc;
+  --navy-primary: #03346E;
+  --navy-hover: #6EACDA;
   --section-muted: #f8fafc;
 }
 
 .dark {
-  --background: #0f172a;
+  --background: #021526;
   --foreground: #f1f5f9;
   --section-muted: #1e293b;
+  --navy-primary: #03346E;
 }
 
 @theme inline {

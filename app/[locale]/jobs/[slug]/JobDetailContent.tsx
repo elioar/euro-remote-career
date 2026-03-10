@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
+import { MapPin, Banknote, CalendarDays } from "lucide-react";
 import type { DemoJob } from "../../../../lib/demo-jobs";
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
@@ -162,12 +163,12 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
           </motion.div>
 
           <motion.dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600 dark:text-slate-300" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.2, ease: easeCubic }}>
-            <div><dt className="sr-only">{t("location")}</dt><dd>📍 {job.location}</dd></div>
-            {job.salary && (<div><dt className="sr-only">{t("salary")}</dt><dd>💰 {job.salary}</dd></div>)}
+            <div><dt className="sr-only">{t("location")}</dt><dd className="flex items-center gap-1"><MapPin size={14} aria-hidden />{job.location}</dd></div>
+            {job.salary && (<div><dt className="sr-only">{t("salary")}</dt><dd className="flex items-center gap-1"><Banknote size={14} aria-hidden />{job.salary}</dd></div>)}
             {job.datePosted && (
               <div>
                 <dt className="sr-only">{t("posted")}</dt>
-                <dd>📅 {new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</dd>
+                <dd className="flex items-center gap-1"><CalendarDays size={14} aria-hidden />{new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</dd>
               </div>
             )}
           </motion.dl>

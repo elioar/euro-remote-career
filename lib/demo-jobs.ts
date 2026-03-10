@@ -25,6 +25,12 @@ export type DemoJob = {
   timezone?: string;
   /** Optional e.g. "Senior", "Mid-level". */
   seniority?: string;
+  /** Optional e.g. "Full-time", "Part-time", "Contract". */
+  employmentType?: string;
+  /** Optional number of applicants for display. */
+  applicants?: number;
+  /** Whether to show an URGENT badge. */
+  urgent?: boolean;
 };
 
 export const DEMO_JOBS: DemoJob[] = [
@@ -34,7 +40,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "Tech Co",
     companyLogo: "https://ui-avatars.com/api/?name=Tech+Co&background=0E1A2B&color=fff&size=128",
     description:
-      "Build modern web apps with React and TypeScript. Fully remote, EU timezone-friendly — strong ownership and async communication.\n\nYou'll work with the product and design teams to ship features end-to-end. We value clear documentation and async-first collaboration. 🚀",
+      "Build modern web apps with React and TypeScript. Fully remote, EU timezone-friendly — strong ownership and async communication.\n\nYou'll work with the product and design teams to ship features end-to-end. We value clear documentation and async-first collaboration.",
     slug: "senior-frontend-engineer",
     category: "Tech",
     location: "Remote",
@@ -44,10 +50,13 @@ export const DEMO_JOBS: DemoJob[] = [
     summary: "Senior Frontend Engineer at Tech Co. React, TypeScript, remote, EU-friendly. Apply on company site.",
     requirements:
       "5+ years frontend experience. Strong React and TypeScript. Experience with async teams and written communication.",
-    benefits: "Remote-first 🌍 · Flexible hours ⏰ · Learning budget 📚 · Health insurance 💙",
+    benefits: "Remote-first · Flexible hours · Learning budget · Health insurance",
     datePosted: "2025-02-15",
     timezone: "EU preferred",
     seniority: "Senior",
+    employmentType: "Full-time",
+    applicants: 34,
+    urgent: true,
   },
   {
     id: "2",
@@ -55,7 +64,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "Design Studio",
     companyLogo: "https://ui-avatars.com/api/?name=Design+Studio&background=0E1A2B&color=fff&size=128",
     description:
-      "Own product design for a B2B SaaS. Async-first team, Figma, user research — EU or Americas timezone.\n\nYou'll own the design system and key flows, working closely with engineering and product. Great fit if you love clean UI and clear communication. ✨",
+      "Own product design for a B2B SaaS. Async-first team, Figma, user research — EU or Americas timezone.\n\nYou'll own the design system and key flows, working closely with engineering and product. Great fit if you love clean UI and clear communication.",
     slug: "product-designer",
     category: "Design",
     location: "Remote",
@@ -64,83 +73,98 @@ export const DEMO_JOBS: DemoJob[] = [
     applyUrl: "https://example.com/apply/2",
     datePosted: "2025-02-10",
     timezone: "EU or Americas",
+    employmentType: "Full-time",
+    applicants: 21,
   },
   {
     id: "3",
     title: "Content Marketing Lead",
     company: "Growth Inc",
     companyLogo: "https://ui-avatars.com/api/?name=Growth+Inc&background=0E1A2B&color=fff&size=128",
-    description: "Lead content strategy and SEO. Remote, flexible hours — blog, newsletters, and partnerships. You'll own the voice and growth story. 📈",
+    description: "Lead content strategy and SEO. Remote, flexible hours — blog, newsletters, and partnerships. You'll own the voice and growth story.",
     slug: "content-marketing-lead",
     category: "Marketing",
     location: "Remote",
     async: false,
     salary: "€60k–80k",
     applyUrl: "https://example.com/apply/3",
+    employmentType: "Full-time",
+    applicants: 58,
+    urgent: true,
   },
   {
     id: "4",
     title: "Backend Engineer",
     company: "DataFlow",
     companyLogo: "https://ui-avatars.com/api/?name=DataFlow&background=0E1A2B&color=fff&size=128",
-    description: "Design and maintain APIs and data pipelines. Remote-first — Python or Go, strong written communication. Ship impact without the commute. 🔧",
+    description: "Design and maintain APIs and data pipelines. Remote-first — Python or Go, strong written communication. Ship impact without the commute.",
     slug: "backend-engineer",
     category: "Tech",
     location: "Remote",
     async: true,
     salary: "€75k–95k",
     applyUrl: "https://example.com/apply/4",
+    employmentType: "Full-time",
+    applicants: 12,
   },
   {
     id: "5",
     title: "Product Manager",
     company: "Product Labs",
     companyLogo: "https://ui-avatars.com/api/?name=Product+Labs&background=0E1A2B&color=fff&size=128",
-    description: "Drive roadmap and discovery for a developer tool. Remote, EU — async updates and clear documentation. Own the “what” and “why.” 📋",
+    description: "Drive roadmap and discovery for a developer tool. Remote, EU — async updates and clear documentation. Own the 'what' and 'why.'",
     slug: "product-manager",
     category: "Product",
     location: "Remote",
     async: true,
     salary: "€65k–85k",
     applyUrl: "https://example.com/apply/5",
+    employmentType: "Full-time",
+    applicants: 27,
   },
   {
     id: "6",
     title: "UX Researcher",
     company: "Design Studio",
     companyLogo: "https://ui-avatars.com/api/?name=Design+Studio&background=0E1A2B&color=fff&size=128",
-    description: "Run user interviews and usability studies. Remote — collaborate async with design and product. Turn insights into better experiences. 🎯",
+    description: "Run user interviews and usability studies. Remote — collaborate async with design and product. Turn insights into better experiences.",
     slug: "ux-researcher",
     category: "Design",
     location: "Remote",
     async: true,
     applyUrl: "https://example.com/apply/6",
+    employmentType: "Contract",
+    applicants: 9,
   },
   {
     id: "7",
     title: "Growth Marketing Manager",
     company: "Growth Inc",
     companyLogo: "https://ui-avatars.com/api/?name=Growth+Inc&background=0E1A2B&color=fff&size=128",
-    description: "Paid acquisition, landing pages, and conversion. Remote — data-driven and experiment-focused. Test, learn, scale. 📊",
+    description: "Paid acquisition, landing pages, and conversion. Remote — data-driven and experiment-focused. Test, learn, scale.",
     slug: "growth-marketing-manager",
     category: "Marketing",
     location: "Remote",
     async: false,
     salary: "€58k–78k",
     applyUrl: "https://example.com/apply/7",
+    employmentType: "Full-time",
+    applicants: 43,
   },
   {
     id: "8",
     title: "Full-Stack Developer",
     company: "Tech Co",
     companyLogo: "https://ui-avatars.com/api/?name=Tech+Co&background=0E1A2B&color=fff&size=128",
-    description: "End-to-end feature development. React and Node. Remote, EU — occasional sync for planning. Build it, ship it, own it. ⚡",
+    description: "End-to-end feature development. React and Node. Remote, EU — occasional sync for planning. Build it, ship it, own it.",
     slug: "full-stack-developer",
     category: "Tech",
     location: "Remote",
     async: false,
     salary: "€68k–88k",
     applyUrl: "https://example.com/apply/8",
+    employmentType: "Full-time",
+    applicants: 19,
   },
   // Greek companies
   {
@@ -149,7 +173,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "Wolt",
     companyLogo: "https://ui-avatars.com/api/?name=Wolt&background=0E1A2B&color=fff&size=128",
     description:
-      "Build and scale the platform that connects millions of customers with restaurants and stores. Remote-friendly, EU — Kotlin, React, strong ownership.\n\nYou'll work on core services and partner tools. We value async communication and clear documentation. 🚀",
+      "Build and scale the platform that connects millions of customers with restaurants and stores. Remote-friendly, EU — Kotlin, React, strong ownership.\n\nYou'll work on core services and partner tools. We value async communication and clear documentation.",
     slug: "senior-software-engineer-wolt",
     category: "Tech",
     location: "Remote",
@@ -159,6 +183,8 @@ export const DEMO_JOBS: DemoJob[] = [
     summary: "Senior Software Engineer at Wolt. Remote, EU. Apply on company site.",
     datePosted: "2025-02-18",
     timezone: "EU",
+    employmentType: "Full-time",
+    applicants: 31,
   },
   {
     id: "10",
@@ -166,7 +192,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "e-food",
     companyLogo: "https://ui-avatars.com/api/?name=e-food&background=0E1A2B&color=fff&size=128",
     description:
-      "Shape the food delivery experience for millions of users in Greece. Remote or hybrid Athens — Figma, user research, cross-functional collaboration.\n\nOwn design for key product areas. We work async where possible with regular alignment. ✨",
+      "Shape the food delivery experience for millions of users in Greece. Remote or hybrid Athens — Figma, user research, cross-functional collaboration.\n\nOwn design for key product areas. We work async where possible with regular alignment.",
     slug: "product-designer-efood",
     category: "Design",
     location: "Remote",
@@ -175,6 +201,8 @@ export const DEMO_JOBS: DemoJob[] = [
     applyUrl: "https://www.efood.gr/careers",
     datePosted: "2025-02-14",
     timezone: "Greece preferred",
+    employmentType: "Full-time",
+    applicants: 16,
   },
   {
     id: "11",
@@ -182,7 +210,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "Plaisio",
     companyLogo: "https://ui-avatars.com/api/?name=Plaisio&background=0E1A2B&color=fff&size=128",
     description:
-      "Develop and maintain e-commerce and internal systems. Remote in Greece — .NET or Node, databases, APIs.\n\nJoin the tech team behind one of Greece's leading electronics and tech retailers. Flexible hours, remote-first options. 🔧",
+      "Develop and maintain e-commerce and internal systems. Remote in Greece — .NET or Node, databases, APIs.\n\nJoin the tech team behind one of Greece's leading electronics and tech retailers. Flexible hours, remote-first options.",
     slug: "backend-engineer-plaisio",
     category: "Tech",
     location: "Remote",
@@ -191,6 +219,9 @@ export const DEMO_JOBS: DemoJob[] = [
     applyUrl: "https://www.plaisio.gr/careers",
     datePosted: "2025-02-12",
     timezone: "Greece",
+    employmentType: "Full-time",
+    applicants: 8,
+    urgent: true,
   },
   {
     id: "12",
@@ -198,7 +229,7 @@ export const DEMO_JOBS: DemoJob[] = [
     company: "Scroutz",
     companyLogo: "https://ui-avatars.com/api/?name=Scroutz&background=0E1A2B&color=fff&size=128",
     description:
-      "Build data pipelines and analytics for price comparison and product discovery. Remote, EU — Python, SQL, cloud infrastructure.\n\nHelp millions of users find the best deals. Async-friendly team, focus on quality and ownership. 📊",
+      "Build data pipelines and analytics for price comparison and product discovery. Remote, EU — Python, SQL, cloud infrastructure.\n\nHelp millions of users find the best deals. Async-friendly team, focus on quality and ownership.",
     slug: "data-engineer-scroutz",
     category: "Tech",
     location: "Remote",
@@ -207,6 +238,8 @@ export const DEMO_JOBS: DemoJob[] = [
     applyUrl: "https://www.scroutz.gr/careers",
     datePosted: "2025-02-10",
     timezone: "EU / Greece",
+    employmentType: "Full-time",
+    applicants: 22,
   },
 ];
 
