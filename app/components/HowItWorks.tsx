@@ -10,21 +10,21 @@ export async function HowItWorks() {
   ];
 
   return (
-    <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20 dark:border-slate-700 dark:bg-background">
-      <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+    <section className="border-b border-border-muted bg-white py-12 sm:py-16 lg:py-20 dark:border-border-muted dark:bg-background">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl lg:text-3xl">
           {t("title")}
         </h2>
         <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {steps.map((step) => (
             <div key={step.title} className="flex flex-col">
-              <step.icon className="h-8 w-8 text-[#0E1A2B] dark:text-slate-200" />
-              <h3 className="mt-4 font-semibold text-[#0E1A2B] dark:text-slate-100">{step.title}</h3>
-              <p className="mt-2 text-sm text-gray-600 dark:text-slate-300">{step.text}</p>
+              <step.icon className="h-8 w-8 text-[#0E1A2B] dark:text-foreground/80" />
+              <h3 className="mt-4 font-semibold text-[#0E1A2B] dark:text-foreground">{step.title}</h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-foreground/70">{step.text}</p>
             </div>
           ))}
         </div>
-        <p className="mt-8 text-center text-xs text-gray-500 dark:text-slate-400">
+        <p className="mt-8 text-center text-xs text-gray-500 dark:text-foreground/50">
           {t("footer")}
         </p>
       </div>

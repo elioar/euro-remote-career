@@ -7,14 +7,24 @@
   --foreground: #171717;
   --navy-primary: #03346E;
   --navy-hover: #6EACDA;
+  --navy-accent: #03346E;
   --section-muted: #f8fafc;
+  --border-muted: #f1f5f9;
+  --border-card: #f3f4f6;
 }
 
 .dark {
-  --background: #021526;
+  --background: #0B0C0E;
   --foreground: #f1f5f9;
-  --section-muted: #1e293b;
+  --section-muted: #151618;
   --navy-primary: #03346E;
+  --navy-accent: #6EACDA;
+  --card-background: #1B1C1F;
+  --card-active: #222327;
+  --card-selected-bg: rgba(3, 52, 110, 0.1);
+  --card-selected-border: #3A4F6A;
+  --border-muted: rgba(255, 255, 255, 0.05);
+  --border-card: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
@@ -22,7 +32,14 @@
   --color-foreground: var(--foreground);
   --color-navy-primary: var(--navy-primary);
   --color-navy-hover: var(--navy-hover);
+  --color-navy-accent: var(--navy-accent);
   --color-section-muted: var(--section-muted);
+  --color-card-background: var(--card-background);
+  --color-card-active: var(--card-active);
+  --color-card-selected-bg: var(--card-selected-bg);
+  --color-card-selected-border: var(--card-selected-border);
+  --color-border-muted: var(--border-muted);
+  --color-border-card: var(--border-card);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -80,7 +97,7 @@ body::-webkit-scrollbar-thumb:hover {
 .dark body::-webkit-scrollbar-thumb {
   background: #475569;
   border-radius: 10px;
-  border: 2px solid #1e293b;
+  border: 2px solid #3b1e1e;
 }
 
 .dark::-webkit-scrollbar-thumb:hover,

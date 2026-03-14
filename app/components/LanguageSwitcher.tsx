@@ -19,7 +19,7 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-0.5 rounded-full bg-slate-100 p-1 dark:bg-slate-700">
+    <div className="flex items-center gap-0.5 rounded-full bg-slate-50 p-1 border border-border-muted dark:bg-card-background dark:border-border-muted">
       {routing.locales.map((loc) => {
         const isActive = locale === loc;
         const label = loc === "el" ? "GR" : "EN";
@@ -30,10 +30,10 @@ export function LanguageSwitcher() {
             onClick={() => switchLocale(loc)}
             aria-label={loc === "el" ? "Ελληνικά" : "English"}
             aria-current={isActive ? "true" : undefined}
-            className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
+            className={`rounded-full px-4 py-2 text-xs font-bold tracking-wide transition-all ${
               isActive
-                ? "bg-white text-navy-primary shadow-sm dark:bg-blue-500 dark:text-white"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                ? "bg-white text-navy-primary shadow-sm dark:bg-navy-primary dark:text-white"
+                : "text-slate-500 hover:text-slate-700 dark:text-foreground/60 dark:hover:text-foreground"
             }`}
           >
             {label}

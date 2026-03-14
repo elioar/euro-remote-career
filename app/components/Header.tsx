@@ -7,8 +7,12 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "@/app/components/ThemeToggle";
 import { LanguageSwitcher } from "@/app/components/LanguageSwitcher";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const routerNav = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
   const t = useTranslations("Header");
   const tc = useTranslations("Common");
@@ -21,6 +25,26 @@ export function Header() {
     { href: "/about" as const, label: t("about") },
     { href: "/contact" as const, label: t("contact") },
   ];
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    routerNav.push("/");
+    routerNav.refresh();
+  }
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -39,9 +63,9 @@ export function Header() {
   }, [mobileOpen]);
 
   return (
-    <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-gray-100 md:bg-background md:pt-0 md:pb-0 dark:md:border-slate-700">
+    <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-border-muted md:bg-background md:pt-0 md:pb-0 dark:md:border-border-muted">
       <motion.div
-        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-background px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-[1100px] md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal dark:border-slate-700"
+        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-border-muted bg-background px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-7xl md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal dark:border-border-muted"
         animate={{
           boxShadow: isMobile
             ? mobileOpen
@@ -60,7 +84,7 @@ export function Header() {
         </Link>
 
         <nav
-          className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-100 p-1 md:flex dark:bg-slate-700"
+          className="relative hidden items-center justify-center gap-1 rounded-full bg-slate-50/50 p-1 md:flex border border-border-muted dark:bg-card-background dark:border-border-muted"
           aria-label={t("mainNav")}
         >
           {navLinks.map(({ href, label }) => {
@@ -70,13 +94,13 @@ export function Header() {
                 key={href}
                 href={href}
                 className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  isActive ? "text-navy-primary dark:text-blue-300" : "text-navy-primary hover:bg-slate-200/60 dark:text-slate-200 dark:hover:bg-slate-600"
+                  isActive ? "text-navy-primary dark:text-foreground" : "text-navy-primary hover:bg-slate-200/60 dark:text-foreground/70 dark:hover:text-foreground"
                 }`}
               >
                 {isActive && (
                   <motion.span
                     layoutId="nav-capsule-pill"
-                    className="absolute inset-0 rounded-full bg-slate-100 shadow-sm dark:bg-slate-500"
+                    className="absolute inset-0 rounded-full bg-white shadow-sm border border-border-muted dark:bg-card-active dark:border-border-muted"
                     transition={{
                       type: "spring",
                       stiffness: 380,
@@ -95,22 +119,41 @@ export function Header() {
             <LanguageSwitcher />
           </div>
           <ThemeToggle />
-          <Link
-            href="/jobs"
-            className="hidden whitespace-nowrap text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-blue-300 dark:hover:text-blue-200"
-          >
-            {tc("postAJob")}
-          </Link>
-          <Link
-            href="/jobs"
-            className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
-          >
-            {tc("browseJobs")}
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="hidden whitespace-nowrap text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-navy-accent dark:hover:text-navy-accent/80"
+              >
+                {t("dashboard")}
+              </Link>
+              <button
+                onClick={() => handleSignOut()}
+                className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
+              >
+                {t("signOut")}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="hidden whitespace-nowrap text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-navy-accent dark:hover:text-navy-accent/80"
+              >
+                {t("signIn")}
+              </Link>
+              <Link
+                href="/register"
+                className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
+              >
+                {t("register")}
+              </Link>
+            </>
+          )}
           <button
             type="button"
             onClick={() => setMobileOpen((o) => !o)}
-            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden dark:hover:bg-slate-700"
+            className="relative flex h-10 w-10 items-center justify-center rounded-lg text-navy-primary transition-colors hover:bg-gray-100 md:hidden dark:hover:bg-card-active"
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
@@ -175,7 +218,7 @@ export function Header() {
                 damping: 34,
                 mass: 0.9,
               }}
-              className="absolute inset-0 flex flex-col overflow-auto bg-white pt-[72px] dark:bg-slate-900"
+              className="absolute inset-0 flex flex-col overflow-auto bg-white pt-[72px] dark:bg-background"
             >
               <motion.nav
                 className="flex-1 px-6 py-6"
@@ -206,8 +249,8 @@ export function Header() {
                           onClick={() => setMobileOpen(false)}
                           className={`flex items-center rounded-xl px-4 py-3.5 text-base font-medium transition-colors ${
                             isActive
-                              ? "bg-navy-primary/10 text-navy-primary dark:bg-slate-700 dark:text-white"
-                              : "text-navy-primary hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800"
+                              ? "bg-navy-primary/10 text-navy-primary dark:bg-card-active dark:text-white"
+                              : "text-navy-primary hover:bg-slate-100 dark:text-white dark:hover:bg-card-active"
                           }`}
                         >
                           {label}
@@ -219,7 +262,7 @@ export function Header() {
               </motion.nav>
 
               <motion.div
-                className="shrink-0 border-t border-slate-200 px-6 py-4 dark:border-slate-700"
+                className="shrink-0 border-t border-slate-200 px-6 py-4 dark:border-border-muted"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.2 }}
@@ -248,27 +291,47 @@ export function Header() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.28 }}
               >
-                <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 dark:bg-slate-800">
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 dark:bg-card-active">
                   <span className="text-sm font-medium text-navy-primary dark:text-slate-200">
                     {t("language")}
                   </span>
                   <LanguageSwitcher />
                 </div>
-                <Link
-                  href="/jobs"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-white dark:hover:bg-slate-800"
-                >
-                  {tc("postAJob")}
-                </Link>
-                <Link
-                  href="/jobs"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-                >
-                  {tc("browseJobs")}
-                  <ChevronRightIcon className="h-4 w-4" />
-                </Link>
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-white dark:hover:bg-slate-800"
+                    >
+                      {t("dashboard")}
+                    </Link>
+                    <button
+                      onClick={() => { setMobileOpen(false); handleSignOut(); }}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                    >
+                      {t("signOut")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-border-card dark:text-white dark:hover:bg-card-active"
+                    >
+                      {t("signIn")}
+                    </Link>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                    >
+                      {t("register")}
+                      <ChevronRightIcon className="h-4 w-4" />
+                    </Link>
+                  </>
+                )}
               </motion.div>
             </motion.div>
           </motion.div>

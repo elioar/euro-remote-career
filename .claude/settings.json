@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npm run build)",
+      "Bash(node -e \"const {PrismaClient} = require\\(''./lib/generated/prisma''\\); const p = new PrismaClient\\(\\); console.log\\(Object.keys\\(PrismaClient\\)\\)\")",
+      "Bash(node -e \"const {PrismaLibSql} = require\\(''@prisma/adapter-libsql''\\); console.log\\(PrismaLibSql.toString\\(\\).slice\\(0, 200\\)\\)\")",
+      "Bash(npm uninstall next-auth @prisma/adapter-libsql @libsql/client bcryptjs @types/bcryptjs)",
+      "Bash(npm install @supabase/supabase-js @supabase/ssr)",
+      "Bash(npm install @prisma/adapter-pg pg)",
+      "Bash(npm install -D @types/pg)",
+      "Bash(npx prisma migrate status)",
+      "Bash(npx prisma migrate dev --name rename-cvurl-to-cvpath)",
+      "Bash(grep -r \"useTranslations\\\\|t\\(\"\"\" c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/register c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/login c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/profile)"
+    ]
+  }
+}

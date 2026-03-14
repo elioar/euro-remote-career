@@ -22,7 +22,7 @@ function CompanyLogo({ name, domain, index }: { name: string; domain: string; in
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.06, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="relative flex h-10 w-20 shrink-0 snap-center items-center justify-center rounded-lg border border-gray-200 bg-white px-2 sm:h-12 sm:w-24 dark:border-slate-600 dark:bg-slate-700/80"
+      className="relative flex h-10 w-20 shrink-0 snap-center items-center justify-center rounded-lg border border-border-card bg-white px-2 sm:h-12 sm:w-24 dark:border-border-muted dark:bg-card-background"
       aria-hidden
     >
       {error ? (
@@ -49,9 +49,9 @@ export function CompanyLogos() {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="border-b border-gray-100 bg-section-muted py-8 sm:py-12 lg:py-16 dark:border-slate-700"
+      className="border-b border-border-muted bg-section-muted py-8 sm:py-12 lg:py-16 dark:border-border-muted"
     >
-      <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex snap-x snap-mandatory flex-nowrap items-center justify-start gap-6 overflow-x-auto pb-2 sm:flex-wrap sm:justify-between sm:gap-8 sm:pb-0 lg:gap-12">
           {COMPANIES.map((company, i) => (
             <CompanyLogo key={company.domain} name={company.name} domain={company.domain} index={i} />

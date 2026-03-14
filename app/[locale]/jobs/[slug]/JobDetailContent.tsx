@@ -20,7 +20,7 @@ function ApplyCard({ job }: { job: DemoJob }) {
       initial={{ opacity: 0, x: 16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: 0.2, ease: easeCubic }}
-      className="w-full shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start dark:border-slate-500 dark:bg-slate-800"
+      className="w-full shrink-0 rounded-2xl border border-border-card bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start dark:border-border-card dark:bg-card-background"
       aria-label={t("applyOnCompanySite")}
     >
       {job.companyLogo ? (
@@ -28,22 +28,22 @@ function ApplyCard({ job }: { job: DemoJob }) {
           <img
             src={job.companyLogo}
             alt=""
-            className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain dark:border-slate-600 dark:bg-slate-700"
+            className="h-10 w-10 rounded-full border border-slate-100 bg-white object-contain dark:border-border-muted dark:bg-card-active"
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         </div>
       ) : null}
-      <h2 className="text-base font-semibold text-[#0E1A2B] dark:text-slate-100">
+      <h2 className="text-base font-semibold text-foreground dark:text-foreground">
         {t("applyOnCompanySite")}
       </h2>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+      <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">
         {t("applyRedirectText")}
       </p>
       <motion.a
         href={job.applyUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover dark:bg-blue-600 dark:hover:bg-blue-500"
+        className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
       >
@@ -51,14 +51,14 @@ function ApplyCard({ job }: { job: DemoJob }) {
       </motion.a>
       <Link
         href="/jobs"
-        className="mt-3 flex w-full items-center justify-center rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-slate-200 dark:hover:bg-slate-600"
+        className="mt-3 flex w-full items-center justify-center rounded-lg border border-border-card px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-muted dark:text-foreground/80 dark:hover:bg-card-active"
       >
         {t("backToJobs")}
       </Link>
-      <dl className="mt-5 space-y-2 border-t border-slate-100 pt-4 text-sm dark:border-slate-600">
+      <dl className="mt-5 space-y-2 border-t border-border-muted pt-4 text-sm dark:border-border-muted">
         <div className="flex justify-between gap-2">
-          <dt className="text-slate-500 dark:text-slate-400">{t("company")}</dt>
-          <dd className="font-medium text-slate-800 dark:text-slate-200">{job.company}</dd>
+          <dt className="text-slate-500 dark:text-foreground/50">{t("company")}</dt>
+          <dd className="font-medium text-slate-800 dark:text-foreground/80">{job.company}</dd>
         </div>
         <div className="flex justify-between gap-2">
           <dt className="text-slate-500 dark:text-slate-400">{t("category")}</dt>
@@ -94,8 +94,8 @@ function DescriptionBlock({ title, content, delay = 0 }: { title: string; conten
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: easeCubic }}
     >
-      <h2 className="text-lg font-semibold text-[#0E1A2B] dark:text-slate-100">{title}</h2>
-      <div className="mt-3 max-w-prose space-y-4 text-slate-700 leading-relaxed dark:text-slate-300">
+      <h2 className="text-lg font-semibold text-foreground dark:text-foreground">{title}</h2>
+      <div className="mt-3 max-w-prose space-y-4 text-slate-700 leading-relaxed dark:text-foreground/85">
         {paragraphs.map((p, i) => {
           if (p.startsWith("- ") || p.startsWith("* ")) {
             const items = p.split(/\n/).map((line) => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean);
@@ -122,34 +122,34 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
     <>
       <motion.nav
         aria-label={t("breadcrumb")}
-        className="text-sm text-slate-600 dark:text-slate-400"
+        className="text-sm text-slate-600 dark:text-foreground/60"
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: easeCubic }}
       >
         <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-          <li><Link href="/" className="text-navy-primary hover:text-navy-hover dark:text-blue-300 dark:hover:text-blue-200">{t("home")}</Link></li>
+          <li><Link href="/" className="text-navy-primary hover:text-navy-hover dark:text-navy-accent dark:hover:text-navy-accent/80">{t("home")}</Link></li>
+          <li aria-hidden="true" className="text-slate-400 dark:text-foreground/30">/</li>
+          <li><Link href="/jobs" className="text-navy-primary hover:text-navy-hover dark:text-navy-accent dark:hover:text-navy-accent/80">{t("jobs")}</Link></li>
           <li aria-hidden="true" className="text-slate-400 dark:text-slate-500">/</li>
-          <li><Link href="/jobs" className="text-navy-primary hover:text-navy-hover dark:text-blue-300 dark:hover:text-blue-200">{t("jobs")}</Link></li>
-          <li aria-hidden="true" className="text-slate-400 dark:text-slate-500">/</li>
-          <li className="max-w-[200px] truncate font-medium text-slate-800 sm:max-w-none dark:text-slate-200">{job.title}</li>
+          <li className="max-w-[200px] truncate font-medium text-slate-800 sm:max-w-none dark:text-foreground/80">{job.title}</li>
         </ol>
       </motion.nav>
 
       <div className="mt-6 flex flex-col gap-8 lg:flex-row lg:gap-10">
         <div className="min-w-0 flex-1">
-          <motion.h1 className="text-2xl font-semibold tracking-tight text-[#0E1A2B] sm:text-3xl dark:text-slate-100" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.05 }}>
+          <motion.h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl dark:text-foreground" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.05 }}>
             {job.title}
           </motion.h1>
           <motion.div className="mt-2 flex items-center gap-3" variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.1 }}>
             {job.companyLogo ? (
-              <img src={job.companyLogo} alt="" className="h-10 w-10 shrink-0 rounded object-contain border border-slate-100 bg-white dark:border-slate-600 dark:bg-slate-700" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              <img src={job.companyLogo} alt="" className="h-10 w-10 shrink-0 rounded object-contain border border-border-card bg-white dark:border-border-muted dark:bg-card-active" onError={(e) => { e.currentTarget.style.display = "none"; }} />
             ) : null}
-            <span className="text-lg text-slate-600 dark:text-slate-300">{job.company}</span>
+            <span className="text-lg text-slate-600 dark:text-foreground/70">{job.company}</span>
           </motion.div>
 
           <motion.div className="mt-4 flex flex-wrap gap-2" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.15, ease: easeCubic }}>
-            <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">{t("remoteBadge")}</span>
+            <span className="rounded-full border border-border-card bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-border-muted dark:bg-card-active dark:text-foreground/80">{t("remoteBadge")}</span>
             {job.async && (
               <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-200">{t("asyncBadge")}</span>
             )}
@@ -162,7 +162,7 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             )}
           </motion.div>
 
-          <motion.dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600 dark:text-slate-300" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.2, ease: easeCubic }}>
+          <motion.dl className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-slate-600 dark:text-foreground/60" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.2, ease: easeCubic }}>
             <div><dt className="sr-only">{t("location")}</dt><dd className="flex items-center gap-1"><MapPin size={14} aria-hidden />{job.location}</dd></div>
             {job.salary && (<div><dt className="sr-only">{t("salary")}</dt><dd className="flex items-center gap-1"><Banknote size={14} aria-hidden />{job.salary}</dd></div>)}
             {job.datePosted && (

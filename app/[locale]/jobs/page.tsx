@@ -8,7 +8,7 @@ type Props = { params: Promise<{ locale: string }> };
 
 function JobsPageFallback() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
+    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
       <div className="mb-8">
         <div className="h-8 w-48 animate-pulse rounded bg-slate-200 dark:bg-slate-700" />
         <div className="mt-2 h-4 w-72 animate-pulse rounded bg-slate-100 dark:bg-slate-700" />

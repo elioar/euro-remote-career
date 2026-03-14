@@ -33,14 +33,14 @@ export function ContactContent() {
         <motion.h1
           variants={fadeUp}
           transition={{ duration: 0.4 }}
-          className="text-3xl font-semibold tracking-tight text-[#0E1A2B] sm:text-4xl dark:text-slate-100"
+          className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl dark:text-foreground"
         >
           {t("pageTitle")}
         </motion.h1>
         <motion.p
           variants={fadeUp}
           transition={{ duration: 0.4 }}
-          className="mt-3 text-lg text-slate-600 dark:text-slate-300"
+          className="mt-3 text-lg text-slate-600 dark:text-foreground/70"
         >
           {t("subtitle")}
         </motion.p>
@@ -56,24 +56,24 @@ export function ContactContent() {
           variants={fadeUp}
           transition={{ duration: 0.4 }}
           whileHover={{ y: -4, transition: { duration: 0.2 } }}
-          className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-slate-700 dark:bg-slate-800"
+          className="rounded-2xl border border-border-card bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-border-card dark:bg-card-background"
           aria-labelledby="contact-options"
         >
-          <h2 id="contact-options" className="text-lg font-semibold text-[#0E1A2B] dark:text-slate-100">
+          <h2 id="contact-options" className="text-lg font-semibold text-foreground dark:text-foreground">
             {t("contactOptions")}
           </h2>
           <ul className="mt-6 space-y-6">
             <li>
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t("generalLabel")}</span>
+              <span className="text-sm font-medium text-slate-500 dark:text-foreground/50">{t("generalLabel")}</span>
               <motion.a
                 href="mailto:hello@euroremotecareer.com"
-                className="mt-1 block text-navy-primary hover:text-navy-hover dark:text-blue-400 dark:hover:text-blue-300"
+                className="mt-1 block text-navy-primary hover:text-navy-hover dark:text-navy-accent dark:hover:text-navy-accent/80"
                 whileHover={{ x: 4 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 hello@euroremotecareer.com
               </motion.a>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-1 text-sm text-slate-600 dark:text-foreground/60">
                 {t("generalDesc")}
               </p>
             </li>
@@ -81,13 +81,13 @@ export function ContactContent() {
               <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t("employersLabel")}</span>
               <motion.a
                 href="mailto:employers@euroremotecareer.com"
-                className="mt-1 block text-navy-primary hover:text-navy-hover dark:text-blue-400 dark:hover:text-blue-300"
+                className="mt-1 block text-navy-primary hover:text-navy-hover dark:text-navy-accent dark:hover:text-navy-accent/80"
                 whileHover={{ x: 4 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 employers@euroremotecareer.com
               </motion.a>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-1 text-sm text-slate-600 dark:text-foreground/60">
                 {t("employersDesc")}
               </p>
             </li>
@@ -101,16 +101,16 @@ export function ContactContent() {
           variants={fadeUp}
           transition={{ duration: 0.4 }}
           whileHover={{ y: -4, transition: { duration: 0.2 } }}
-          className="rounded-2xl bg-section-muted p-6 sm:p-8 transition-shadow hover:shadow-md dark:border dark:border-slate-700"
+          className="rounded-2xl bg-section-muted p-6 sm:p-8 transition-shadow hover:shadow-md dark:border dark:border-border-muted"
           aria-labelledby="quick-links"
         >
-          <h2 id="quick-links" className="text-lg font-semibold text-[#0E1A2B] dark:text-slate-100">
+          <h2 id="quick-links" className="text-lg font-semibold text-foreground dark:text-foreground">
             {t("quickLinks")}
           </h2>
           <ul className="mt-6 space-y-4">
             <li>
               <motion.div whileHover={{ x: 4 }}>
-                <Link href="/about" className="text-navy-primary hover:text-navy-hover inline-block dark:text-blue-400 dark:hover:text-blue-300">
+                <Link href="/about" className="text-navy-primary hover:text-navy-hover inline-block dark:text-navy-accent dark:hover:text-navy-accent/80">
                   {t("aboutLink")}
                 </Link>
               </motion.div>
@@ -118,7 +118,7 @@ export function ContactContent() {
             </li>
             <li>
               <motion.div whileHover={{ x: 4 }}>
-                <Link href="/jobs" className="text-navy-primary hover:text-navy-hover inline-block dark:text-blue-400 dark:hover:text-blue-300">
+                <Link href="/jobs" className="text-navy-primary hover:text-navy-hover inline-block dark:text-navy-accent dark:hover:text-navy-accent/80">
                   {t("browseLink")}
                 </Link>
               </motion.div>
@@ -126,11 +126,11 @@ export function ContactContent() {
             </li>
             <li>
               <motion.div whileHover={{ x: 4 }}>
-                <Link href="/privacy" className="text-navy-primary hover:text-navy-hover inline-block dark:text-blue-400 dark:hover:text-blue-300">
+                <Link href="/privacy" className="text-navy-primary hover:text-navy-hover inline-block dark:text-navy-accent dark:hover:text-navy-accent/80">
                   {t("privacyLink")}
                 </Link>
               </motion.div>
-              <p className="mt-0.5 text-sm text-slate-600 dark:text-slate-400">{t("privacyDesc")}</p>
+              <p className="mt-0.5 text-sm text-slate-600 dark:text-foreground/60">{t("privacyDesc")}</p>
             </li>
           </ul>
         </motion.section>

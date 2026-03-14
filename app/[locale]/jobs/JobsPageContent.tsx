@@ -20,10 +20,10 @@ const CATEGORIES: JobCategory[] = ["Tech", "Design", "Marketing", "Product"];
 const PER_PAGE = 8;
 
 const CATEGORY_COLORS: Record<JobCategory, { pill: string }> = {
-  Tech: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
-  Design: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
-  Marketing: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
-  Product: { pill: "border-slate-200 text-slate-600 dark:border-slate-600 dark:text-slate-300" },
+  Tech: { pill: "dark:border-border-muted dark:text-foreground/80" },
+  Design: { pill: "dark:border-border-muted dark:text-foreground/80" },
+  Marketing: { pill: "dark:border-border-muted dark:text-foreground/80" },
+  Product: { pill: "dark:border-border-muted dark:text-foreground/80" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -51,8 +51,8 @@ function JobCard({
       onClick={onClick}
       className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition-all hover:shadow-md ${
         selected
-          ? "border-navy-primary bg-navy-primary/5 dark:border-navy-hover dark:bg-navy-hover/10"
-          : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/60"
+          ? "border-navy-primary bg-navy-primary/5 dark:border-card-selected-border dark:bg-card-selected-bg"
+          : "border-border-card bg-white dark:border-border-card dark:bg-card-background hover:dark:bg-card-active hover:dark:border-white/20"
       }`}
     >
       {/* Top row: logo + title/company + salary */}
@@ -61,15 +61,15 @@ function JobCard({
           <img
             src={job.companyLogo}
             alt=""
-            className="h-10 w-10 shrink-0 rounded-xl border border-slate-100 object-contain p-1 dark:border-slate-700 dark:bg-slate-700"
+            className="h-10 w-10 shrink-0 rounded-xl border border-border-card object-contain p-1 dark:border-border-muted dark:bg-card-active"
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         )}
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-slate-900 dark:text-slate-100">{job.title}</p>
-          <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+          <p className="font-semibold text-slate-900 dark:text-foreground">{job.title}</p>
+          <p className="mt-0.5 text-sm text-slate-500 dark:text-foreground/70">
             {job.company}
-            {job.timezone && <span className="ml-1.5 text-slate-400 dark:text-slate-500">· {job.timezone}</span>}
+            {job.timezone && <span className="ml-1.5 text-slate-400 dark:text-foreground/50">· {job.timezone}</span>}
           </p>
         </div>
         {job.salary && (
@@ -85,12 +85,12 @@ function JobCard({
           {job.location === "Remote" ? tc("remote") : job.location}
         </span>
         {job.employmentType && (
-          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">
+          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">
             {job.employmentType}
           </span>
         )}
         {job.async && (
-          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">
+          <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">
             {tc("asyncFriendly")}
           </span>
         )}
@@ -129,19 +129,19 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      {!hideHeader && <div className="shrink-0 border-b border-slate-100 p-5 dark:border-slate-700">
+      {!hideHeader && <div className="shrink-0 border-b border-border-muted p-5 dark:border-border-muted">
         <div className="flex items-start gap-3">
           {job.companyLogo && (
             <img
               src={job.companyLogo}
               alt=""
-              className="h-12 w-12 shrink-0 rounded-xl border border-slate-100 object-contain p-1 dark:border-slate-700 dark:bg-slate-700"
+              className="h-12 w-12 shrink-0 rounded-xl border border-border-card object-contain p-1 dark:border-border-muted dark:bg-card-active"
               onError={(e) => { e.currentTarget.style.display = "none"; }}
             />
           )}
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{job.title}</h2>
-            <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{job.company}</p>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-foreground">{job.title}</h2>
+            <p className="mt-0.5 text-sm text-slate-500 dark:text-foreground/60">{job.company}</p>
           </div>
           {showCloseOnDesktop && (
             <button
@@ -155,19 +155,18 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
         </div>
 
         {/* Meta */}
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1"><MapPin size={13} aria-hidden />{job.location}</span>
-          {job.salary && <span className="flex items-center gap-1"><Banknote size={13} aria-hidden />{job.salary}/yr</span>}
-          {job.datePosted && <span className="flex items-center gap-1"><CalendarDays size={13} aria-hidden />{new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>}
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-foreground/75">
+          <span className="flex items-center gap-1"><MapPin size={13} className="text-slate-400 dark:text-foreground/50" aria-hidden />{job.location}</span>
+          {job.salary && <span className="flex items-center gap-1"><Banknote size={13} className="text-slate-400 dark:text-foreground/50" aria-hidden />{job.salary}/yr</span>}
+          {job.datePosted && <span className="flex items-center gap-1"><CalendarDays size={13} className="text-slate-400 dark:text-foreground/50" aria-hidden />{new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>}
         </div>
 
-        {/* Tags */}
         <div className="mt-3 flex flex-wrap gap-1.5">
           <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${accent.pill}`}>{job.category}</span>
-          {job.employmentType && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.employmentType}</span>}
-          {job.seniority && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{job.seniority}</span>}
-          {job.async && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">{tc("asyncFriendly")}</span>}
-          {job.urgent && <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:text-slate-300">Urgent</span>}
+          {job.employmentType && <span className="rounded-full border border-border-card px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">{job.employmentType}</span>}
+          {job.seniority && <span className="rounded-full border border-border-card px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">{job.seniority}</span>}
+          {job.async && <span className="rounded-full border border-border-card px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">{tc("asyncFriendly")}</span>}
+          {job.urgent && <span className="rounded-full border border-border-card px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:border-border-muted dark:text-foreground">Urgent</span>}
         </div>
 
         {/* Apply buttons */}
@@ -182,7 +181,7 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
           </a>
           <Link
             href={`/jobs/${job.slug}`}
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="inline-flex items-center justify-center rounded-xl border border-border-card px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             {t("fullDetails")}
           </Link>
@@ -196,14 +195,14 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
           <div className="mb-2">
             <div className="flex items-start gap-3">
               {job.companyLogo && (
-                <img src={job.companyLogo} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-slate-100 object-contain p-1 dark:border-slate-700 dark:bg-slate-700" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                <img src={job.companyLogo} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-border-card object-contain p-1 dark:border-border-muted dark:bg-card-active" onError={(e) => { e.currentTarget.style.display = "none"; }} />
               )}
               <div className="min-w-0 flex-1">
-                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{job.title}</h2>
-                <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{job.company}</p>
+                <h2 className="text-base font-semibold text-slate-900 dark:text-foreground">{job.title}</h2>
+                <p className="mt-0.5 text-sm text-slate-500 dark:text-foreground/60">{job.company}</p>
               </div>
             </div>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-foreground/50">
               <span className="flex items-center gap-1"><MapPin size={13} aria-hidden />{job.location}</span>
               {job.salary && <span className="flex items-center gap-1"><Banknote size={13} aria-hidden />{job.salary}/yr</span>}
               {job.datePosted && <span className="flex items-center gap-1"><CalendarDays size={13} aria-hidden />{new Date(job.datePosted).toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>}
@@ -218,19 +217,19 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
           </div>
         )}
         <section>
-          <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">{t("aboutRole")}</h3>
-          <div className="space-y-3">{paragraphs(job.description).map((p, i) => <p key={i}>{p}</p>)}</div>
+          <h3 className="mb-2 font-semibold text-slate-900 dark:text-foreground">{t("aboutRole")}</h3>
+          <div className="space-y-3 dark:text-foreground/85">{paragraphs(job.description).map((p, i) => <p key={i}>{p}</p>)}</div>
         </section>
         {job.requirements && (
           <section>
-            <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">{t("requirements")}</h3>
-            <div className="space-y-3">{paragraphs(job.requirements).map((p, i) => <p key={i}>{p}</p>)}</div>
+            <h3 className="mb-2 font-semibold text-slate-900 dark:text-foreground">{t("requirements")}</h3>
+            <div className="space-y-3 dark:text-foreground/85">{paragraphs(job.requirements).map((p, i) => <p key={i}>{p}</p>)}</div>
           </section>
         )}
         {job.benefits && (
           <section>
-            <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">{t("benefits")}</h3>
-            <div className="space-y-3">{paragraphs(job.benefits).map((p, i) => <p key={i}>{p}</p>)}</div>
+            <h3 className="mb-2 font-semibold text-slate-900 dark:text-foreground">{t("benefits")}</h3>
+            <div className="space-y-3 dark:text-foreground/85">{paragraphs(job.benefits).map((p, i) => <p key={i}>{p}</p>)}</div>
           </section>
         )}
       </div>
@@ -247,7 +246,7 @@ function JobDetailPanel({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typ
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 16 }}
       transition={{ duration: 0.25, ease: easeCubic }}
-      className="h-full overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/80"
+      className="h-full overflow-hidden rounded-2xl border border-border-card bg-white dark:border-slate-700/50 dark:bg-card-background"
     >
       <JobDetailInner job={job} tc={tc} onClose={onClose} showCloseOnDesktop />
     </motion.div>
@@ -257,7 +256,7 @@ function JobDetailPanel({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typ
 function SheetApplyBar({ job }: { job: DemoJob }) {
   const t = useTranslations("JobDetail");
   return (
-    <div className="shrink-0 border-t border-slate-100 p-4 dark:border-slate-700">
+    <div className="shrink-0 border-t border-border-muted p-4 dark:border-border-muted">
       <div className="flex gap-2">
         <a
           href={job.applyUrl}
@@ -310,7 +309,7 @@ function MobileBottomSheet({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<
 
       {/* Sheet */}
       <motion.div
-        className="absolute inset-x-0 bottom-0 flex flex-col bg-white dark:bg-slate-900"
+        className="absolute inset-x-0 bottom-0 flex flex-col bg-white dark:bg-card-background"
         style={{ borderRadius: expanded ? 0 : "24px 24px 0 0" }}
         initial={{ y: "100%" }}
         animate={{ y: 0, height: expanded ? "100dvh" : "65dvh" }}
@@ -449,21 +448,21 @@ export function JobsPageContent() {
         placeholder={t("keywordPlaceholder")}
         value={query}
         onChange={(e) => updateUrl({ query: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 shadow-sm focus:border-navy-primary focus:outline-none focus:ring-2 focus:ring-navy-primary/20 sm:w-48 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-navy-hover dark:focus:ring-navy-hover/30"
+        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder-slate-400 shadow-sm focus:border-navy-primary focus:outline-none focus:ring-2 focus:ring-navy-primary/20 sm:w-48 dark:border-border-muted dark:bg-card-background dark:text-slate-100 dark:placeholder-slate-400 dark:focus:border-navy-hover dark:focus:ring-navy-hover/30"
       />
       <div className="flex items-center gap-2">
-        <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-navy-hover dark:has-[:checked]:bg-navy-hover/10 dark:has-[:checked]:text-navy-hover">
+        <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-border-muted dark:bg-card-background dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-white dark:has-[:checked]:bg-white dark:has-[:checked]:text-slate-900">
           <input type="checkbox" checked={remoteOnly} onChange={(e) => updateUrl({ remote: e.target.checked })} className="peer sr-only" />
-          <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-navy-hover dark:peer-checked:bg-navy-hover" aria-hidden>
+          <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-white/20 dark:bg-slate-700 dark:peer-checked:border-slate-900 dark:peer-checked:bg-slate-900" aria-hidden>
             <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity">
               <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
             </span>
           </span>
           <span className="pointer-events-none select-none">{t("remoteOnly")}</span>
         </label>
-        <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-navy-hover dark:has-[:checked]:bg-navy-hover/10 dark:has-[:checked]:text-navy-hover">
+        <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 has-[:checked]:border-navy-primary has-[:checked]:bg-navy-primary/5 has-[:checked]:text-navy-primary dark:border-border-muted dark:bg-card-background dark:text-slate-300 dark:hover:bg-slate-700/50 dark:has-[:checked]:border-white dark:has-[:checked]:bg-white dark:has-[:checked]:text-slate-900">
           <input type="checkbox" checked={asyncOnly} onChange={(e) => updateUrl({ async: e.target.checked })} className="peer sr-only" />
-          <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-slate-500 dark:bg-slate-700 dark:peer-checked:border-navy-hover dark:peer-checked:bg-navy-hover" aria-hidden>
+          <span className="relative flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 border-slate-300 bg-white transition-all peer-checked:border-navy-primary peer-checked:bg-navy-primary peer-checked:[&_.check]:opacity-100 dark:border-white/20 dark:bg-slate-700 dark:peer-checked:border-slate-900 dark:peer-checked:bg-slate-900" aria-hidden>
             <span className="check absolute inset-0 flex items-center justify-center text-white opacity-0 transition-opacity">
               <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 13l4 4L19 7" /></svg>
             </span>
@@ -504,7 +503,7 @@ export function JobsPageContent() {
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               category === cat
                 ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                : "border border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900 dark:border-slate-600 dark:bg-transparent dark:text-slate-300 dark:hover:border-slate-400 dark:hover:text-white"
+                : "border border-slate-200 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-900 dark:border-border-muted dark:bg-transparent dark:text-slate-300 dark:hover:border-slate-400 dark:hover:text-white"
             }`}
           >
             {cat || t("allCategories")}
@@ -557,7 +556,7 @@ export function JobsPageContent() {
               <button
                 type="button"
                 onClick={() => setVisibleCount((c) => c + PER_PAGE)}
-                className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 dark:border-border-muted dark:bg-card-background dark:text-slate-200 dark:hover:bg-card-active"
               >
                 {t("loadMore")}
               </button>
@@ -578,7 +577,7 @@ export function JobsPageContent() {
                 key="empty-panel"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-700"
+                className="flex h-full items-center justify-center rounded-2xl border border-dashed border-slate-200 dark:border-border-muted"
               >
                 <p className="text-sm text-slate-400 dark:text-slate-500">Select a job to see details</p>
               </motion.div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { HeroSearch } from "./HeroSearch";
@@ -37,8 +36,8 @@ export function Hero() {
       animate="animate"
       variants={{ animate: { transition: { staggerChildren: 0.1 } } }}
     >
-      <div className="mx-auto max-w-[1100px] px-4 py-12 sm:px-6 sm:py-16 lg:py-20 xl:py-24">
-        <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-14 lg:items-center">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:py-20 xl:py-24">
+        <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-14 lg:items-stretch">
           <motion.div className="space-y-4 sm:space-y-6" variants={stagger}>
             <motion.h1
               className="max-w-[520px] text-2xl font-bold leading-[1.1] tracking-[-0.02em] text-foreground sm:text-3xl sm:leading-[1.05] md:text-4xl lg:text-[56px]"
@@ -97,7 +96,7 @@ export function Hero() {
             <motion.p
               variants={fadeUp}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base dark:text-slate-400"
+              className="max-w-[480px] text-sm leading-relaxed text-gray-600 sm:text-base dark:text-foreground/60"
             >
               {t("subtitle")}
             </motion.p>
@@ -124,16 +123,15 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl dark:bg-navy-primary dark:ring-1 dark:ring-navy-hover/30"
+            className="relative w-full aspect-[4/3] sm:aspect-video lg:aspect-auto overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl lg:h-full dark:bg-navy-primary dark:ring-1 dark:ring-navy-hover/30"
           >
-            <Image
-              src="/hero_image.webp"
-              alt={t("heroImageAlt")}
-              width={800}
-              height={520}
-              priority
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="h-auto w-full object-cover dark:opacity-95"
+            <video
+              src="/hero_video.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover dark:opacity-95"
             />
           </motion.div>
         </div>
@@ -151,7 +149,7 @@ function TrustAvatars() {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 + i * 0.05, type: "spring", stiffness: 400, damping: 20 }}
-          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-medium text-gray-600 shadow-sm dark:border-navy-primary dark:bg-navy-primary dark:text-navy-hover"
+          className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-white bg-slate-100 text-xs font-medium text-slate-500 shadow-sm dark:border-card-active dark:bg-card-active dark:text-foreground/40"
           aria-hidden
         >
           {i}

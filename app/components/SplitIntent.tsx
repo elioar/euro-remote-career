@@ -9,20 +9,20 @@ export async function SplitIntent() {
   const employerBullets = [t("employerBullet1"), t("employerBullet2"), t("employerBullet3")];
 
   return (
-    <section className="border-b border-gray-100 bg-white py-12 sm:py-16 lg:py-20 dark:border-slate-700 dark:bg-background">
-      <div className="mx-auto max-w-[1100px] px-4 sm:px-6 lg:px-8">
+    <section className="border-b border-border-muted bg-white py-12 sm:py-16 lg:py-20 dark:border-border-muted dark:bg-background">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-6 sm:grid-cols-2">
           <Link
             href="/jobs"
-            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-slate-600 dark:bg-slate-800"
+            className="group flex flex-col rounded-2xl border border-border-card bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-border-card dark:bg-card-background hover:dark:bg-card-active"
           >
-            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-slate-100">
+            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-foreground">
               {t("seekerTitle")}
             </h2>
             <ul className="mt-4 space-y-2">
               {seekerBullets.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-slate-100" />
+                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-foreground/70">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-foreground/80" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -34,15 +34,15 @@ export async function SplitIntent() {
           </Link>
           <Link
             href="/jobs"
-            className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-slate-600 dark:bg-slate-800"
+            className="group flex flex-col rounded-2xl border border-border-card bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-border-card dark:bg-card-background hover:dark:bg-card-active"
           >
-            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-slate-100">
+            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-foreground">
               {t("employerTitle")}
             </h2>
             <ul className="mt-4 space-y-2">
               {employerBullets.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-300">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-slate-100" />
+                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-foreground/70">
+                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-foreground/80" />
                   <span>{item}</span>
                 </li>
               ))}
