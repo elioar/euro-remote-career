@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Briefcase, User, Settings } from "lucide-react";
 import SignOutButton from "./SignOutButton";
 import { getTranslations } from "next-intl/server";
+import { CandidateDashboardContent } from "./CandidateDashboardContent";
+import { Header } from "@/app/components/Header";
 
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
@@ -15,11 +17,11 @@ export default async function DashboardPage() {
 
   if (!authUser) redirect("/login");
 
-  // Ensure app User row exists (created on first dashboard visit after signup)
+  // Ensure app User row exists
   const role = (authUser.user_metadata?.role as string) ?? "CANDIDATE";
   const user = await prisma.user.upsert({
     where: { email: authUser.email! },
-    update: { id: authUser.id }, // Sync ID in case it changed in Supabase (e.g. account recreation)
+    update: { id: authUser.id },
     create: {
       id: authUser.id,
       email: authUser.email!,
@@ -37,8 +39,21 @@ export default async function DashboardPage() {
     ? user.employerProfile?.companyName
     : user.candidateProfile?.fullName;
 
+  if (!isEmployer) {
+    return (
+      <main className="min-h-screen bg-background text-foreground">
+        <Header />
+        <CandidateDashboardContent 
+          displayName={displayName} 
+          email={authUser.email} 
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-background">
+      <Header />
       <div className="max-w-4xl mx-auto px-4 py-12">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground">
@@ -54,7 +69,7 @@ export default async function DashboardPage() {
           <div className="mb-8 p-5 rounded-2xl bg-navy-primary/10 border border-navy-primary/20">
             <p className="text-foreground font-medium mb-2">{t("completeProfileTitle")}</p>
             <p className="text-foreground/60 text-sm mb-4">
-              {isEmployer ? t("completeProfileDescEmployer") : t("completeProfileDescCandidate")}
+              {t("completeProfileDescEmployer")}
             </p>
             <Link
               href="/profile"
@@ -72,15 +87,11 @@ export default async function DashboardPage() {
             className="group p-6 rounded-2xl border border-foreground/10 bg-section-muted hover:border-navy-primary/40 transition-all"
           >
             <div className="flex items-center gap-3 mb-3">
-              {isEmployer ? (
-                <Briefcase className="w-6 h-6 text-navy-primary" />
-              ) : (
-                <User className="w-6 h-6 text-navy-primary" />
-              )}
+              <Briefcase className="w-6 h-6 text-navy-primary" />
               <h2 className="text-lg font-semibold text-foreground">{t("myProfile")}</h2>
             </div>
             <p className="text-foreground/60 text-sm">
-              {isEmployer ? t("myProfileDescEmployer") : t("myProfileDescCandidate")}
+              {t("myProfileDescEmployer")}
             </p>
           </Link>
 
@@ -88,7 +99,7 @@ export default async function DashboardPage() {
             <div className="flex items-center gap-3 mb-3">
               <Briefcase className="w-6 h-6 text-foreground/40" />
               <h2 className="text-lg font-semibold text-foreground">
-                {isEmployer ? t("postAJob") : t("myApplications")}
+                {t("postAJob")}
               </h2>
             </div>
             <p className="text-foreground/60 text-sm">{t("comingSoon")}</p>

@@ -65,7 +65,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[101] bg-transparent pt-3 pb-0 md:z-50 md:border-b md:border-border-muted md:bg-background md:pt-0 md:pb-0 dark:md:border-border-muted">
       <motion.div
-        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-border-muted bg-background px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-7xl md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal dark:border-border-muted"
+        className="relative z-[102] mx-4 flex items-center justify-between gap-3 rounded-2xl border border-border-muted bg-background px-4 py-3 shadow-lg md:z-auto md:mx-auto md:max-w-[1600px] md:rounded-none md:border-0 md:shadow-none md:py-3 sm:px-6 lg:px-8 md:grid md:grid-cols-[1fr_auto_1fr] md:justify-normal dark:border-border-muted"
         animate={{
           boxShadow: isMobile
             ? mobileOpen
@@ -119,7 +119,7 @@ export function Header() {
             <LanguageSwitcher />
           </div>
           <ThemeToggle />
-          {isLoggedIn ? (
+          {isLoggedIn && !pathname.includes("/dashboard") && (
             <>
               <Link
                 href="/dashboard"
@@ -134,7 +134,9 @@ export function Header() {
                 {t("signOut")}
               </button>
             </>
-          ) : (
+          )}
+          {isLoggedIn && pathname.includes("/dashboard") && null}
+          {!isLoggedIn && (
             <>
               <Link
                 href="/login"
@@ -297,7 +299,7 @@ export function Header() {
                   </span>
                   <LanguageSwitcher />
                 </div>
-                {isLoggedIn ? (
+                {isLoggedIn && !pathname.includes("/dashboard") && (
                   <>
                     <Link
                       href="/dashboard"
@@ -313,7 +315,8 @@ export function Header() {
                       {t("signOut")}
                     </button>
                   </>
-                ) : (
+                )}
+                {!isLoggedIn && (
                   <>
                     <Link
                       href="/login"

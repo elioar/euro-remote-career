@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { HeroSearch } from "./HeroSearch";
+import { DecorativeVideo } from "./DecorativeVideo";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -125,13 +126,10 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             className="relative w-full aspect-[4/3] sm:aspect-video lg:aspect-auto overflow-hidden rounded-2xl shadow-lg sm:rounded-3xl lg:h-full dark:bg-navy-primary dark:ring-1 dark:ring-navy-hover/30"
           >
-            <video
+            <DecorativeVideo
               src="/hero_video.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 h-full w-full object-cover dark:opacity-95"
+              className="absolute inset-0 h-full w-full"
+              videoClassName="h-full w-full object-cover dark:opacity-95"
             />
           </motion.div>
         </div>
