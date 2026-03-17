@@ -1,6 +1,9 @@
+"use client";
+
 import { motion } from "framer-motion";
-import { User, Bookmark, Edit2, Eye, TrendingUp, Search, Briefcase, BarChart3, Clock } from "lucide-react";
+import { User, Eye } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface ProfileSidebarProps {
   displayName?: string;
@@ -10,6 +13,8 @@ interface ProfileSidebarProps {
 }
 
 export function ProfileSidebar({ displayName, role, location }: ProfileSidebarProps) {
+  const t = useTranslations("DashboardCandidate.profileSidebar");
+
   return (
     <aside className="flex flex-col gap-6">
       {/* 1. Profile Card - Premium Refinement */}
@@ -18,20 +23,20 @@ export function ProfileSidebar({ displayName, role, location }: ProfileSidebarPr
           <User className="h-12 w-12 text-slate-300 dark:text-foreground/10" />
         </div>
         <h3 className="text-xl font-bold text-foreground mb-1">
-          {displayName || "Revaldo"}
+          {displayName || t("fallbackName")}
         </h3>
         <p className="text-sm font-medium text-slate-500 dark:text-foreground/50 mb-1">
-          {role || "UI Designer"}
+          {role || t("fallbackRole")}
         </p>
         <p className="text-[11px] text-slate-400 dark:text-foreground/30 mb-8 uppercase tracking-widest">
-          {location || "Surakarta, Central Java, ID"}
+          {location || t("fallbackLocation")}
         </p>
         
         <Link 
           href="/profile"
           className="w-full py-3.5 rounded-full bg-slate-50 border border-slate-100 dark:border-white/5 text-foreground text-sm font-bold hover:bg-slate-100 transition-all shadow-sm dark:bg-white dark:text-slate-900"
         >
-          Edit Profile
+          {t("editProfile")}
         </Link>
       </div>
 
@@ -44,7 +49,7 @@ export function ProfileSidebar({ displayName, role, location }: ProfileSidebarPr
              <div className="p-1.5 rounded-full bg-slate-50 dark:bg-card-active">
                 <Eye className="h-3 w-3 text-slate-400" />
              </div>
-             <span className="text-xs font-bold text-foreground">345 Profile View</span>
+             <span className="text-xs font-bold text-foreground">345 {t("profileViews")}</span>
           </div>
 
           {/* SVG Line Chart (Aesthetic Curve) */}
@@ -83,30 +88,30 @@ export function ProfileSidebar({ displayName, role, location }: ProfileSidebarPr
         <div className="grid grid-cols-2 gap-4">
            {/* Search Result */}
            <div className="rounded-[32px] bg-white dark:bg-card-background p-5 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
-              <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">Search Result</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("searchResult")}</p>
               <h4 className="text-2xl font-bold text-foreground leading-none">22</h4>
-              <p className="text-[10px] font-medium text-slate-400 mt-2">Views</p>
+              <p className="text-[10px] font-medium text-slate-400 mt-2">{t("views")}</p>
            </div>
            {/* Applied Job */}
            <div className="rounded-[32px] bg-white dark:bg-card-background p-5 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
-              <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">Applied Job</p>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("appliedJob")}</p>
               <h4 className="text-2xl font-bold text-foreground leading-none">12</h4>
-              <p className="text-[10px] font-medium text-slate-400 mt-2">Job</p>
+              <p className="text-[10px] font-medium text-slate-400 mt-2">{t("job")}</p>
            </div>
         </div>
 
         {/* Post Views Block */}
         <div className="rounded-[32px] bg-white dark:bg-card-background p-6 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
-            <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">Post Views</p>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("postViews")}</p>
             <h4 className="text-2xl font-bold text-foreground leading-none">268</h4>
-            <p className="text-[10px] font-medium text-slate-400 mt-2">Views</p>
+            <p className="text-[10px] font-medium text-slate-400 mt-2">{t("views")}</p>
         </div>
 
         {/* Experience Block */}
         <div className="rounded-[32px] bg-white dark:bg-card-background p-6 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
-            <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">Experience</p>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("experience")}</p>
             <h4 className="text-2xl font-bold text-foreground leading-none">5</h4>
-            <p className="text-[10px] font-medium text-slate-400 mt-2">Month</p>
+            <p className="text-[10px] font-medium text-slate-400 mt-2">{t("month")}</p>
         </div>
 
       </div>

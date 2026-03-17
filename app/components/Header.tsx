@@ -13,11 +13,15 @@ import { useRouter } from "next/navigation";
 export function Header() {
   const routerNav = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [userDisplayName, setUserDisplayName] = useState("");
   const pathname = usePathname();
   const t = useTranslations("Header");
-  const tc = useTranslations("Common");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return !window.matchMedia("(min-width: 768px)").matches;
+  });
 
   const navLinks = [
     { href: "/" as const, label: t("home") },
@@ -26,15 +30,36 @@ export function Header() {
     { href: "/contact" as const, label: t("contact") },
   ];
 
+  function applyAuthUser(
+    user:
+      | {
+          email?: string | null;
+          user_metadata?: Record<string, unknown>;
+        }
+      | null
+  ) {
+    setIsLoggedIn(!!user);
+    const email = user?.email ?? "";
+    setUserEmail(email);
+    const metadata = user?.user_metadata;
+    const fullName = typeof metadata?.full_name === "string"
+      ? metadata.full_name
+      : typeof metadata?.name === "string"
+        ? metadata.name
+        : "";
+    const fallback = email ? email.split("@")[0] : "";
+    setUserDisplayName(fullName || fallback);
+  }
+
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
+      applyAuthUser(user ?? null);
     });
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session?.user);
+      applyAuthUser(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
   }, []);
@@ -48,7 +73,6 @@ export function Header() {
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
-    setIsMobile(!mq.matches);
     const fn = () => setIsMobile(!mq.matches);
     mq.addEventListener("change", fn);
     return () => mq.removeEventListener("change", fn);
@@ -299,22 +323,46 @@ export function Header() {
                   </span>
                   <LanguageSwitcher />
                 </div>
-                {isLoggedIn && !pathname.includes("/dashboard") && (
-                  <>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex w-full items-center justify-center gap-2 rounded-full border-2 border-navy-primary bg-transparent px-4 py-3 text-sm font-medium text-navy-primary transition-colors hover:bg-slate-50 dark:border-slate-500 dark:text-white dark:hover:bg-slate-800"
-                    >
-                      {t("dashboard")}
-                    </Link>
-                    <button
-                      onClick={() => { setMobileOpen(false); handleSignOut(); }}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-                    >
-                      {t("signOut")}
-                    </button>
-                  </>
+                {isLoggedIn && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-border-muted dark:bg-card-active/60">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 dark:border-border-muted dark:bg-card-background dark:text-foreground">
+                        {(userDisplayName || userEmail || "U").charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                          {userDisplayName || t("user")}
+                        </p>
+                        <p className="truncate text-xs text-slate-500 dark:text-foreground/55">
+                          {userEmail}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-white dark:border-border-muted dark:text-foreground dark:hover:bg-card-background"
+                      >
+                        {t("profile")}
+                      </Link>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-white dark:border-border-muted dark:text-foreground dark:hover:bg-card-background"
+                      >
+                        {t("dashboard")}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                {isLoggedIn && (
+                  <button
+                    onClick={() => { setMobileOpen(false); handleSignOut(); }}
+                    className="flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                  >
+                    {t("signOut")}
+                  </button>
                 )}
                 {!isLoggedIn && (
                   <>

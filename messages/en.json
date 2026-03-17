@@ -25,7 +25,9 @@
     "signIn": "Sign in",
     "register": "Register",
     "dashboard": "Dashboard",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "profile": "Profile",
+    "user": "User"
   },
   "Footer": {
     "about": "About",
@@ -403,5 +405,43 @@
     "save": "Save profile",
     "saving": "Saving...",
     "savedSuccess": "Profile saved successfully!"
+  },
+  "DashboardCandidate": {
+    "welcomeBack": "Welcome Back {name}",
+    "welcomeSubtitle": "Let's find your dream job today.",
+    "fallbackName": "User",
+    "fallbackEmail": "user@example.com",
+    "allCategories": "All",
+    "applications": "{count, plural, one {# application} other {# applications}}",
+    "urgent": "Urgent",
+    "saveJob": "Save job",
+    "close": "Close",
+    "closeDetails": "Close details",
+    "applyNow": "Apply Now",
+    "fullDetails": "Full Details",
+    "aboutRole": "About the role",
+    "requirements": "Requirements",
+    "benefits": "Benefits",
+    "search": "Search",
+    "searchPlaceholder": "Search...",
+    "filters": "Filters",
+    "selectJob": "Select a job to view details",
+    "profileSettings": "Profile settings",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "profileSidebar": {
+      "fallbackName": "User",
+      "fallbackRole": "UI Designer",
+      "fallbackLocation": "Surakarta, Central Java, ID",
+      "editProfile": "Edit Profile",
+      "profileViews": "Profile Views",
+      "searchResult": "Search Result",
+      "appliedJob": "Applied Job",
+      "views": "Views",
+      "job": "Job",
+      "postViews": "Post Views",
+      "experience": "Experience",
+      "month": "Month"
+    }
   }
 }

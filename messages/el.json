@@ -25,7 +25,9 @@
     "signIn": "Σύνδεση",
     "register": "Εγγραφή",
     "dashboard": "Πίνακας",
-    "signOut": "Αποσύνδεση"
+    "signOut": "Αποσύνδεση",
+    "profile": "Προφίλ",
+    "user": "Χρήστης"
   },
   "Footer": {
     "about": "Σχετικά",
@@ -403,5 +405,43 @@
     "save": "Αποθήκευση προφίλ",
     "saving": "Αποθήκευση...",
     "savedSuccess": "Το προφίλ αποθηκεύτηκε!"
+  },
+  "DashboardCandidate": {
+    "welcomeBack": "Καλώς ήρθες ξανά {name}",
+    "welcomeSubtitle": "Ας βρούμε τη δουλειά των ονείρων σου σήμερα.",
+    "fallbackName": "Χρήστης",
+    "fallbackEmail": "user@example.com",
+    "allCategories": "Όλα",
+    "applications": "{count, plural, one {# αίτηση} other {# αιτήσεις}}",
+    "urgent": "Επείγον",
+    "saveJob": "Αποθήκευση θέσης",
+    "close": "Κλείσιμο",
+    "closeDetails": "Κλείσιμο λεπτομερειών",
+    "applyNow": "Κάνε Αίτηση",
+    "fullDetails": "Πλήρεις λεπτομέρειες",
+    "aboutRole": "Σχετικά με τη θέση",
+    "requirements": "Απαιτήσεις",
+    "benefits": "Παροχές",
+    "search": "Αναζήτηση",
+    "searchPlaceholder": "Αναζήτηση...",
+    "filters": "Φίλτρα",
+    "selectJob": "Επίλεξε μια θέση για να δεις λεπτομέρειες",
+    "profileSettings": "Ρυθμίσεις προφίλ",
+    "messages": "Μηνύματα",
+    "notifications": "Ειδοποιήσεις",
+    "profileSidebar": {
+      "fallbackName": "Χρήστης",
+      "fallbackRole": "UI Designer",
+      "fallbackLocation": "Surakarta, Central Java, ID",
+      "editProfile": "Επεξεργασία προφίλ",
+      "profileViews": "Προβολές προφίλ",
+      "searchResult": "Αποτελέσματα αναζήτησης",
+      "appliedJob": "Αιτήσεις",
+      "views": "Προβολές",
+      "job": "Θέσεις",
+      "postViews": "Προβολές αγγελίας",
+      "experience": "Εμπειρία",
+      "month": "Μήνες"
+    }
   }
 }
