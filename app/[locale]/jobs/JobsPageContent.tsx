@@ -9,6 +9,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Users, MapPin, Banknote, CalendarDays, ExternalLink, X } from "lucide-react";
 import { DEMO_JOBS, type DemoJob, type JobCategory } from "../../../lib/demo-jobs";
 
+type JobsPageContentProps = {
+  dbJobs?: DemoJob[];
+};
+
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -356,7 +360,7 @@ function MobileBottomSheet({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<
   );
 }
 
-export function JobsPageContent() {
+export function JobsPageContent({ dbJobs = [] }: JobsPageContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("JobsPage");
@@ -368,8 +372,10 @@ export function JobsPageContent() {
   const remoteOnly = searchParams.get("remote") === "true";
   const asyncOnly = searchParams.get("async") === "true";
 
+  const allJobs = useMemo(() => [...dbJobs, ...DEMO_JOBS], [dbJobs]);
+
   const openId = searchParams.get("open") ?? "";
-  const selectedJob = useMemo(() => DEMO_JOBS.find((j) => j.id === openId) ?? null, [openId]);
+  const selectedJob = useMemo(() => allJobs.find((j) => j.id === openId) ?? null, [openId, allJobs]);
 
   const setSelectedJob = useCallback((job: DemoJob | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -402,7 +408,7 @@ export function JobsPageContent() {
   );
 
   const filtered = useMemo(() => {
-    let list = [...DEMO_JOBS];
+    let list = [...allJobs];
     const q = query.trim().toLowerCase();
     if (q) list = list.filter((j) => j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q));
     if (category) list = list.filter((j) => j.category === category);

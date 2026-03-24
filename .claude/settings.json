@@ -11,7 +11,15 @@
       "Bash(npm install -D @types/pg)",
       "Bash(npx prisma migrate status)",
       "Bash(npx prisma migrate dev --name rename-cvurl-to-cvpath)",
-      "Bash(grep -r \"useTranslations\\\\|t\\(\"\"\" c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/register c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/login c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/profile)"
+      "Bash(grep -r \"useTranslations\\\\|t\\(\"\"\" c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/register c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/login c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/profile)",
+      "Bash(xargs grep:*)",
+      "Bash(node -e \":*)",
+      "Bash(npx prisma:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\api\\jobs\\[id]",
+      "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\dashboard",
+      "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\admin\\review"
     ]
   }
 }

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { DEMO_JOBS } from "../lib/demo-jobs";
 import { routing } from "@/i18n/routing";
+import { prisma } from "@/lib/prisma";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
 
@@ -15,7 +16,7 @@ function alternates(path: string) {
   return { languages };
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes = [
@@ -54,5 +55,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }))
   );
 
-  return [...staticPages, ...jobPages];
+  // Published database jobs
+  const dbJobs = await prisma.job.findMany({
+    where: {
+      status: "PUBLISHED",
+      OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+    },
+    select: { slug: true, publishedAt: true },
+  });
+
+  const dbJobPages: MetadataRoute.Sitemap = dbJobs.flatMap((job) =>
+    routing.locales.map((locale) => ({
+      url:
+        locale === routing.defaultLocale
+          ? `${SITE_URL}/jobs/${job.slug}`
+          : `${SITE_URL}/${locale}/jobs/${job.slug}`,
+      lastModified: job.publishedAt ?? now,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+      alternates: alternates(`/jobs/${job.slug}`),
+    }))
+  );
+
+  return [...staticPages, ...jobPages, ...dbJobPages];
 }

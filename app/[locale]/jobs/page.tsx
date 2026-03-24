@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { JobsPageContent } from "./JobsPageContent";
+import { getPublishedJobs } from "@/lib/jobs/queries";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -30,11 +31,13 @@ export default async function JobsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
+  const dbJobs = await getPublishedJobs();
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <Suspense fallback={<JobsPageFallback />}>
-        <JobsPageContent />
+        <JobsPageContent dbJobs={dbJobs} />
       </Suspense>
       <Footer />
     </div>

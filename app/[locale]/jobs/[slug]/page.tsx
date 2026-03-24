@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Header } from "../../../components/Header";
 import { Footer } from "../../../components/Footer";
 import { getJobBySlug, type DemoJob } from "../../../../lib/demo-jobs";
+import { getPublishedJobBySlug } from "@/lib/jobs/queries";
 import { JobDetailContent } from "./JobDetailContent";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
@@ -19,7 +20,7 @@ type Props = { params: Promise<{ locale: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
-  const job = getJobBySlug(slug);
+  const job = getJobBySlug(slug) ?? (await getPublishedJobBySlug(slug));
   const t = await getTranslations({ locale, namespace: "Metadata" });
 
   if (!job) {
@@ -84,7 +85,7 @@ export default async function JobPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  const job = getJobBySlug(slug);
+  const job = getJobBySlug(slug) ?? (await getPublishedJobBySlug(slug));
   if (!job) notFound();
 
   const schema = jobPostingSchema(job, slug);

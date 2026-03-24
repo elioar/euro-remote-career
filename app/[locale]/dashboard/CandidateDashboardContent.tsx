@@ -303,14 +303,16 @@ function MobileJobSheet({
   );
 }
 
-type CandidateDashboardContentProps = { 
-  displayName?: string; 
+type CandidateDashboardContentProps = {
+  displayName?: string;
   email?: string | null;
+  dbJobs?: DemoJob[];
 };
 
 export function CandidateDashboardContent({
   displayName,
-  email
+  email,
+  dbJobs = [],
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
   const td = useTranslations("DashboardCandidate");
@@ -377,7 +379,7 @@ export function CandidateDashboardContent({
   };
 
   const filtered = useMemo(() => {
-    let list = [...DEMO_JOBS];
+    let list = [...dbJobs, ...DEMO_JOBS];
     const q = query.trim().toLowerCase();
     if (q) list = list.filter((j) => j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q));
     if (category) list = list.filter((j) => j.category === category);

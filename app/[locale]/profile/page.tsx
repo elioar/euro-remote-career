@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import EmployerProfileForm from "./EmployerProfileForm";
 import CandidateProfileForm from "./CandidateProfileForm";
 import { getTranslations } from "next-intl/server";
+import { Header } from "@/app/components/Header";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
@@ -26,8 +27,9 @@ export default async function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-12">
-        <div className="mb-8">
+      <Header />
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <div className="mb-8 pl-1">
           <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
           <p className="text-foreground/60 mt-1">{user.email}</p>
         </div>
