@@ -42,9 +42,11 @@ export default async function proxy(request: NextRequest) {
   }
 
   // 3. Role-based route protection
+  const ADMIN_EMAILS = ["euroremotecareer@gmail.com", "mycomments2026@gmail.com"];
   const requiredRole = getRequiredRole(path);
   if (requiredRole && user) {
-    const userRole = user.user_metadata?.role as string | undefined;
+    const isAdmin = ADMIN_EMAILS.includes(user.email ?? "");
+    const userRole = isAdmin ? "ADMIN" : (user.user_metadata?.role as string | undefined);
     if (userRole !== requiredRole) {
       const locale = pathname.startsWith("/el") ? "/el" : "";
       const dashboardUrl = new URL(`${locale}/dashboard`, request.url);

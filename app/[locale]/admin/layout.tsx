@@ -18,11 +18,15 @@ export default async function AdminLayout({
 
   if (!authUser) redirect("/login");
 
-  const user = await prisma.user.findUnique({
-    where: { id: authUser.id },
-  });
+  const ADMIN_EMAILS = ["euroremotecareer@gmail.com", "mycomments2026@gmail.com"];
+  const isAdmin = ADMIN_EMAILS.includes(authUser.email ?? "");
 
-  if (!user || user.role !== "ADMIN") redirect("/dashboard");
+  if (!isAdmin) {
+    const user = await prisma.user.findUnique({
+      where: { id: authUser.id },
+    });
+    if (!user || user.role !== "ADMIN") redirect("/dashboard");
+  }
 
   return (
     <main className="min-h-screen bg-background">

@@ -14,7 +14,9 @@
       "Bash(find /c/Users/elioa/Desktop/euro-remote-career -maxdepth 1 -type f -name *intl* -o -name .next*)",
       "Bash(find /c/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard/post-job -type f -name *.tsx -o -name *.ts -o -name *.json)",
       "Bash(git show:*)",
-      "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard/my-jobs/)"
+      "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard/my-jobs/)",
+      "Bash(cat c:/Users/elioa/Desktop/euro-remote-career/app/\\\\[locale\\\\]/dashboard/SignOutButton.tsx)",
+      "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/admin/)"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",

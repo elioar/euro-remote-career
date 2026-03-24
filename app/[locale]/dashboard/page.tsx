@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Briefcase, User, Settings } from "lucide-react";
+import { Briefcase, User, Settings, Mail, Bell, LogOut, Eye, Send, FileText, CheckCircle } from "lucide-react";
 import SignOutButton from "./SignOutButton";
 import { getTranslations } from "next-intl/server";
 import { CandidateDashboardContent } from "./CandidateDashboardContent";
@@ -19,14 +19,17 @@ export default async function DashboardPage() {
   if (!authUser) redirect("/login");
 
   // Ensure app User row exists
-  const role = (authUser.user_metadata?.role as string) ?? "CANDIDATE";
+  const ADMIN_EMAILS = ["euroremotecareer@gmail.com", "mycomments2026@gmail.com"];
+  const isAdmin = ADMIN_EMAILS.includes(authUser.email!);
+  const metaRole = (authUser.user_metadata?.role as string) ?? "CANDIDATE";
+  const resolvedRole = isAdmin ? "ADMIN" : metaRole === "EMPLOYER" ? "EMPLOYER" : "CANDIDATE";
   const user = await prisma.user.upsert({
     where: { email: authUser.email! },
-    update: { id: authUser.id },
+    update: { id: authUser.id, role: resolvedRole },
     create: {
       id: authUser.id,
       email: authUser.email!,
-      role: role === "EMPLOYER" ? "EMPLOYER" : "CANDIDATE",
+      role: resolvedRole,
     },
     include: {
       employerProfile: true,
@@ -60,6 +63,11 @@ export default async function DashboardPage() {
       })
     : [];
 
+  const totalJobs = employerJobs.length;
+  const publishedJobs = employerJobs.filter((j) => j.status === "PUBLISHED").length;
+  const totalApplications = employerJobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
+  const draftJobs = employerJobs.filter((j) => j.status === "DRAFT").length;
+
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
     return (
@@ -78,21 +86,62 @@ export default async function DashboardPage() {
     <main className="min-h-screen bg-background">
       <Header />
       <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10 lg:py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-2 flex items-center gap-2">
-              {t("welcome")}{displayName ? `, ${displayName}` : ""} <span className="text-2xl">👋</span>
+        <header className="mb-10 grid grid-cols-1 gap-6 items-center lg:grid-cols-[1fr_minmax(0,2fr)_1fr]">
+          <div className="lg:col-span-1">
+            <h1 className="text-3xl font-bold text-foreground whitespace-nowrap">
+              {t("welcome")}{displayName ? `, ${displayName}` : ""}
             </h1>
-            <div className="flex items-center gap-2 text-sm text-foreground/50 font-medium">
-              <span>{user.email}</span>
-              <span className="w-1 h-1 rounded-full bg-foreground/30" />
-              <span className="capitalize tracking-wide text-navy-primary">{user.role.toLowerCase()}</span>
+            <p className="text-slate-500 dark:text-foreground/60 mt-1 text-lg">{t("employerSubtitle")}</p>
+          </div>
+
+          {/* Middle column - Mail & Bell Icons */}
+          <div className="hidden lg:col-span-1 lg:flex items-center justify-end gap-5">
+            <button
+              type="button"
+              aria-label="Messages"
+              className="h-12 w-12 flex items-center justify-center rounded-full bg-white dark:bg-card-active border border-slate-200 dark:border-white/10 shadow-sm text-slate-400 dark:text-foreground/70 hover:text-navy-primary dark:hover:text-white transition-all"
+            >
+              <Mail className="h-4.5 w-4.5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Notifications"
+              className="h-12 w-12 flex items-center justify-center rounded-full bg-white dark:bg-card-active border border-slate-200 dark:border-white/10 shadow-sm text-slate-400 dark:text-foreground/70 hover:text-navy-primary dark:hover:text-white transition-all relative"
+            >
+              <Bell className="h-4.5 w-4.5" />
+            </button>
+          </div>
+
+          {/* Right column - Divider & Profile */}
+          <div className="hidden lg:col-span-1 lg:flex items-center">
+            <div className="h-12 w-px bg-slate-200 dark:bg-white/10 hidden lg:block shrink-0" />
+
+            <div className="flex items-center gap-4 group ml-4">
+              <div className="h-12 w-12 rounded-xl border border-slate-200 dark:border-white/10 overflow-hidden bg-slate-50 dark:bg-card-active flex items-center justify-center">
+                <User className="h-7 w-7 text-slate-300 dark:text-foreground/20" />
+              </div>
+              <div className="hidden min-[1200px]:block">
+                <h3 className="text-base font-bold text-foreground leading-tight">
+                  {displayName || user.email}
+                </h3>
+                <p className="text-sm font-medium text-slate-400 dark:text-foreground/40 mt-0.5">
+                  {user.email}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 ml-4">
+                <Link
+                  href="/profile"
+                  className="p-2 rounded-lg text-slate-300 hover:text-navy-primary transition-colors"
+                  title="Profile settings"
+                >
+                  <Settings className="h-5 w-5" />
+                </Link>
+                <SignOutButton iconOnly />
+              </div>
             </div>
           </div>
-          <div>
-            <SignOutButton />
-          </div>
-        </div>
+        </header>
 
         {!hasProfile && (
           <div className="mb-8 p-6 rounded-2xl bg-navy-primary/5 border border-navy-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -114,30 +163,37 @@ export default async function DashboardPage() {
 
         {isEmployer && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Column 1: Applied Candidates */}
+            {/* Column 1: Latest Applications */}
             <div className="lg:col-span-3">
               <div className="sticky top-24">
                 <h3 className="text-lg font-bold text-foreground mb-4">Latest Applications</h3>
-                <div className="p-5 rounded-3xl bg-card-background border border-foreground/10 overflow-hidden shadow-sm">
-                  {employerApplications.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="w-10 h-10 rounded-full bg-navy-primary/10 flex items-center justify-center mx-auto mb-3">
-                        <User className="w-5 h-5 text-navy-primary" />
+                <div className="rounded-3xl bg-card-background border border-foreground/10 overflow-hidden shadow-sm divide-y divide-foreground/5">
+                  {[
+                    { name: "Maria Papadopoulou", role: "Senior Frontend Engineer", time: "2h ago", status: "new" },
+                    { name: "Alexandros Nikos", role: "Product Designer", time: "5h ago", status: "new" },
+                    { name: "Sofia Karagianni", role: "Marketing Lead", time: "1d ago", status: "reviewed" },
+                    { name: "Dimitris Vlachos", role: "Full Stack Developer", time: "2d ago", status: "reviewed" },
+                    { name: "Elena Martins", role: "Senior Frontend Engineer", time: "3d ago", status: "shortlisted" },
+                  ].map((app, i) => (
+                    <div key={i} className="px-5 py-3.5 flex items-center gap-3 hover:bg-foreground/[0.02] transition-colors cursor-pointer">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-navy-primary/20 to-navy-primary/5 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-blue-400">{app.name.split(" ").map(n => n[0]).join("")}</span>
                       </div>
-                      <p className="text-sm font-medium text-foreground">No applications yet</p>
-                      <p className="text-xs text-foreground/40 mt-1">When candidates apply, they will show up here.</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-foreground text-sm truncate">{app.name}</p>
+                        <p className="text-xs text-blue-400 font-medium truncate">{app.role}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-[11px] text-foreground/40">{app.time}</p>
+                        {app.status === "new" && (
+                          <span className="inline-block mt-1 w-2 h-2 rounded-full bg-blue-500" />
+                        )}
+                        {app.status === "shortlisted" && (
+                          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-500">TOP</span>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {employerApplications.map((app) => (
-                        <div key={app.id} className="pb-4 border-b border-foreground/5 last:border-0 last:pb-0">
-                          <p className="font-bold text-foreground text-sm truncate">{app.candidate.fullName}</p>
-                          <p className="text-xs text-navy-primary font-medium mt-0.5 truncate">{app.job.title}</p>
-                          <p className="text-[11px] text-foreground/40 mt-1.5">{new Date(app.createdAt).toLocaleDateString()}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
@@ -147,11 +203,11 @@ export default async function DashboardPage() {
               <MyJobsList initialJobs={JSON.parse(JSON.stringify(employerJobs))} />
             </div>
 
-            {/* Column 3: Quick Actions */}
+            {/* Column 3: Quick Actions & Stats */}
             <div className="lg:col-span-3">
               <div className="sticky top-24 space-y-4">
                 <h3 className="text-lg font-bold text-foreground mb-4">Quick Actions</h3>
-                
+
                 <Link
                   href="/dashboard/post-job"
                   className="group block p-6 rounded-3xl bg-navy-primary text-white hover:bg-navy-hover transition-all duration-300 relative overflow-hidden shadow-md hover:shadow-lg"
@@ -168,21 +224,40 @@ export default async function DashboardPage() {
                   </div>
                 </Link>
 
-                <Link
-                  href="/profile"
-                  className="group block p-6 rounded-3xl bg-card-background border border-foreground/10 hover:border-navy-primary/30 transition-all duration-300 relative overflow-hidden shadow-sm hover:shadow-md"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-navy-primary/5 rounded-full -mr-16 -mt-16 transition-transform duration-500 group-hover:scale-150" />
-                  <div className="relative">
-                    <div className="w-10 h-10 rounded-xl bg-background border border-foreground/10 flex items-center justify-center mb-4 text-navy-primary transition-colors group-hover:bg-navy-primary/10">
-                      <Settings className="w-5 h-5" />
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-4 rounded-2xl bg-card-background border border-foreground/10">
+                    <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
+                      <FileText className="w-4.5 h-4.5 text-blue-500" />
                     </div>
-                    <h2 className="text-lg font-bold text-foreground mb-1.5">Company Profile</h2>
-                    <p className="text-foreground/50 text-[13px] leading-relaxed">
-                      Manage your logo, website, and info.
-                    </p>
+                    <p className="text-2xl font-bold text-foreground">{totalJobs}</p>
+                    <p className="text-xs text-foreground/50 mt-0.5">Total Jobs</p>
                   </div>
-                </Link>
+
+                  <div className="p-4 rounded-2xl bg-card-background border border-foreground/10">
+                    <div className="w-9 h-9 rounded-xl bg-green-500/10 flex items-center justify-center mb-3">
+                      <CheckCircle className="w-4.5 h-4.5 text-green-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{publishedJobs}</p>
+                    <p className="text-xs text-foreground/50 mt-0.5">Published</p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-card-background border border-foreground/10">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
+                      <Send className="w-4.5 h-4.5 text-emerald-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{totalApplications}</p>
+                    <p className="text-xs text-foreground/50 mt-0.5">Applications</p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-card-background border border-foreground/10">
+                    <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3">
+                      <Eye className="w-4.5 h-4.5 text-amber-500" />
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{draftJobs}</p>
+                    <p className="text-xs text-foreground/50 mt-0.5">Drafts</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

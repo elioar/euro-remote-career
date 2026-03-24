@@ -350,6 +350,7 @@
   },
   "Dashboard": {
     "welcome": "Καλώς ήρθες",
+    "employerSubtitle": "Διαχειρίσου τις αγγελίες σου και βρες remote ταλέντα.",
     "role": "{role}",
     "completeProfileTitle": "Συμπλήρωσε το προφίλ σου",
     "completeProfileDesc": "Ρύθμισε το προφίλ σου για να ξεκινήσεις.",
@@ -502,6 +503,7 @@
   },
   "EditJob": {
     "pageTitle": "Επεξεργασία Θέσης",
+    "pageSubtitle": "Ενημέρωσε τα στοιχεία της αγγελίας σου.",
     "rejectedBanner": "Αυτή η θέση απορρίφθηκε. Λόγος:",
     "saveChanges": "Αποθήκευση Αλλαγών",
     "saving": "Αποθήκευση...",

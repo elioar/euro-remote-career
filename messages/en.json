@@ -350,6 +350,7 @@
   },
   "Dashboard": {
     "welcome": "Welcome",
+    "employerSubtitle": "Manage your jobs and find remote talent.",
     "role": "{role}",
     "completeProfileTitle": "Complete your profile",
     "completeProfileDesc": "Set up your {role} profile to get started.",
@@ -502,6 +503,7 @@
   },
   "EditJob": {
     "pageTitle": "Edit Job",
+    "pageSubtitle": "Update your job listing details.",
     "rejectedBanner": "This job was rejected. Reason:",
     "saveChanges": "Save Changes",
     "saving": "Saving...",

@@ -221,6 +221,13 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <Link
+                    href={`/jobs/${job.slug}`}
+                    className="p-2 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                    title={t("view")}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Link>
                   {(job.status === "DRAFT" || job.status === "REJECTED") && (
                     <button
                       onClick={() => router.push(`/dashboard/edit-job/${job.id}`)}
@@ -239,15 +246,6 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
                     >
                       <Send className="w-4 h-4" />
                     </button>
-                  )}
-                  {job.status === "PUBLISHED" && (
-                    <Link
-                      href={`/jobs/${job.slug}`}
-                      className="p-2 rounded-lg text-foreground/50 hover:text-foreground hover:bg-foreground/5 transition-colors"
-                      title={t("view")}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Link>
                   )}
                   {(job.status === "PUBLISHED" || job.status === "PENDING_REVIEW") && (
                     <button

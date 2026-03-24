@@ -5,7 +5,7 @@ import { LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 
-export default function SignOutButton() {
+export default function SignOutButton({ iconOnly = false }: { iconOnly?: boolean }) {
   const t = useTranslations("Dashboard");
   const router = useRouter();
 
@@ -14,6 +14,18 @@ export default function SignOutButton() {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
+  }
+
+  if (iconOnly) {
+    return (
+      <button
+        onClick={handleSignOut}
+        className="p-2 rounded-lg text-slate-300 hover:text-red-500 transition-colors"
+        title={t("signOut")}
+      >
+        <LogOut className="h-5 w-5" />
+      </button>
+    );
   }
 
   return (

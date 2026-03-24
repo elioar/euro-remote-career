@@ -41,11 +41,11 @@ export default async function EditJobPage({
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      <div className="max-w-2xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-foreground mb-8">
-          {t("pageTitle")}
-        </h1>
-        <EditJobForm job={JSON.parse(JSON.stringify(job))} />
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 sm:py-12">
+        <EditJobForm
+          job={JSON.parse(JSON.stringify(job))}
+          companyName={user.employerProfile.companyName}
+        />
       </div>
     </main>
   );
