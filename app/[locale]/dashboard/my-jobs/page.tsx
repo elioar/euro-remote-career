@@ -2,16 +2,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { Header } from "@/app/components/Header";
-import { getTranslations } from "next-intl/server";
-import EditJobForm from "./EditJobForm";
+import MyJobsList from "./MyJobsList";
 
-export default async function EditJobPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const t = await getTranslations("EditJob");
+export default async function MyJobsPage() {
   const supabase = await createClient();
   const {
     data: { user: authUser },
@@ -28,24 +21,17 @@ export default async function EditJobPage({
     redirect("/dashboard");
   }
 
-  const job = await prisma.job.findUnique({ where: { id } });
-
-  if (!job || job.employerId !== user.employerProfile.id) {
-    redirect("/dashboard");
-  }
-
-  if (job.status !== "DRAFT" && job.status !== "REJECTED") {
-    redirect("/dashboard");
-  }
+  const employerJobs = await prisma.job.findMany({
+    where: { employerId: user.employerProfile.id },
+    include: { _count: { select: { applications: true } } },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <main className="min-h-screen bg-background">
       <Header />
       <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10 lg:py-12">
-        <EditJobForm
-          job={JSON.parse(JSON.stringify(job))}
-          companyName={user.employerProfile.companyName}
-        />
+        <MyJobsList initialJobs={JSON.parse(JSON.stringify(employerJobs))} />
       </div>
     </main>
   );

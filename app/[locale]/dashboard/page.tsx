@@ -9,6 +9,7 @@ import { CandidateDashboardContent } from "./CandidateDashboardContent";
 import { Header } from "@/app/components/Header";
 import { getPublishedJobs } from "@/lib/jobs/queries";
 import MyJobsList from "./my-jobs/MyJobsList";
+import LatestApplications from "./LatestApplications";
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const supabase = await createClient();
@@ -163,42 +164,12 @@ export default async function DashboardPage() {
 
         {isEmployer && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Column 1: Latest Applications */}
+            {/* Column 1: Latest Applications (sidebar) */}
             <div className="lg:col-span-3">
-              <div className="sticky top-24">
-                <h3 className="text-lg font-bold text-foreground mb-4">Latest Applications</h3>
-                <div className="rounded-3xl bg-card-background border border-foreground/10 overflow-hidden shadow-sm divide-y divide-foreground/5">
-                  {[
-                    { name: "Maria Papadopoulou", role: "Senior Frontend Engineer", time: "2h ago", status: "new" },
-                    { name: "Alexandros Nikos", role: "Product Designer", time: "5h ago", status: "new" },
-                    { name: "Sofia Karagianni", role: "Marketing Lead", time: "1d ago", status: "reviewed" },
-                    { name: "Dimitris Vlachos", role: "Full Stack Developer", time: "2d ago", status: "reviewed" },
-                    { name: "Elena Martins", role: "Senior Frontend Engineer", time: "3d ago", status: "shortlisted" },
-                  ].map((app, i) => (
-                    <div key={i} className="px-5 py-3.5 flex items-center gap-3 hover:bg-foreground/[0.02] transition-colors cursor-pointer">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-navy-primary/20 to-navy-primary/5 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-blue-400">{app.name.split(" ").map(n => n[0]).join("")}</span>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-foreground text-sm truncate">{app.name}</p>
-                        <p className="text-xs text-blue-400 font-medium truncate">{app.role}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="text-[11px] text-foreground/40">{app.time}</p>
-                        {app.status === "new" && (
-                          <span className="inline-block mt-1 w-2 h-2 rounded-full bg-blue-500" />
-                        )}
-                        {app.status === "shortlisted" && (
-                          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-500">TOP</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <LatestApplications />
             </div>
 
-            {/* Column 2: My Jobs */}
+            {/* Column 2: My Jobs (full featured) */}
             <div className="lg:col-span-6">
               <MyJobsList initialJobs={JSON.parse(JSON.stringify(employerJobs))} />
             </div>

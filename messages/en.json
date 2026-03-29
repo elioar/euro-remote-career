@@ -548,7 +548,20 @@
     "errorGeneric": "Something went wrong. Please try again.",
     "backToDashboard": "← Back to dashboard",
     "created": "Created",
-    "expires": "Expires"
+    "expires": "Expires",
+    "searchPlaceholder": "Search jobs by title or category...",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortApplications": "Most applications",
+    "sortTitle": "Title A-Z",
+    "noSearchResults": "No jobs match your search.",
+    "noPublishedHint": "Submit a draft to get it published.",
+    "expiresToday": "Expires today",
+    "repost": "Repost",
+    "unarchive": "Unarchive",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!",
+    "viewAll": "View All"
   },
   "AdminDashboard": {
     "pageTitle": "Admin Dashboard",

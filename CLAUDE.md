@@ -12,7 +12,7 @@ app/
   page.tsx            # Home: Header, Hero, SplitIntent, CompanyLogos, HowItWorks, Categories, FeaturedJobs, EmployerTrustStrip, Footer
   globals.css         # Tailwind 4 entry; @theme inline for design tokens (--navy-primary, etc.)
   components/         # Shared UI (Header, Footer, Hero, HeroSearch, HeroSpline, FeaturedJobs, etc.)
-  about/, contact/, terms/, privacy/   # Static/content pages
+  about/, contact/, terms/, privacy/   # Static/content pagesjrgt
   jobs/
     page.tsx          # Jobs listing
     [slug]/page.tsx   # Job detail (async params, generateMetadata, getJobBySlug)

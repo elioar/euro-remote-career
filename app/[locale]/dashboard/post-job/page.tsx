@@ -24,7 +24,7 @@ export default async function PostJobPage() {
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 sm:py-12">
+      <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10 lg:py-12">
         <PostJobForm
           hasProfile={!!user.employerProfile}
           companyName={user.employerProfile?.companyName}

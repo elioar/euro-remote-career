@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireEmployer } from "@/lib/utils/auth";
 import { generateJobSlug } from "@/lib/utils/slug";
-import { archiveJob } from "@/lib/jobs/lifecycle";
+
 
 export async function GET(
   _req: NextRequest,
@@ -114,12 +114,6 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  if (job.status === "DRAFT") {
-    await prisma.job.delete({ where: { id } });
-    return NextResponse.json({ deleted: true });
-  }
-
-  // Non-draft jobs get archived instead of deleted
-  const archived = await archiveJob(id);
-  return NextResponse.json(archived);
+  await prisma.job.delete({ where: { id } });
+  return NextResponse.json({ deleted: true });
 }

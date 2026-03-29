@@ -548,7 +548,20 @@
     "errorGeneric": "Κάτι πήγε στραβά. Προσπάθησε ξανά.",
     "backToDashboard": "← Πίσω στον πίνακα",
     "created": "Δημιουργήθηκε",
-    "expires": "Λήγει"
+    "expires": "Λήγει",
+    "searchPlaceholder": "Αναζήτηση θέσεων...",
+    "sortNewest": "Νεότερα πρώτα",
+    "sortOldest": "Παλαιότερα πρώτα",
+    "sortApplications": "Περισσότερες αιτήσεις",
+    "sortTitle": "Τίτλος Α-Ω",
+    "noSearchResults": "Δεν βρέθηκαν θέσεις.",
+    "noPublishedHint": "Υπέβαλε ένα πρόχειρο για δημοσίευση.",
+    "expiresToday": "Λήγει σήμερα",
+    "repost": "Επαναδημοσίευση",
+    "unarchive": "Αναίρεση αρχειοθέτησης",
+    "copyLink": "Αντιγραφή συνδέσμου",
+    "linkCopied": "Ο σύνδεσμος αντιγράφηκε!",
+    "viewAll": "Όλες"
   },
   "AdminDashboard": {
     "pageTitle": "Πίνακας Διαχείρισης",
