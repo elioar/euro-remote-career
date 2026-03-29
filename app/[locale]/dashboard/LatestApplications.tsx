@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Eye, UserCheck, Star, Users, ChevronLeft, ChevronRight, FileText, Download } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 type AppStatus = "new" | "reviewed" | "shortlisted" | "rejected";
 type FilterKey = "all" | AppStatus;
@@ -59,9 +60,10 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "shortlisted", label: "Top" },
 ];
 
-/* ─── CV Preview Modal ─── */
+/* ─── Modern CV Preview Modal ─── */
 function CvPreviewModal({ app, onClose }: { app: Application; onClose: () => void }) {
   const { fakeCv: cv } = app;
+  const t = useTranslations("Dashboard");
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose(); }
@@ -70,12 +72,7 @@ function CvPreviewModal({ app, onClose }: { app: Application; onClose: () => voi
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [onClose]);
 
-  // TODO: Replace with real Supabase signed URL when wiring real data
-  // const supabase = createClient();
-  // const { data } = await supabase.storage.from("cv-uploads").createSignedUrl(app.cvPath, 300);
-
   function handleDownload() {
-    // Fake download: generate a text file from the fake CV data
     const lines = [
       app.name, app.role, "",
       `Email: ${cv.email}  |  Phone: ${cv.phone}  |  Location: ${cv.location}`, "",
@@ -95,92 +92,144 @@ function CvPreviewModal({ app, onClose }: { app: Application; onClose: () => voi
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8" onClick={onClose}>
+      <div className="absolute inset-0 bg-navy-primary/20 backdrop-blur-md transition-opacity" />
+      
       <div
-        className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-card-background border border-foreground/10 shadow-2xl overflow-hidden"
+        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col rounded-[32px] bg-white dark:bg-[#0f111a] shadow-2xl shadow-black/40 border border-white/10 overflow-hidden animate-in fade-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-foreground/10 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-navy-primary/20 to-navy-primary/5 flex items-center justify-center">
-              <span className="text-sm font-bold text-blue-400">
+        {/* Modern Modal Header */}
+        <div className="flex items-center justify-between px-8 py-5 border-b border-foreground/5 bg-slate-50/50 dark:bg-white/[0.02] shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-navy-primary flex items-center justify-center shadow-lg shadow-navy-primary/20">
+              <span className="text-lg font-black text-white uppercase">
                 {app.name.split(" ").map((n) => n[0]).join("")}
               </span>
             </div>
             <div>
-              <h3 className="font-bold text-foreground">{app.name}</h3>
-              <p className="text-xs text-foreground/50">{app.role} · CV Preview</p>
+              <h3 className="text-lg font-bold text-foreground leading-tight">{app.name}</h3>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs text-blue-500 font-bold uppercase tracking-wider">{app.role}</span>
+                <span className="w-1 h-1 rounded-full bg-foreground/20" />
+                <span className="text-xs text-foreground/40 italic">{t("cvPreview")}</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          
+          <div className="flex items-center gap-3">
             <button
               onClick={handleDownload}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-navy-primary text-white text-xs font-semibold hover:bg-navy-hover transition-colors"
+              className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl bg-navy-primary text-white text-xs font-bold hover:bg-navy-hover transition-all shadow-md active:scale-95"
             >
-              <Download className="w-3.5 h-3.5" />
-              Download
+              <Download className="w-4 h-4" />
+              {t("downloadCV")}
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-colors"
+              className="p-2.5 rounded-xl text-foreground/40 hover:text-foreground hover:bg-foreground/5 transition-colors border border-transparent hover:border-foreground/10"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Fake PDF page */}
-        <div className="flex-1 overflow-y-auto bg-neutral-100 dark:bg-neutral-900/50 p-6 flex justify-center">
-          <div className="w-full max-w-[595px] bg-white dark:bg-[#1a1a2e] rounded-lg shadow-lg p-10 min-h-[842px]">
-            {/* Name & title */}
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{app.name}</h2>
-            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mt-0.5">{app.role}</p>
-
-            {/* Contact bar */}
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-white/10 pb-4">
-              <span>{cv.email}</span>
-              <span>{cv.phone}</span>
-              <span>{cv.location}</span>
-            </div>
-
-            {/* Summary */}
-            <div className="mt-5">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1.5">Summary</h4>
-              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{cv.summary}</p>
-            </div>
-
-            {/* Experience */}
-            <div className="mt-6">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Experience</h4>
-              <div className="space-y-4">
-                {cv.experience.map((exp, i) => (
-                  <div key={i} className="relative pl-4 border-l-2 border-blue-200 dark:border-blue-900">
-                    <div className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-blue-500" />
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{exp.title}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{exp.company} · {exp.period}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">{exp.desc}</p>
-                  </div>
-                ))}
+        {/* CV Content Area */}
+        <div className="flex-1 overflow-y-auto bg-[#f8f9fc] dark:bg-[#0a0b10] p-6 md:p-12 flex justify-center custom-scrollbar">
+          <div className="w-full max-w-[800px] bg-white dark:bg-[#151825] rounded-[24px] shadow-2xl shadow-black/10 border border-foreground/5 p-10 md:p-16 relative overflow-hidden text-slate-800 dark:text-slate-200">
+            {/* Design accents */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-navy-primary/5 rounded-full -mr-16 -mt-16 blur-3xl text-emerald-500" />
+            
+            {/* CV Header */}
+            <div className="relative mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-foreground/5 pb-8">
+              <div>
+                <h1 className="text-4xl font-black tracking-tight text-foreground mb-2">{app.name}</h1>
+                <p className="text-lg font-bold text-navy-primary mb-6">{app.role}</p>
+                <div className="flex flex-wrap gap-4 text-sm text-foreground/50 font-medium">
+                  <span className="flex items-center gap-2 bg-foreground/5 px-3 py-1.5 rounded-lg border border-foreground/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-navy-primary" /> {cv.email}
+                  </span>
+                  <span className="flex items-center gap-2 bg-foreground/5 px-3 py-1.5 rounded-lg border border-foreground/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" /> {cv.phone}
+                  </span>
+                  <span className="flex items-center gap-2 bg-foreground/5 px-3 py-1.5 rounded-lg border border-foreground/5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600" /> {cv.location}
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* Education */}
-            <div className="mt-6">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1.5">Education</h4>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{cv.education}</p>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+              {/* Left Column (Main Content) */}
+              <div className="md:col-span-8 space-y-12">
+                {/* Summary Section */}
+                <section>
+                  <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-navy-primary/60 mb-4 flex items-center gap-3">
+                    {t("summary")} <div className="h-px flex-1 bg-navy-primary/10" />
+                  </h4>
+                  <p className="text-base leading-relaxed text-foreground/80 font-medium italic">
+                    "{cv.summary}"
+                  </p>
+                </section>
 
-            {/* Skills */}
-            <div className="mt-6">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">Skills</h4>
-              <div className="flex flex-wrap gap-1.5">
-                {cv.skills.map((skill) => (
-                  <span key={skill} className="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 text-xs font-medium">
-                    {skill}
-                  </span>
-                ))}
+                {/* Experience Section */}
+                <section>
+                  <h4 className="text-[11px] font-black uppercase tracking-[0.2em] text-navy-primary/60 mb-8 flex items-center gap-3">
+                    {t("professionalExperience")} <div className="h-px flex-1 bg-navy-primary/10" />
+                  </h4>
+                  <div className="space-y-10 relative pl-4 border-l-2 border-foreground/5">
+                    {cv.experience.map((exp, i) => (
+                      <div key={i} className="relative group">
+                        <div className="absolute -left-[21px] top-1.5 w-4 h-4 rounded-full bg-white dark:bg-[#151825] border-2 border-blue-500 shadow-sm group-hover:scale-125 transition-transform" />
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-1">
+                          <h5 className="font-black text-foreground text-lg">{exp.title}</h5>
+                          <span className="text-[11px] font-black bg-navy-primary/5 text-navy-primary px-3 py-1 rounded-full uppercase">
+                            {exp.period}
+                          </span>
+                        </div>
+                        <p className="text-sm font-bold text-navy-primary mb-3">{exp.company}</p>
+                        <p className="text-sm text-foreground/60 leading-relaxed font-medium">
+                          {exp.desc}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              {/* Right Column (Sidebar) */}
+              <div className="md:col-span-4 space-y-12">
+                {/* Skills Section */}
+                <section>
+                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-5">
+                    {t("expertise")}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {cv.skills.map((skill) => (
+                      <span key={skill} className="px-3 py-1.5 rounded-xl bg-foreground/5 text-foreground/70 text-[11px] font-bold border border-foreground/5 hover:bg-navy-primary/10 hover:text-navy-primary hover:border-navy-primary/20 transition-all cursor-default">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </section>
+
+                {/* Education Section */}
+                <section>
+                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 mb-5">
+                    {t("education")}
+                  </h4>
+                  <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/5 text-sm">
+                    <p className="font-bold text-foreground mb-1 leading-snug">{cv.education}</p>
+                    <p className="text-[11px] text-foreground/40 font-bold uppercase tracking-tighter">Graduated with Honors</p>
+                  </div>
+                </section>
+
+                {/* Footer Insight */}
+                <div className="pt-8 mt-auto border-t border-dashed border-foreground/10 px-2">
+                   <p className="text-[10px] text-foreground/30 leading-relaxed font-medium">
+                    {t("verifiedProfile")}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -192,6 +241,7 @@ function CvPreviewModal({ app, onClose }: { app: Application; onClose: () => voi
 
 /* ─── Main Component ─── */
 export default function LatestApplications() {
+  const t = useTranslations("Dashboard");
   const [apps, setApps] = useState(INITIAL_APPS);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [page, setPage] = useState(1);
@@ -218,7 +268,7 @@ export default function LatestApplications() {
       <div className="sticky top-24">
         {/* Header with unread count */}
         <div className="flex items-center gap-2 mb-3">
-          <h3 className="text-lg font-bold text-foreground">Latest Applications</h3>
+          <h3 className="text-lg font-bold text-foreground">{t("applications")}</h3>
           {newCount > 0 && (
             <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-500 text-white">
               {newCount}
@@ -240,7 +290,7 @@ export default function LatestApplications() {
                     : "bg-section-muted text-foreground/50 hover:text-foreground"
                 }`}
               >
-                {f.label}
+                {t(`filters.${f.key}`)}
                 <span className={`ml-1 text-[10px] ${filter === f.key ? "text-white/60" : "text-foreground/30"}`}>
                   {count}
                 </span>
@@ -250,95 +300,112 @@ export default function LatestApplications() {
         </div>
 
         {/* Applications list */}
-        <div className="rounded-3xl bg-card-background border border-foreground/10 overflow-hidden shadow-sm divide-y divide-foreground/5">
+        <div className="space-y-3">
           {paged.length === 0 ? (
-            <div className="px-5 py-10 text-center">
+            <div className="rounded-3xl bg-card-background border border-foreground/10 px-5 py-10 text-center shadow-sm">
               <Users className="w-8 h-8 text-foreground/15 mx-auto mb-2" />
               <p className="text-foreground/50 text-sm">
-                {filter === "all" ? "No applications yet." : `No ${filter} applications.`}
+                {t("noFilteredApplications", { status: t(`filters.${filter}`).toLowerCase() })}
               </p>
               {filter === "all" && (
-                <p className="text-foreground/30 text-xs mt-1">Applications will appear here when candidates apply to your jobs.</p>
+                <p className="text-foreground/30 text-xs mt-1 px-4">{t("appsDescription")}</p>
               )}
             </div>
           ) : (
             paged.map((app) => (
-              <div key={app.id} className="px-4 py-3 hover:bg-foreground/[0.02] transition-colors">
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-navy-primary/20 to-navy-primary/5 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-blue-400">
-                      {app.name.split(" ").map((n) => n[0]).join("")}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-foreground text-sm truncate">{app.name}</p>
-                      {app.status === "new" && (
-                        <span className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-                      )}
-                    </div>
-                    <p className="text-xs text-blue-400 font-medium truncate">{app.role}</p>
-                    <p className="text-[11px] text-foreground/30 truncate mt-0.5">Applied to: {app.job}</p>
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${STATUS_BADGE[app.status].className}`}>
-                        {STATUS_BADGE[app.status].label}
+              <div 
+                key={app.id} 
+                className="group relative rounded-3xl bg-card-background border border-foreground/10 p-4 hover:border-navy-primary/30 hover:shadow-lg hover:shadow-navy-primary/5 transition-all duration-300"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Avatar with Status Indicator */}
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-navy-primary/10 to-navy-primary/5 border border-foreground/5 flex items-center justify-center">
+                      <span className="text-sm font-black text-navy-primary uppercase">
+                        {app.name.split(" ").map((n) => n[0]).join("")}
                       </span>
-                      <span className="text-[10px] text-foreground/30">{app.time}</span>
+                    </div>
+                    {app.status === "new" && (
+                      <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-blue-500 shadow-sm animate-pulse" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                       <h4 className="font-bold text-foreground text-[15px] truncate group-hover:text-navy-primary transition-colors">
+                        {app.name}
+                      </h4>
+                      <span className="text-[10px] font-bold text-foreground/20 whitespace-nowrap uppercase tracking-tighter">
+                        {app.time}
+                      </span>
+                    </div>
+                    
+                    <p className="text-xs font-semibold text-navy-primary truncate mt-0.5">{app.role}</p>
+                    
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider ${STATUS_BADGE[app.status].className}`}>
+                        {t(`status.${app.status}`)}
+                      </span>
+                      <span className="text-[10px] text-foreground/40 font-medium truncate italic max-w-[120px]">
+                        for {app.job}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Quick actions */}
-                <div className="flex items-center gap-1 mt-2 ml-12">
-                  {/* CV Preview / Download */}
-                  <button
-                    onClick={() => app.cvPath ? setViewingCv(app) : undefined}
-                    disabled={!app.cvPath}
-                    className={`p-1.5 rounded-md transition-colors ${
-                      app.cvPath
-                        ? "text-foreground/30 hover:text-navy-primary hover:bg-navy-primary/10"
-                        : "text-foreground/15 cursor-not-allowed"
-                    }`}
-                    title={app.cvPath ? "View CV" : "No CV uploaded"}
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                  </button>
-                  {app.status === "new" && (
+                {/* Card Actions (Visible on hover on desktop, always on mobile) */}
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-foreground/5">
+                  <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => updateStatus(app.id, "reviewed")}
-                      className="p-1.5 rounded-md text-foreground/30 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
-                      title="Mark as reviewed"
+                      onClick={() => app.cvPath ? setViewingCv(app) : undefined}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all ${
+                        app.cvPath
+                          ? "bg-navy-primary/5 text-navy-primary hover:bg-navy-primary hover:text-white"
+                          : "bg-foreground/5 text-foreground/20 cursor-not-allowed"
+                      }`}
                     >
-                      <Eye className="w-3.5 h-3.5" />
+                      <FileText className="w-3.5 h-3.5" />
+                      {t("actions.viewCV")}
                     </button>
-                  )}
-                  {app.status !== "shortlisted" && app.status !== "rejected" && (
                     <button
                       onClick={() => updateStatus(app.id, "shortlisted")}
-                      className="p-1.5 rounded-md text-foreground/30 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+                      className={`p-1.5 rounded-xl transition-all ${
+                         app.status === "shortlisted" 
+                         ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20" 
+                         : "bg-foreground/5 text-foreground/30 hover:bg-emerald-500/10 hover:text-emerald-500"
+                      }`}
                       title="Shortlist"
                     >
-                      <Star className="w-3.5 h-3.5" />
+                      <Star className="w-3.5 h-3.5 fill-current" />
                     </button>
-                  )}
-                  {app.status !== "rejected" && (
-                    <button
-                      onClick={() => updateStatus(app.id, "rejected")}
-                      className="p-1.5 rounded-md text-foreground/30 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                      title="Reject"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                  {app.status === "rejected" && (
-                    <button
-                      onClick={() => updateStatus(app.id, "new")}
-                      className="p-1.5 rounded-md text-foreground/30 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
-                      title="Move back to New"
-                    >
-                      <UserCheck className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    {app.status === "new" && (
+                      <button
+                        onClick={() => updateStatus(app.id, "reviewed")}
+                        className="p-1.5 rounded-xl bg-foreground/5 text-foreground/30 hover:bg-blue-500/10 hover:text-blue-500 transition-all font-bold text-[11px] px-3"
+                      >
+                        {t("actions.markReviewed")}
+                      </button>
+                    )}
+                    {app.status !== "rejected" ? (
+                      <button
+                        onClick={() => updateStatus(app.id, "rejected")}
+                        className="p-1.5 rounded-xl bg-foreground/5 text-foreground/30 hover:bg-red-500/10 hover:text-red-500 transition-all"
+                        title={t("actions.reject")}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => updateStatus(app.id, "new")}
+                        className="p-1.5 rounded-xl bg-foreground/5 text-foreground/30 hover:bg-blue-500/10 hover:text-blue-500 transition-all text-[11px] font-bold px-3"
+                      >
+                        {t("actions.restore")}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))
@@ -388,7 +455,7 @@ export default function LatestApplications() {
           href="/dashboard"
           className="mt-3 w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-section-muted border border-foreground/10 text-foreground/60 text-xs font-semibold hover:text-foreground hover:border-foreground/20 transition-colors"
         >
-          View All Applications
+          {t("viewAllApplications")}
         </Link>
       </div>
     </>

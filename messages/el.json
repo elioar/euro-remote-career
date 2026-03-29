@@ -363,7 +363,53 @@
     "postAJob": "Δημοσίευση θέσης",
     "myApplications": "Οι αιτήσεις μου",
     "comingSoon": "Έρχεται στη Φάση 3.",
-    "signOut": "Αποσύνδεση"
+    "signOut": "Αποσύνδεση",
+    "myJobs": "Οι Θέσεις μου",
+    "accountCenter": "Κέντρο Λογαριασμού",
+    "freePlan": "Δωρεάν Πλάνο",
+    "activeCredits": "Ενεργές Αγγελίες",
+    "upgradeToPro": "Αναβάθμιση σε Pro",
+    "profileStrength": "Συμπλήρωση Προφίλ",
+    "excellentReach": "ΕΞΑΙΡΕΤΙΚΗ ΠΡΟΒΟΛΗ",
+    "completeProfile": "Ολοκλήρωση Προφίλ",
+    "totalVisibility": "Συνολική Προβολή",
+    "last30Days": "Τελευταίες 30 ημέρες",
+    "hiringHelp": "Χρειάζεσαι βοήθεια;",
+    "hiringHelpDesc": "Η ομάδα μας είναι εδώ για να σε βοηθήσει να βρεις το κατάλληλο ταλέντο.",
+    "contactSupport": "Επικοινωνία με Υποστήριξη",
+    "totalJobs": "Σύνολο Θέσεων",
+    "published": "Δημοσιευμένες",
+    "applications": "Αιτήσεις",
+    "viewAllApplications": "Προβολή Όλων των Αιτήσεων",
+    "noApplications": "Δεν υπάρχουν αιτήσεις ακόμα.",
+    "noFilteredApplications": "Δεν βρέθηκαν {status} αιτήσεις.",
+    "appsDescription": "Οι αιτήσεις θα εμφανιστούν εδώ όταν οι υποψήφιοι κάνουν αίτηση στις θέσεις σας.",
+    "cvPreview": "Προεπισκόπηση Βιογραφικού",
+    "downloadCV": "Λήψη PDF",
+    "professionalExperience": "Επαγγελματική Εμπειρία",
+    "expertise": "Εξειδίκευση",
+    "education": "Εκπαίδευση",
+    "summary": "Σύνοψη",
+    "verifiedProfile": "Αυτό το προφίλ έχει επαληθευτεί από την Euro Remote Career. Ο υποψήφιος είναι διαθέσιμος για άμεση εργασία.",
+    "filters": {
+      "all": "Όλες",
+      "new": "Νέες",
+      "reviewed": "Αξιολογημένες",
+      "shortlisted": "Top"
+    },
+    "status": {
+      "new": "Νέα",
+      "reviewed": "Αξιολογήθηκε",
+      "shortlisted": "Shortlisted",
+      "rejected": "Απορρίφθηκε"
+    },
+    "actions": {
+      "viewCV": "Βιογραφικό",
+      "markReviewed": "Αξιολόγηση",
+      "restore": "Επαναφορά",
+      "shortlist": "Shortlist",
+      "reject": "Απόρριψη"
+    }
   },
   "Profile": {
     "title": "Το προφίλ μου",
@@ -499,7 +545,7 @@
     "errorRequired": "Τίτλος, περιγραφή, κατηγορία και τύπος εργασίας είναι υποχρεωτικά",
     "errorGeneric": "Κάτι πήγε στραβά. Προσπάθησε ξανά.",
     "errorNoProfile": "Συμπλήρωσε πρώτα το προφίλ εταιρείας.",
-    "backToDashboard": "← Πίσω στον πίνακα"
+    "backToDashboard": "Πίσω στον πίνακα"
   },
   "EditJob": {
     "pageTitle": "Επεξεργασία Θέσης",

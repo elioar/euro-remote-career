@@ -202,13 +202,6 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
           <h2 className="text-xl font-bold text-foreground mb-1">{t("pageTitle")}</h2>
           <p className="text-xs text-foreground/60">{t("pageSubtitle")}</p>
         </div>
-        <Link
-          href="/dashboard/post-job"
-          className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-navy-primary text-white text-xs font-semibold hover:bg-navy-hover transition-colors shadow-sm"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          {t("postNewJob")}
-        </Link>
       </div>
 
       {/* Search & Sort */}
@@ -312,8 +305,8 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
                 key={job.id}
                 className="p-4 rounded-2xl border border-foreground/10 bg-section-muted hover:border-foreground/20 transition-colors"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
+                  <div className="min-w-0 w-full sm:flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold text-foreground truncate">{job.title}</h3>
                       <span
@@ -330,37 +323,6 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
                       </span>
                     </div>
 
-                    {/* Stats row: applications + expiration */}
-                    <div className="flex items-center gap-4 mt-2 mb-1 text-xs font-semibold text-foreground/70 flex-wrap">
-                      {appCount > 0 && job.status !== "REJECTED" && (
-                        <span className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-2 py-0.5 rounded-full">
-                          <Users className="w-3.5 h-3.5" /> {appCount} {appCount === 1 ? "Apply" : "Applies"}
-                        </span>
-                      )}
-                      {appCount === 0 && job.status !== "DRAFT" && job.status !== "REJECTED" && (
-                        <span className="flex items-center gap-1.5 text-foreground/30 px-2 py-0.5">
-                          <Users className="w-3.5 h-3.5" /> 0 Applies
-                        </span>
-                      )}
-                      {job.status === "PUBLISHED" && days !== null && (
-                        <span className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full ${
-                          days <= 3
-                            ? "bg-red-500/10 text-red-500"
-                            : days <= 7
-                            ? "bg-amber-500/10 text-amber-500"
-                            : "bg-blue-500/10 text-blue-500"
-                        }`}>
-                          <Clock className="w-3.5 h-3.5" />
-                          {days <= 0 ? t("expiresToday") : `${days}d left`}
-                        </span>
-                      )}
-                      {job.status === "PUBLISHED" && (
-                        <span className="flex items-center gap-1.5 bg-navy-primary/10 text-navy-primary px-2 py-0.5 rounded-full">
-                          <Eye className="w-3.5 h-3.5" /> {(job.id.charCodeAt(0) * 17) % 500 + 40} Views
-                        </span>
-                      )}
-                    </div>
-
                     {job.status === "REJECTED" && job.rejectionReason && (
                       <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                         {t("rejectionReason")} {job.rejectionReason}
@@ -368,8 +330,8 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
                     )}
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {/* Actions (right side) */}
+                  <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap flex-shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
                     {job.status !== "DRAFT" && job.status !== "REJECTED" && job.status !== "ARCHIVED" && job.status !== "EXPIRED" && (
                       <Link
                         href={`/jobs/${job.slug}`}
@@ -441,6 +403,39 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
                     </button>
                   </div>
                 </div>
+
+                {/* Stats row: applications + expiration (Now takes full width of card) */}
+                {job.status !== "DRAFT" && job.status !== "REJECTED" && (
+                  <div className="flex flex-row flex-nowrap items-center gap-2 mt-4 pt-4 border-t border-foreground/5 text-[11px] font-semibold text-foreground/70 overflow-x-auto no-scrollbar">
+                    {appCount > 0 && (
+                      <span className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-2.5 py-1 rounded-lg whitespace-nowrap">
+                        <Users className="w-3.5 h-3.5" /> {appCount} {appCount === 1 ? "Apply" : "Applies"}
+                      </span>
+                    )}
+                    {appCount === 0 && (
+                      <span className="flex items-center gap-1.5 text-foreground/40 px-1 py-1 whitespace-nowrap">
+                        <Users className="w-3.5 h-3.5" /> 0 Applies
+                      </span>
+                    )}
+                    {job.status === "PUBLISHED" && days !== null && (
+                      <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg whitespace-nowrap ${
+                        days <= 3
+                          ? "bg-red-500/10 text-red-500"
+                          : days <= 7
+                          ? "bg-amber-500/10 text-amber-500"
+                          : "bg-blue-500/10 text-blue-400 dark:text-blue-400"
+                      }`}>
+                        <Clock className="w-3.5 h-3.5" />
+                        {days <= 0 ? t("expiresToday") : `${days}d left`}
+                      </span>
+                    )}
+                    {job.status === "PUBLISHED" && (
+                      <span className="flex items-center gap-1.5 bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-2.5 py-1 rounded-lg whitespace-nowrap">
+                        <Eye className="w-3.5 h-3.5" /> {(job.id.charCodeAt(0) * 17) % 500 + 40} Views
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

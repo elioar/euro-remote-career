@@ -17,12 +17,13 @@
   --background: #0B0C0E;
   --foreground: #f1f5f9;
   --section-muted: #151618;
-  --navy-primary: #03346E;
+  --navy-primary: #3b82f6; /* Lighter, vibrant blue for dark mode visibility */
+  --navy-hover: #60a5fa;
   --navy-accent: #6EACDA;
   --card-background: #1B1C1F;
   --card-active: #222327;
-  --card-selected-bg: rgba(3, 52, 110, 0.1);
-  --card-selected-border: #3A4F6A;
+  --card-selected-bg: rgba(59, 130, 246, 0.1);
+  --card-selected-border: #3b82f6;
   --border-muted: rgba(255, 255, 255, 0.05);
   --border-card: rgba(255, 255, 255, 0.1);
 }

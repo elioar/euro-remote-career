@@ -175,46 +175,59 @@ export default function PostJobForm({
   const parsedTags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-foreground/10 bg-section-muted text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent focus:bg-background transition-all";
+    "w-full px-5 py-3.5 rounded-2xl border border-foreground/10 bg-section-muted text-foreground placeholder-foreground/30 focus:outline-none focus:ring-2 focus:ring-navy-primary/20 focus:border-navy-primary focus:bg-background transition-all duration-300 font-medium text-sm";
   const selectClass =
-    "w-full px-4 py-3 rounded-xl border border-foreground/10 bg-section-muted text-foreground focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent focus:bg-background transition-all";
+    "w-full px-5 py-3.5 rounded-2xl border border-foreground/10 bg-section-muted text-foreground focus:outline-none focus:ring-2 focus:ring-navy-primary/20 focus:border-navy-primary focus:bg-background transition-all duration-300 font-medium text-sm appearance-none cursor-pointer";
+
+  const SectionLabel = ({ icon: Icon, title, desc }: any) => (
+    <div className="flex items-center gap-3 mb-6">
+      <div className="w-10 h-10 rounded-2xl bg-navy-primary/10 flex items-center justify-center shrink-0">
+        <Icon className="w-5 h-5 text-navy-primary" />
+      </div>
+      <div>
+        <h3 className="text-base font-bold text-foreground leading-tight">{title}</h3>
+        {desc && <p className="text-[11px] text-foreground/40 font-bold uppercase tracking-wider mt-0.5">{desc}</p>}
+      </div>
+    </div>
+  );
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-500">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-foreground/50 hover:text-foreground mb-3 transition-colors"
+            className="group inline-flex items-center gap-2 text-sm font-bold text-foreground/40 hover:text-navy-primary mb-4 transition-all"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center group-hover:bg-navy-primary/10 transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+            </div>
             {t("backToDashboard")}
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">{t("pageTitle")}</h1>
-          <p className="text-foreground/50 mt-1">{t("pageSubtitle")}</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tight leading-none">{t("pageTitle")}</h1>
+          <p className="text-lg text-foreground/40 mt-3 font-medium">{t("pageSubtitle")}</p>
         </div>
+        
         {companyName && (
-          <div className="hidden sm:flex items-center gap-3 px-4 py-2.5 rounded-xl bg-section-muted border border-foreground/10">
-            <div className="w-8 h-8 rounded-lg bg-navy-primary/10 flex items-center justify-center">
-              <Briefcase className="w-4 h-4 text-navy-primary" />
+          <div className="flex items-center gap-4 px-5 py-3 rounded-[2rem] bg-card-background border border-foreground/10 shadow-sm animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="w-10 h-10 rounded-2xl bg-navy-primary/10 flex items-center justify-center text-navy-primary">
+              <Briefcase className="w-5 h-5" />
             </div>
-            <span className="text-sm font-medium text-foreground">{companyName}</span>
+            <div>
+              <p className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.15em] leading-none mb-1">Hiring for</p>
+              <p className="text-sm font-bold text-foreground leading-none">{companyName}</p>
+            </div>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main form - left 2 cols */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Job Basics Card */}
-          <div className="p-6 rounded-2xl border border-foreground/10 bg-background">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-navy-primary/10 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-navy-primary" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Job Details</h2>
-            </div>
+        {/* Main Form Area */}
+        <div className="lg:col-span-2 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* Section 1: Core Details */}
+          <div className="p-8 rounded-[2.5rem] border border-foreground/10 bg-card-background shadow-xl shadow-foreground/[0.02]">
+            <SectionLabel icon={FileText} title="Job Fundamentals" desc="The core details of your listing" />
 
             <div className="space-y-5">
               {/* Title */}
@@ -282,21 +295,22 @@ export default function PostJobForm({
 
               {/* Category - pill selector */}
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2.5">
-                  {t("category")} <span className="text-red-500">*</span>
+                <label className="block text-sm font-bold text-foreground mb-3">
+                  {t("category")} <span className="text-navy-primary">*</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   {CATEGORIES.map((cat) => (
                     <button
                       key={cat}
                       type="button"
                       onClick={() => setCategory(cat)}
-                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                      className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 flex items-center gap-2 group ${
                         category === cat
-                          ? "bg-navy-primary text-white shadow-sm"
-                          : `border border-foreground/10 ${CATEGORY_ICONS[cat]} hover:border-foreground/20`
+                          ? "bg-navy-primary text-white shadow-lg shadow-navy-primary/20 scale-[1.02]"
+                          : `border border-foreground/10 bg-section-muted hover:border-navy-primary/30 hover:bg-navy-primary/[0.02]`
                       }`}
                     >
+                      <div className={`w-2 h-2 rounded-full ${category === cat ? 'bg-white' : 'bg-navy-primary/40 group-hover:bg-navy-primary'} transition-colors`} />
                       {t(`category${cat}`)}
                     </button>
                   ))}
@@ -305,15 +319,9 @@ export default function PostJobForm({
             </div>
           </div>
 
-          {/* Additional Details Card */}
-          <div className="p-6 rounded-2xl border border-foreground/10 bg-background">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-navy-primary/10 flex items-center justify-center">
-                <Layers className="w-4 h-4 text-navy-primary" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Additional Info</h2>
-              <span className="text-xs text-foreground/40 ml-1">Optional</span>
-            </div>
+          {/* Section 2: Environment & Compensation */}
+          <div className="p-8 rounded-[2.5rem] border border-foreground/10 bg-card-background shadow-xl shadow-foreground/[0.02]">
+            <SectionLabel icon={Layers} title="Workspace & Perks" desc="Remote culture and salary details" />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Async Level */}
@@ -402,7 +410,7 @@ export default function PostJobForm({
                     {parsedTags.map((tag, i) => (
                       <span
                         key={i}
-                        className="px-2.5 py-1 rounded-lg bg-navy-primary/10 text-navy-primary text-xs font-medium"
+                        className="px-3 py-1 rounded-xl bg-navy-primary/10 text-navy-primary text-[10px] font-bold border border-navy-primary/10"
                       >
                         {tag}
                       </span>
@@ -412,149 +420,150 @@ export default function PostJobForm({
                 <p className="text-xs text-foreground/30 mt-1.5">{t("tagsHint")}</p>
               </div>
             </div>
+
           </div>
         </div>
 
-        {/* Sidebar - right col */}
-        <div className="space-y-5">
-          {/* Live Preview */}
-          <div className="p-5 rounded-2xl border border-foreground/10 bg-background sticky top-24">
-            <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wider mb-4">
-              Preview
-            </h3>
+        {/* Sidebar Preview Area */}
+        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-700 delay-150">
+          <div className="sticky top-24 space-y-6">
+            <div className="p-8 rounded-[2.5rem] border border-foreground/10 bg-gradient-to-b from-card-background to-section-muted shadow-2xl shadow-foreground/[0.03] overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-navy-primary/5 rounded-full blur-3xl group-hover:bg-navy-primary/10 transition-colors" />
+              
+              <div className="relative">
+                <h3 className="text-[10px] font-black text-navy-primary uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-navy-primary shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                  Live Preview
+                </h3>
 
-            <div className="space-y-3">
-              <div>
-                <p className="text-lg font-bold text-foreground leading-tight">
-                  {title || "Job Title"}
-                </p>
-                {companyName && (
-                  <p className="text-sm text-foreground/50 mt-0.5">{companyName}</p>
-                )}
-              </div>
+                <div className="space-y-5">
+                  <div>
+                    <h2 className="text-2xl font-black text-foreground leading-[1.1] tracking-tight break-words">
+                      {title || "Position Title"}
+                    </h2>
+                    {companyName && (
+                      <p className="text-sm font-bold text-foreground/40 mt-2">{companyName}</p>
+                    )}
+                  </div>
 
-              <div className="flex flex-wrap gap-1.5">
-                <span className="px-2 py-0.5 rounded-md bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-medium">
-                  Remote
-                </span>
-                {category && (
-                  <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${CATEGORY_ICONS[category] || "bg-section-muted text-foreground/60"}`}>
-                    {category}
-                  </span>
-                )}
-                {asyncLevel && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium">
-                    {asyncLevel === "full" ? "Fully Async" : asyncLevel === "friendly" ? "Async-Friendly" : "Mostly Sync"}
-                  </span>
-                )}
-              </div>
-
-              {salary && (
-                <p className="text-sm font-medium text-green-600 dark:text-green-400">€{salary}/{salaryPeriod}</p>
-              )}
-
-              {location && (
-                <p className="text-xs text-foreground/40 flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> {location}
-                </p>
-              )}
-
-              {description && (
-                <div className="pt-3 border-t border-foreground/5">
-                  <p className="text-[10px] font-semibold text-foreground/40 uppercase tracking-wider mb-1">About the Role</p>
-                  <p className="text-xs text-foreground/50 line-clamp-3 whitespace-pre-line">
-                    {description}
-                  </p>
-                </div>
-              )}
-
-              {requirements && (
-                <div className="pt-2">
-                  <p className="text-[10px] font-semibold text-foreground/40 uppercase tracking-wider mb-1">What You&apos;ll Need</p>
-                  <p className="text-xs text-foreground/50 line-clamp-2 whitespace-pre-line">
-                    {requirements}
-                  </p>
-                </div>
-              )}
-
-              {benefits && (
-                <div className="pt-2">
-                  <p className="text-[10px] font-semibold text-foreground/40 uppercase tracking-wider mb-1">What You Get</p>
-                  <p className="text-xs text-foreground/50 line-clamp-2 whitespace-pre-line">
-                    {benefits}
-                  </p>
-                </div>
-              )}
-
-              {parsedTags.length > 0 && (
-                <div className="flex flex-wrap gap-1 pt-2">
-                  {parsedTags.slice(0, 5).map((tag, i) => (
-                    <span
-                      key={i}
-                      className="px-2 py-0.5 rounded bg-foreground/5 text-foreground/40 text-[10px] font-medium"
-                    >
-                      {tag}
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider border border-emerald-500/10">
+                      100% Remote
                     </span>
-                  ))}
-                  {parsedTags.length > 5 && (
-                    <span className="text-foreground/30 text-[10px]">+{parsedTags.length - 5}</span>
+                    {category && (
+                      <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-colors ${
+                        category === "Tech" ? "bg-blue-500/5 text-blue-500 border-blue-500/10" :
+                        category === "Design" ? "bg-violet-500/5 text-violet-500 border-violet-500/10" :
+                        category === "Marketing" ? "bg-amber-500/5 text-amber-500 border-amber-500/10" :
+                        "bg-foreground/5 text-foreground/40 border-foreground/5"
+                      }`}>
+                        {category}
+                      </span>
+                    )}
+                    {asyncLevel && (
+                      <span className="px-3 py-1.5 rounded-xl bg-navy-primary/5 text-navy-primary text-[10px] font-black uppercase tracking-wider border border-navy-primary/10">
+                        {asyncLevel === "full" ? "Fully Async" : asyncLevel === "friendly" ? "Async Friendly" : "Sync Required"}
+                      </span>
+                    )}
+                  </div>
+
+                  {(salary || location) && (
+                    <div className="space-y-1.5 pt-1">
+                      {salary && (
+                        <div className="flex items-center gap-2 text-sm font-bold text-foreground">
+                          <Banknote className="w-4 h-4 text-emerald-500" />
+                          <span>€{salary} <span className="text-[10px] text-foreground/30 uppercase tracking-widest ml-1">{salaryPeriod}</span></span>
+                        </div>
+                      )}
+                      {location && (
+                        <div className="flex items-center gap-2 text-[11px] font-bold text-foreground/40 uppercase tracking-wider">
+                          <MapPin className="w-4 h-4" /> {location}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {description && (
+                    <div className="pt-5 border-t border-foreground/5">
+                      <p className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-2">{t("aboutRole")}</p>
+                      <p className="text-xs text-foreground/60 leading-relaxed line-clamp-4 whitespace-pre-line font-medium">
+                        {description}
+                      </p>
+                    </div>
+                  )}
+
+                  {parsedTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-4">
+                      {parsedTags.slice(0, 4).map((tag, i) => (
+                        <span key={i} className="px-2 py-1 rounded-lg bg-foreground/5 text-foreground/40 text-[9px] font-black uppercase tracking-wider border border-foreground/5">
+                          {tag}
+                        </span>
+                      ))}
+                      {parsedTags.length > 4 && <span className="text-foreground/20 font-black text-[9px]">+{parsedTags.length - 4}</span>}
+                    </div>
+                  )}
+
+                  {requirements && (
+                    <div className="pt-4 border-t border-foreground/5">
+                      <p className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-2">{t("requirements")}</p>
+                      <p className="text-xs text-foreground/60 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
+                        {requirements}
+                      </p>
+                    </div>
+                  )}
+
+                  {benefits && (
+                    <div className="pt-4">
+                      <p className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] mb-2">{t("benefits")}</p>
+                      <p className="text-xs text-foreground/60 leading-relaxed line-clamp-3 whitespace-pre-line font-medium">
+                        {benefits}
+                      </p>
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Divider */}
-            <div className="border-t border-foreground/5 mt-5 pt-5">
-              <h3 className="text-sm font-semibold text-foreground/60 uppercase tracking-wider mb-4">
-                Actions
-              </h3>
+                <div className="mt-8 pt-8 border-t border-navy-primary/10">
+                  <div className="space-y-3">
+                    {/* Error / Success Feedback */}
+                    {error && (
+                      <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold animate-in zoom-in-95 duration-200">
+                        {error}
+                      </div>
+                    )}
 
-              {/* Error / Success */}
-              {error && (
-                <p className="text-red-500 text-sm bg-red-50 dark:bg-red-950/30 px-4 py-3 rounded-xl mb-3">
-                  {error}
-                </p>
-              )}
+                    {success && (
+                      <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-xs font-bold flex items-center gap-2 animate-in zoom-in-95 duration-200">
+                        <CheckCircle className="w-4 h-4" />
+                        {success}
+                      </div>
+                    )}
 
-              {success && (
-                <div className="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-xl mb-3">
-                  <CheckCircle className="w-4 h-4" />
-                  {success}
+                    <button
+                      type="button"
+                      onClick={handleSubmitForReview}
+                      disabled={isDisabled}
+                      className="w-full h-14 rounded-2xl bg-navy-primary text-white font-black uppercase tracking-widest shadow-xl shadow-navy-primary/20 hover:bg-navy-hover hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-60 disabled:cursor-not-allowed group flex items-center justify-center gap-3"
+                    >
+                      {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-4.5 h-4.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
+                      <span className="text-xs">{submitting ? t("submitting") : t("submitForReview")}</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={handleSaveDraft}
+                      disabled={isDisabled}
+                      className="w-full h-12 rounded-2xl border border-foreground/10 text-foreground/60 text-[11px] font-black uppercase tracking-widest hover:bg-foreground/5 hover:text-foreground transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
+                    >
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {loading ? t("savingDraft") : t("saveDraft")}
+                    </button>
+                  </div>
+
+                  <p className="text-[10px] text-foreground/30 mt-5 text-center leading-relaxed font-bold uppercase tracking-wider">
+                    Listing Review Process: <span className="text-foreground/15">12-24h</span>
+                  </p>
                 </div>
-              )}
-
-              <div className="space-y-2.5">
-                <button
-                  type="button"
-                  onClick={handleSubmitForReview}
-                  disabled={isDisabled}
-                  className="w-full py-3 px-5 rounded-xl bg-navy-primary text-white font-semibold hover:bg-navy-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-                >
-                  {submitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                  {submitting ? t("submitting") : t("submitForReview")}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveDraft}
-                  disabled={isDisabled}
-                  className="w-full py-3 px-5 rounded-xl border border-foreground/10 text-foreground font-medium hover:bg-section-muted transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4 text-foreground/40" />
-                  )}
-                  {loading ? t("savingDraft") : t("saveDraft")}
-                </button>
               </div>
-
-              <p className="text-[11px] text-foreground/30 mt-3 text-center leading-snug">
-                Jobs are reviewed before publishing. You&apos;ll be notified once approved.
-              </p>
             </div>
           </div>
         </div>

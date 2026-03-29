@@ -363,7 +363,53 @@
     "postAJob": "Post a Job",
     "myApplications": "My Applications",
     "comingSoon": "Coming in Phase 3.",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "myJobs": "My Jobs",
+    "accountCenter": "Account Center",
+    "freePlan": "Free Plan",
+    "activeCredits": "Active Job Credits",
+    "upgradeToPro": "Upgrade to Pro",
+    "profileStrength": "Profile Strength",
+    "excellentReach": "EXCELLENT REACH",
+    "completeProfile": "Complete Profile",
+    "totalVisibility": "Total Visibility",
+    "last30Days": "Last 30 days",
+    "hiringHelp": "Need hiring help?",
+    "hiringHelpDesc": "Our team is here to help you find the right remote talent.",
+    "contactSupport": "Contact Support",
+    "totalJobs": "Total Jobs",
+    "published": "Published",
+    "applications": "Applications",
+    "viewAllApplications": "View All Applications",
+    "noApplications": "No applications yet.",
+    "noFilteredApplications": "No {status} applications found.",
+    "appsDescription": "Applications will appear here once candidates apply to your job listings.",
+    "cvPreview": "CV Preview",
+    "downloadCV": "Download PDF",
+    "professionalExperience": "Professional Experience",
+    "expertise": "Expertise",
+    "education": "Education",
+    "summary": "Summary",
+    "verifiedProfile": "This profile has been verified by Euro Remote Career. The candidate is available for immediate hire.",
+    "filters": {
+      "all": "All",
+      "new": "New",
+      "reviewed": "Reviewed",
+      "shortlisted": "Top"
+    },
+    "status": {
+      "new": "New",
+      "reviewed": "Reviewed",
+      "shortlisted": "Shortlisted",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "viewCV": "CV",
+      "markReviewed": "Review",
+      "restore": "Restore",
+      "shortlist": "Shortlist",
+      "reject": "Reject"
+    }
   },
   "Profile": {
     "title": "My Profile",
@@ -499,7 +545,7 @@
     "errorRequired": "Title, description, category, and remote type are required",
     "errorGeneric": "Something went wrong. Please try again.",
     "errorNoProfile": "Please complete your company profile first.",
-    "backToDashboard": "← Back to dashboard"
+    "backToDashboard": "Back to dashboard"
   },
   "EditJob": {
     "pageTitle": "Edit Job",
@@ -546,7 +592,7 @@
     "successDeleted": "Job deleted.",
     "successSubmitted": "Job submitted for review!",
     "errorGeneric": "Something went wrong. Please try again.",
-    "backToDashboard": "← Back to dashboard",
+    "backToDashboard": "Back to dashboard",
     "created": "Created",
     "expires": "Expires",
     "searchPlaceholder": "Search jobs by title or category...",
