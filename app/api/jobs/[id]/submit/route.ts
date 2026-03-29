@@ -23,7 +23,7 @@ export async function POST(
   }
 
   try {
-    const updated = await submitForReview(id);
+    const updated = await submitForReview(id, auth.user.id);
     return NextResponse.json(updated);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Server error";

@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import type { Job } from "@/lib/generated/prisma";
 
-export async function submitForReview(jobId: string): Promise<Job> {
+export async function submitForReview(jobId: string, userId: string): Promise<Job> {
   const job = await prisma.job.findUniqueOrThrow({ where: { id: jobId } });
 
-  if (job.status !== "DRAFT") {
-    throw new Error("Only draft jobs can be submitted for review");
+  if (job.status !== "DRAFT" && job.status !== "REJECTED") {
+    throw new Error("Only draft or rejected jobs can be submitted for review");
   }
 
   // Validate required fields
@@ -13,10 +13,17 @@ export async function submitForReview(jobId: string): Promise<Job> {
     throw new Error("Title, description, category, and remote type are required");
   }
 
-  return prisma.job.update({
-    where: { id: jobId },
-    data: { status: "PENDING_REVIEW" },
-  });
+  const [updated] = await prisma.$transaction([
+    prisma.job.update({
+      where: { id: jobId },
+      data: { status: "PENDING_REVIEW" },
+    }),
+    prisma.moderationLog.create({
+      data: { jobId, adminId: userId, action: "PENDING" },
+    }),
+  ]);
+
+  return updated;
 }
 
 export async function approveJob(jobId: string, adminId: string): Promise<Job> {
