@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, Star, Users, ChevronLeft, ChevronRight, FileText, Loader2 } from "lucide-react";
+import { X, Star, Users, ChevronLeft, ChevronRight, FileText, Loader2, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type DbStatus = "PENDING" | "REVIEWING" | "ACCEPTED" | "REJECTED";
@@ -73,11 +73,11 @@ function CvPreviewModal({
     setLoadingCv(true);
     try {
       const res = await fetch(`/api/applications/${app.id}/cv`);
-      if (!res.ok) { alert("Failed to load CV"); return; }
-      const { url } = await res.json();
-      window.open(url, "_blank");
-    } catch {
-      alert("Failed to load CV");
+      const data = await res.json();
+      if (!res.ok) { alert(`Error ${res.status}: ${data.error} — ${data.detail ?? ""}`); return; }
+      window.open(data.url, "_blank");
+    } catch (e) {
+      alert(`Failed to load CV: ${e}`);
     } finally {
       setLoadingCv(false);
     }
@@ -130,7 +130,7 @@ function CvPreviewModal({
               disabled={loadingCv}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-navy-primary text-white text-sm font-semibold hover:bg-navy-hover transition-colors disabled:opacity-60"
             >
-              {loadingCv ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              {loadingCv ? <Loader2 className="w-4 h-4 animate-spin" /> : <ExternalLink className="w-4 h-4" />}
               {t("downloadCV")}
             </button>
           ) : (

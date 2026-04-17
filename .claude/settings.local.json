@@ -21,7 +21,13 @@
       "Bash(DIRECT_URL=\"postgresql://postgres.smowjtkcrruvefjpowfi:sRuvXzC3961rvcPp@aws-1-eu-central-1.pooler.supabase.com:6543/postgres\" npx prisma:*)",
       "Bash(wait)",
       "Bash(mkdir -p /home/eliodev/Documents/Projects/euro-remote-career/app/api/candidate/cvs/\\\\[id\\\\])",
-      "Bash(mkdir -p /home/eliodev/Documents/Projects/euro-remote-career/app/api/applications/\\\\[id\\\\]/cv)"
+      "Bash(mkdir -p /home/eliodev/Documents/Projects/euro-remote-career/app/api/applications/\\\\[id\\\\]/cv)",
+      "Bash(npm run *)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(cmd //c \"taskkill /F /IM node.exe\")",
+      "Bash(npm install *)",
+      "Bash(cmd //c \"taskkill /F /IM node.exe 2>nul & rd /s /q \\\\\"C:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\.next\\\\\" 2>nul & echo done\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",

@@ -107,6 +107,7 @@ model Application {
   status      ApplicationStatus @default(PENDING)
   coverLetter String?
   cvPath      String?
+  cvViewedAt  DateTime?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   candidate   CandidateProfile  @relation(fields: [candidateId], references: [id], onDelete: Cascade)

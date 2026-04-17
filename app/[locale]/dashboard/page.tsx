@@ -91,6 +91,7 @@ export default async function DashboardPage() {
           email={authUser.email}
           dbJobs={dbJobs}
           candidateApplications={JSON.parse(JSON.stringify(candidateApplications))}
+          cvs={JSON.parse(JSON.stringify(user.candidateProfile?.cvs ?? []))}
         />
       </main>
     );

@@ -4,13 +4,13 @@ import { useMemo, useState, useRef, useEffect, useLayoutEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Clock, 
-  Users, 
-  MapPin, 
-  Banknote, 
-  CalendarDays, 
-  ExternalLink, 
+import {
+  Clock,
+  Users,
+  MapPin,
+  Banknote,
+  CalendarDays,
+  ExternalLink,
   X,
   Mail,
   Search,
@@ -20,12 +20,16 @@ import {
   Settings,
   SlidersHorizontal,
   LogOut,
-  User
+  User,
+  CheckCircle,
 } from "lucide-react";
 import { DEMO_JOBS, type DemoJob, type JobCategory } from "@/lib/demo-jobs";
 import { ProfileSidebar } from "@/app/components/ProfileSidebar";
 import { createClient } from "@/lib/supabase/client";
 import { MyApplications } from "./MyApplications";
+import { ApplyModal } from "@/app/[locale]/jobs/[slug]/ApplyModal";
+
+type CandidateCV = { id: string; fileName: string; storagePath: string };
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
@@ -152,10 +156,14 @@ function JobDetailInner({
   job,
   tc,
   td,
+  onApply,
+  isApplied,
 }: {
   job: DemoJob;
   tc: ReturnType<typeof useTranslations>;
   td: ReturnType<typeof useTranslations>;
+  onApply?: (job: DemoJob) => void;
+  isApplied?: boolean;
 }) {
   const locale = useLocale();
   const accent = CATEGORY_COLORS[job.category];
@@ -203,14 +211,29 @@ function JobDetailInner({
 
         {/* Apply buttons */}
         <div className="mt-4 flex gap-2">
-          <a
-            href={job.applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
-          >
-            {td("applyNow")} <ExternalLink size={13} aria-hidden />
-          </a>
+          {job.isInternalJob && onApply ? (
+            isApplied ? (
+              <div className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 text-sm font-medium text-emerald-600 dark:text-emerald-400 cursor-default">
+                <CheckCircle size={14} aria-hidden /> {td("applicationSubmitted")}
+              </div>
+            ) : (
+              <button
+                onClick={() => onApply(job)}
+                className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+              >
+                {td("applyNow")}
+              </button>
+            )
+          ) : (
+            <a
+              href={job.applyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+            >
+              {td("applyNow")} <ExternalLink size={13} aria-hidden />
+            </a>
+          )}
           <Link
             href={`/jobs/${job.slug}`}
             className="inline-flex items-center justify-center rounded-xl border border-border-card px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700"
@@ -249,11 +272,15 @@ function MobileJobSheet({
   tc,
   td,
   onClose,
+  onApply,
+  isApplied,
 }: {
   job: DemoJob;
   tc: ReturnType<typeof useTranslations>;
   td: ReturnType<typeof useTranslations>;
   onClose: () => void;
+  onApply?: (job: DemoJob) => void;
+  isApplied?: boolean;
 }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -297,7 +324,7 @@ function MobileJobSheet({
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden">
-          <JobDetailInner job={job} tc={tc} td={td} />
+          <JobDetailInner job={job} tc={tc} td={td} onApply={onApply} isApplied={isApplied} />
         </div>
       </motion.div>
     </motion.div>
@@ -309,6 +336,7 @@ type CandidateDashboardContentProps = {
   email?: string | null;
   dbJobs?: DemoJob[];
   candidateApplications?: any[];
+  cvs?: CandidateCV[];
 };
 
 export function CandidateDashboardContent({
@@ -316,6 +344,7 @@ export function CandidateDashboardContent({
   email,
   dbJobs = [],
   candidateApplications = [],
+  cvs = [],
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
   const td = useTranslations("DashboardCandidate");
@@ -332,6 +361,16 @@ export function CandidateDashboardContent({
   const [selectedJob, setSelectedJob] = useState<DemoJob | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
+  const [applyModalJob, setApplyModalJob] = useState<DemoJob | null>(null);
+  const [localAppliedIds, setLocalAppliedIds] = useState<Set<string>>(new Set());
+
+  const appliedJobIds = useMemo(
+    () => new Set(candidateApplications.map((a: any) => a.job?.id).filter(Boolean)),
+    [candidateApplications]
+  );
+
+  const isJobApplied = (job: DemoJob) =>
+    !!job.jobDbId && (appliedJobIds.has(job.jobDbId) || localAppliedIds.has(job.jobDbId));
 
   const handleSignOut = async () => {
     const supabase = createClient();
@@ -750,7 +789,7 @@ export function CandidateDashboardContent({
                 transition={{ duration: 0.2 }}
                 className="h-full"
               >
-                <JobDetailInner job={activeDesktopJob} tc={tc} td={td} />
+                <JobDetailInner job={activeDesktopJob} tc={tc} td={td} onApply={setApplyModalJob} isApplied={isJobApplied(activeDesktopJob)} />
               </motion.div>
             ) : (
               <div className="flex h-full items-center justify-center p-12 text-center">
@@ -772,9 +811,27 @@ export function CandidateDashboardContent({
 
       <AnimatePresence>
         {!isDesktop && selectedJob && (
-          <MobileJobSheet job={selectedJob} tc={tc} td={td} onClose={() => setSelectedJob(null)} />
+          <MobileJobSheet job={selectedJob} tc={tc} td={td} onClose={() => setSelectedJob(null)} onApply={setApplyModalJob} isApplied={isJobApplied(selectedJob)} />
         )}
       </AnimatePresence>
+
+      {applyModalJob && (
+        <ApplyModal
+          jobId={applyModalJob.jobDbId!}
+          jobTitle={applyModalJob.title}
+          company={applyModalJob.company}
+          candidateName={displayName || ""}
+          candidateEmail={email || ""}
+          cvs={cvs}
+          onClose={() => setApplyModalJob(null)}
+          onSuccess={() => {
+            if (applyModalJob.jobDbId) {
+              setLocalAppliedIds((prev) => new Set([...prev, applyModalJob.jobDbId!]));
+            }
+            setApplyModalJob(null);
+          }}
+        />
+      )}
     </div>
   );
 }

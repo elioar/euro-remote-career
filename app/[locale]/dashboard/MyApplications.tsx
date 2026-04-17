@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
-import { Briefcase, ExternalLink, Clock } from "lucide-react";
+import { Briefcase, ExternalLink, Clock, Eye, EyeOff } from "lucide-react";
 
 type ApplicationStatus = "PENDING" | "REVIEWING" | "ACCEPTED" | "REJECTED";
 
@@ -11,6 +11,8 @@ type MyApplication = {
   status: ApplicationStatus;
   createdAt: string;
   coverLetter: string | null;
+  cvPath: string | null;
+  cvViewedAt: string | null;
   job: {
     id: string;
     title: string;
@@ -23,10 +25,10 @@ type MyApplication = {
 };
 
 const STATUS_STYLES: Record<ApplicationStatus, { label: string; className: string }> = {
-  PENDING: { label: "Applied", className: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-  REVIEWING: { label: "Under Review", className: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
-  ACCEPTED: { label: "Accepted", className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
-  REJECTED: { label: "Declined", className: "bg-red-500/10 text-red-500 dark:text-red-400" },
+  PENDING:   { label: "Applied",     className: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+  REVIEWING: { label: "Reviewed",    className: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+  ACCEPTED:  { label: "Shortlisted", className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+  REJECTED:  { label: "Rejected",    className: "bg-red-500/10 text-red-500 dark:text-red-400" },
 };
 
 function timeAgo(dateStr: string, locale: string) {
@@ -99,10 +101,25 @@ export function MyApplications({ applications }: { applications: MyApplication[]
                 </div>
 
                 <div className="flex items-center justify-between mt-3">
-                  <span className="flex items-center gap-1 text-[11px] text-foreground/35 font-medium">
-                    <Clock className="w-3 h-3" />
-                    {timeAgo(app.createdAt, locale)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1 text-[11px] text-foreground/35 font-medium">
+                      <Clock className="w-3 h-3" />
+                      {timeAgo(app.createdAt, locale)}
+                    </span>
+                    {app.cvPath && (
+                      app.cvViewedAt ? (
+                        <span className="flex items-center gap-1 text-[11px] font-semibold text-violet-500 bg-violet-500/10 px-2 py-0.5 rounded-lg">
+                          <Eye className="w-3 h-3" />
+                          CV Viewed
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-[11px] font-medium text-foreground/30 bg-foreground/5 px-2 py-0.5 rounded-lg">
+                          <EyeOff className="w-3 h-3" />
+                          CV Not Opened Yet
+                        </span>
+                      )
+                    )}
+                  </div>
                   <Link
                     href={`/jobs/${app.job.slug}`}
                     className="flex items-center gap-1 text-[11px] font-semibold text-navy-primary hover:text-navy-hover transition-colors"
