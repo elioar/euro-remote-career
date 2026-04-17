@@ -61,11 +61,12 @@ export async function PUT(req: NextRequest) {
     }
 
     if (user.role === "CANDIDATE") {
-      const { fullName, email, cvPath } = data;
+      const { fullName, email } = data;
       const profile = await prisma.candidateProfile.upsert({
         where: { userId: user.id },
-        update: { fullName, email, cvPath },
-        create: { userId: user.id, fullName, email, cvPath },
+        update: { fullName, email },
+        create: { userId: user.id, fullName, email },
+        include: { cvs: { orderBy: { uploadedAt: "desc" } } },
       });
       return NextResponse.json(profile);
     }

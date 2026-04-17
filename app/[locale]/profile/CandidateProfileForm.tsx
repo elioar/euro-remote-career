@@ -2,21 +2,22 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { Loader2, ArrowLeft, CheckCircle, Upload, FileText, X, Download } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle, Upload, FileText, X, Download, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
+
+type CandidateCV = {
+  id: string;
+  fileName: string;
+  storagePath: string;
+  uploadedAt: string;
+};
 
 type CandidateProfile = {
   fullName: string;
   email: string;
-  cvPath: string | null;
+  cvs: CandidateCV[];
 } | null;
-
-function extractFileName(storagePath: string): string {
-  // Path format: {userId}/{filename}
-  const parts = storagePath.split("/");
-  return parts.length > 1 ? parts.slice(1).join("/") : storagePath;
-}
 
 export default function CandidateProfileForm({
   profile,
@@ -28,10 +29,7 @@ export default function CandidateProfileForm({
   const t = useTranslations("Profile");
   const [fullName, setFullName] = useState(profile?.fullName ?? "");
   const [email, setEmail] = useState(profile?.email ?? userEmail);
-  const [cvPath, setCvPath] = useState(profile?.cvPath ?? "");
-  const [cvFileName, setCvFileName] = useState(() =>
-    profile?.cvPath ? extractFileName(profile.cvPath) : ""
-  );
+  const [cvs, setCvs] = useState<CandidateCV[]>(profile?.cvs ?? []);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,7 +49,6 @@ export default function CandidateProfileForm({
       setError(t("errorInvalidType"));
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       setError(t("errorFileSize"));
       return;
@@ -62,41 +59,32 @@ export default function CandidateProfileForm({
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setError(t("errorNotAuth"));
-        return;
-      }
+      if (!user) { setError(t("errorNotAuth")); return; }
 
-      const oldPath = cvPath;
-      const newPath = `${user.id}/${file.name}`;
+      const storagePath = `${user.id}/${Date.now()}_${file.name}`;
 
-      // Upload new file first — don't touch old file until success
       const { error: uploadError } = await supabase.storage
         .from("cv-uploads")
-        .upload(newPath, file, {
-          cacheControl: "3600",
-          upsert: true,
-          contentType: file.type,
-        });
+        .upload(storagePath, file, { cacheControl: "3600", upsert: false, contentType: file.type });
 
-      if (uploadError) {
+      if (uploadError) { setError(t("errorUpload")); return; }
+
+      // Save CV record via API
+      const res = await fetch("/api/candidate/cvs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName: file.name, storagePath }),
+      });
+
+      if (!res.ok) {
+        // Rollback upload
+        await supabase.storage.from("cv-uploads").remove([storagePath]);
         setError(t("errorUpload"));
         return;
       }
 
-      // Upload succeeded — now safe to delete old file (if different path)
-      if (oldPath && oldPath !== newPath) {
-        const { error: removeError } = await supabase.storage
-          .from("cv-uploads")
-          .remove([oldPath]);
-        if (removeError) {
-          // Non-blocking: old file stays as orphan, new file is already in place
-          console.warn("Failed to delete old CV:", removeError.message);
-        }
-      }
-
-      setCvPath(newPath);
-      setCvFileName(file.name);
+      const { cv } = await res.json();
+      setCvs((prev) => [cv, ...prev]);
     } catch {
       setError(t("errorUpload"));
     } finally {
@@ -105,60 +93,43 @@ export default function CandidateProfileForm({
     }
   }
 
-  async function handleDownloadCv() {
-    if (!cvPath) return;
+  async function handleDownloadCv(storagePath: string) {
     const supabase = createClient();
     const { data, error: signError } = await supabase.storage
       .from("cv-uploads")
-      .createSignedUrl(cvPath, 60);
-
-    if (signError || !data?.signedUrl) {
-      setError(t("errorDownload"));
-      return;
-    }
-
+      .createSignedUrl(storagePath, 60);
+    if (signError || !data?.signedUrl) { setError(t("errorDownload")); return; }
     window.open(data.signedUrl, "_blank");
   }
 
-  async function handleRemoveCv() {
-    if (cvPath) {
-      const supabase = createClient();
-      const { error: removeError } = await supabase.storage
-        .from("cv-uploads")
-        .remove([cvPath]);
-      if (removeError) {
-        setError(t("errorRemove"));
-        return;
-      }
-    }
-    setCvPath("");
-    setCvFileName("");
+  async function handleRemoveCv(cv: CandidateCV) {
+    const supabase = createClient();
+    // Delete from storage
+    await supabase.storage.from("cv-uploads").remove([cv.storagePath]);
+    // Delete from DB
+    const res = await fetch(`/api/candidate/cvs/${cv.id}`, { method: "DELETE" });
+    if (!res.ok) { setError(t("errorRemove")); return; }
+    setCvs((prev) => prev.filter((c) => c.id !== cv.id));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setSuccess(false);
-
-    if (!fullName.trim()) {
-      setError(`${t("fullName")} ${t("errorRequired")}`);
-      return;
-    }
+    if (!fullName.trim()) { setError(`${t("fullName")} ${t("errorRequired")}`); return; }
 
     setLoading(true);
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, email, cvPath: cvPath || null }),
+        body: JSON.stringify({ fullName, email }),
       });
-
       if (!res.ok) {
         const data = await res.json();
         setError(data.error || t("errorGeneric"));
         return;
       }
-
       setSuccess(true);
     } catch {
       setError(t("errorGeneric"));
@@ -208,54 +179,67 @@ export default function CandidateProfileForm({
           <p className="text-xs text-foreground/40 mt-1">{t("contactEmailHint")}</p>
         </div>
 
+        {/* CV Management */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1.5">
-            {t("cvResume")}
-          </label>
-
-          {cvPath ? (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-section-muted">
-              <FileText className="w-5 h-5 text-navy-primary flex-shrink-0" />
-              <span className="flex-1 min-w-0 text-sm text-foreground truncate">
-                {cvFileName || t("cvResume")}
-              </span>
-              <button
-                type="button"
-                onClick={handleDownloadCv}
-                className="flex-shrink-0 p-1 rounded-lg text-foreground/40 hover:text-navy-primary hover:bg-navy-primary/10 transition-colors"
-                title={t("cvDownload")}
-              >
-                <Download className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleRemoveCv}
-                className="flex-shrink-0 p-1 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                title={t("cvRemove")}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="w-full flex flex-col items-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed border-foreground/20 bg-background hover:border-navy-primary/40 hover:bg-navy-primary/5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {uploading ? (
-                <Loader2 className="w-6 h-6 text-navy-primary animate-spin" />
-              ) : (
-                <Upload className="w-6 h-6 text-foreground/40" />
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-foreground">
+              {t("cvResume")}
+              {cvs.length > 0 && (
+                <span className="ml-2 text-xs font-normal text-foreground/40">
+                  {t("cvCount", { count: cvs.length })}
+                </span>
               )}
-              <span className="text-sm text-foreground/60">
-                {uploading ? t("cvUploading") : t("cvUploadLabel")}
-              </span>
-              <span className="text-xs text-foreground/30">
-                {t("cvUploadHint")}
-              </span>
-            </button>
+            </label>
+          </div>
+
+          {/* CV list */}
+          {cvs.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {cvs.map((cv) => (
+                <div
+                  key={cv.id}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-foreground/20 bg-section-muted"
+                >
+                  <FileText className="w-5 h-5 text-navy-primary flex-shrink-0" />
+                  <span className="flex-1 min-w-0 text-sm text-foreground truncate">{cv.fileName}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadCv(cv.storagePath)}
+                    className="flex-shrink-0 p-1 rounded-lg text-foreground/40 hover:text-navy-primary hover:bg-navy-primary/10 transition-colors"
+                    title={t("cvDownload")}
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveCv(cv)}
+                    className="flex-shrink-0 p-1 rounded-lg text-foreground/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                    title={t("cvRemove")}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
+
+          {/* Upload button */}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="w-full flex flex-col items-center gap-2 px-4 py-5 rounded-xl border-2 border-dashed border-foreground/20 bg-background hover:border-navy-primary/40 hover:bg-navy-primary/5 transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {uploading ? (
+              <Loader2 className="w-5 h-5 text-navy-primary animate-spin" />
+            ) : (
+              <Upload className="w-5 h-5 text-foreground/40" />
+            )}
+            <span className="text-sm text-foreground/60">
+              {uploading ? t("cvUploading") : cvs.length > 0 ? t("cvUploadAnother") : t("cvUploadLabel")}
+            </span>
+            <span className="text-xs text-foreground/30">{t("cvUploadHint")}</span>
+          </button>
 
           <input
             ref={fileInputRef}
@@ -267,9 +251,7 @@ export default function CandidateProfileForm({
         </div>
 
         {error && (
-          <p className="text-red-500 text-sm bg-red-50 dark:bg-red-950/30 px-4 py-3 rounded-xl">
-            {error}
-          </p>
+          <p className="text-red-500 text-sm bg-red-50 dark:bg-red-950/30 px-4 py-3 rounded-xl">{error}</p>
         )}
 
         {success && (

@@ -6,6 +6,8 @@ import { Footer } from "../../../components/Footer";
 import { getJobBySlug, type DemoJob } from "../../../../lib/demo-jobs";
 import { getPublishedJobBySlug } from "@/lib/jobs/queries";
 import { JobDetailContent } from "./JobDetailContent";
+import { createClient } from "@/lib/supabase/server";
+import { prisma } from "@/lib/prisma";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://euroremotecareer.com";
 
@@ -81,6 +83,14 @@ function jobPostingSchema(job: DemoJob, slug: string) {
   return schema;
 }
 
+export type CandidateApplyData = {
+  candidateProfileId: string;
+  fullName: string;
+  email: string;
+  cvs: { id: string; fileName: string; storagePath: string }[];
+  hasApplied: boolean;
+} | null;
+
 export default async function JobPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
@@ -90,6 +100,40 @@ export default async function JobPage({ params }: Props) {
 
   const schema = jobPostingSchema(job, slug);
 
+  // Fetch candidate apply data for internal DB jobs
+  let candidateApplyData: CandidateApplyData = null;
+  if (job.isInternalJob && job.jobDbId) {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    if (authUser) {
+      const dbUser = await prisma.user.findUnique({
+        where: { id: authUser.id },
+        include: {
+          candidateProfile: {
+            include: { cvs: { orderBy: { uploadedAt: "desc" } } },
+          },
+        },
+      });
+      if (dbUser?.role === "CANDIDATE" && dbUser.candidateProfile) {
+        const existing = await prisma.application.findUnique({
+          where: {
+            jobId_candidateId: {
+              jobId: job.jobDbId,
+              candidateId: dbUser.candidateProfile.id,
+            },
+          },
+        });
+        candidateApplyData = {
+          candidateProfileId: dbUser.candidateProfile.id,
+          fullName: dbUser.candidateProfile.fullName,
+          email: dbUser.candidateProfile.email,
+          cvs: dbUser.candidateProfile.cvs,
+          hasApplied: !!existing,
+        };
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <script
@@ -98,7 +142,7 @@ export default async function JobPage({ params }: Props) {
       />
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <JobDetailContent job={job} />
+        <JobDetailContent job={job} candidateApplyData={candidateApplyData} />
       </main>
       <Footer />
     </div>

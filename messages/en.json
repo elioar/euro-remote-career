@@ -409,7 +409,10 @@
       "restore": "Restore",
       "shortlist": "Shortlist",
       "reject": "Reject"
-    }
+    },
+    "appliedFor": "Applied for",
+    "coverLetter": "Cover letter",
+    "noCVAttached": "No CV attached to this application"
   },
   "Profile": {
     "title": "My Profile",
@@ -452,7 +455,31 @@
     "errorGeneric": "Something went wrong. Please try again.",
     "save": "Save profile",
     "saving": "Saving...",
-    "savedSuccess": "Profile saved successfully!"
+    "savedSuccess": "Profile saved successfully!",
+    "cvUploadAnother": "Upload another CV",
+    "cvCount": "{count, plural, one {1 CV} other {# CVs}}"
+  },
+  "Apply": {
+    "title": "Apply for this role",
+    "intro": "Applying as a candidate",
+    "selectCV": "Select your CV",
+    "noCVDesc": "Upload a CV in your profile to apply for jobs.",
+    "uploadNew": "Upload a new CV",
+    "uploading": "Uploading...",
+    "coverLetterLabel": "Cover letter (optional)",
+    "coverLetterPlaceholder": "Why are you a great fit for this role?",
+    "submit": "Submit Application",
+    "submitting": "Submitting...",
+    "cancel": "Cancel",
+    "alreadyApplied": "Application submitted",
+    "loginRequired": "Sign in to apply",
+    "successTitle": "Application submitted!",
+    "successDesc": "Your application has been sent to the employer. Good luck!",
+    "errorInvalidType": "Please upload a PDF or Word document (.pdf, .doc, .docx)",
+    "errorFileSize": "File size must be less than 5MB",
+    "errorNotAuth": "Not authenticated",
+    "errorUpload": "Failed to upload file. Please try again.",
+    "errorGeneric": "Something went wrong. Please try again."
   },
   "DashboardCandidate": {
     "welcomeBack": "Welcome Back {name}",
@@ -477,6 +504,12 @@
     "profileSettings": "Profile settings",
     "messages": "Messages",
     "notifications": "Notifications",
+    "browseJobsTab": "Browse Jobs",
+    "myApplicationsTab": "My Applications",
+    "noApplications": "No applications yet",
+    "noApplicationsDesc": "Apply to jobs and track your progress here.",
+    "browseJobs": "Browse jobs",
+    "viewJob": "View job",
     "profileSidebar": {
       "fallbackName": "User",
       "fallbackRole": "UI Designer",

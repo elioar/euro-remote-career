@@ -30,9 +30,11 @@ export async function getPublishedJobs(): Promise<DemoJob[]> {
     location: job.location ?? "Remote",
     async: job.asyncLevel === "full" || job.asyncLevel === "friendly",
     salary: job.salary ?? undefined,
-    applyUrl: `/jobs/${job.slug}`,
+    applyUrl: job.externalApplyUrl ?? `/jobs/${job.slug}`,
     timezone: job.timezone ?? undefined,
     datePosted: job.publishedAt?.toISOString().split("T")[0],
+    isInternalJob: !job.externalApplyUrl,
+    jobDbId: job.id,
   }));
 }
 
@@ -67,8 +69,10 @@ export async function getPublishedJobBySlug(slug: string): Promise<DemoJob | nul
     location: job.location ?? "Remote",
     async: job.asyncLevel === "full" || job.asyncLevel === "friendly",
     salary: job.salary ?? undefined,
-    applyUrl: `/jobs/${job.slug}`,
+    applyUrl: job.externalApplyUrl ?? `/jobs/${job.slug}`,
     timezone: job.timezone ?? undefined,
     datePosted: job.publishedAt?.toISOString().split("T")[0],
+    isInternalJob: !job.externalApplyUrl,
+    jobDbId: job.id,
   };
 }

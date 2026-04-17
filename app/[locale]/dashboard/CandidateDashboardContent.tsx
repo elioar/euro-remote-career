@@ -25,6 +25,7 @@ import {
 import { DEMO_JOBS, type DemoJob, type JobCategory } from "@/lib/demo-jobs";
 import { ProfileSidebar } from "@/app/components/ProfileSidebar";
 import { createClient } from "@/lib/supabase/client";
+import { MyApplications } from "./MyApplications";
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const cardVariants = {
@@ -307,12 +308,14 @@ type CandidateDashboardContentProps = {
   displayName?: string;
   email?: string | null;
   dbJobs?: DemoJob[];
+  candidateApplications?: any[];
 };
 
 export function CandidateDashboardContent({
   displayName,
   email,
   dbJobs = [],
+  candidateApplications = [],
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
   const td = useTranslations("DashboardCandidate");
@@ -321,6 +324,7 @@ export function CandidateDashboardContent({
   const locale = useLocale();
   
   const router = useRouter();
+  const [activeView, setActiveView] = useState<"jobs" | "applications">("jobs");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<JobCategory | "">("");
   const [remoteOnly, setRemoteOnly] = useState(false);
@@ -534,9 +538,45 @@ export function CandidateDashboardContent({
         </div>
       </header>
 
+      {/* Tab switcher */}
+      <div className="flex items-center gap-1 mb-6 p-1 rounded-full bg-slate-100 dark:bg-card-active border border-slate-200 dark:border-white/5 w-fit">
+        <button
+          onClick={() => setActiveView("jobs")}
+          className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
+            activeView === "jobs"
+              ? "bg-white dark:bg-card-background shadow-sm text-foreground border border-slate-200 dark:border-white/10"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          {td("browseJobsTab")}
+        </button>
+        <button
+          onClick={() => setActiveView("applications")}
+          className={`px-5 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2 ${
+            activeView === "applications"
+              ? "bg-white dark:bg-card-background shadow-sm text-foreground border border-slate-200 dark:border-white/10"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          {td("myApplicationsTab")}
+          {candidateApplications.length > 0 && (
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-navy-primary text-white">
+              {candidateApplications.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* My Applications view */}
+      {activeView === "applications" && (
+        <div className="max-w-2xl">
+          <MyApplications applications={candidateApplications} />
+        </div>
+      )}
+
       {/* Main Grid - Standardized to same height */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,2fr)_1fr] gap-6 items-start">
-        
+      <div className={`grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,2fr)_1fr] gap-6 items-start ${activeView !== "jobs" ? "hidden" : ""}`}>
+
         {/* Column 1: Job List */}
         <div className="self-start flex min-h-0 flex-col gap-6 lg:sticky lg:top-8" ref={leftColumnRef}>
           <div className="flex flex-col gap-6 shrink-0" ref={leftChromeRef}>

@@ -31,6 +31,10 @@ export type DemoJob = {
   applicants?: number;
   /** Whether to show an URGENT badge. */
   urgent?: boolean;
+  /** True for jobs stored in DB (internal apply flow). False/absent for demo jobs. */
+  isInternalJob?: boolean;
+  /** The DB job id — only set when isInternalJob is true. */
+  jobDbId?: string;
 };
 
 export const DEMO_JOBS: DemoJob[] = [

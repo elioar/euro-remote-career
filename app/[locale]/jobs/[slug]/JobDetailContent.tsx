@@ -3,8 +3,11 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { MapPin, Banknote, CalendarDays } from "lucide-react";
+import { MapPin, Banknote, CalendarDays, CheckCircle, LogIn } from "lucide-react";
+import { useState } from "react";
 import type { DemoJob } from "../../../../lib/demo-jobs";
+import type { CandidateApplyData } from "./page";
+import { ApplyModal } from "./ApplyModal";
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const fadeUp = {
@@ -12,8 +15,17 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: easeCubic } },
 };
 
-function ApplyCard({ job }: { job: DemoJob }) {
+function ApplyCard({
+  job,
+  candidateApplyData,
+}: {
+  job: DemoJob;
+  candidateApplyData: CandidateApplyData;
+}) {
   const t = useTranslations("JobDetail");
+  const ta = useTranslations("Apply");
+  const [showModal, setShowModal] = useState(false);
+  const [hasApplied, setHasApplied] = useState(candidateApplyData?.hasApplied ?? false);
 
   return (
     <motion.aside
@@ -21,7 +33,7 @@ function ApplyCard({ job }: { job: DemoJob }) {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: 0.2, ease: easeCubic }}
       className="w-full shrink-0 rounded-2xl border border-border-card bg-white p-5 shadow-sm lg:sticky lg:top-[90px] lg:w-80 lg:self-start dark:border-border-card dark:bg-card-background"
-      aria-label={t("applyOnCompanySite")}
+      aria-label={job.isInternalJob ? ta("title") : t("applyOnCompanySite")}
     >
       {job.companyLogo ? (
         <div className="mb-3 flex justify-center">
@@ -33,22 +45,72 @@ function ApplyCard({ job }: { job: DemoJob }) {
           />
         </div>
       ) : null}
-      <h2 className="text-base font-semibold text-foreground dark:text-foreground">
-        {t("applyOnCompanySite")}
-      </h2>
-      <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">
-        {t("applyRedirectText")}
-      </p>
-      <motion.a
-        href={job.applyUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {t("applyNow")}
-      </motion.a>
+
+      {job.isInternalJob ? (
+        <>
+          <h2 className="text-base font-semibold text-foreground">{ta("title")}</h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">{ta("intro")}</p>
+
+          <div className="mt-4">
+            {hasApplied ? (
+              <div className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm font-medium">
+                <CheckCircle className="w-4 h-4" />
+                {ta("alreadyApplied")}
+              </div>
+            ) : candidateApplyData ? (
+              <motion.button
+                onClick={() => setShowModal(true)}
+                className="w-full flex items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {ta("submit")} →
+              </motion.button>
+            ) : (
+              <Link
+                href="/login"
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+              >
+                <LogIn className="w-4 h-4" />
+                {ta("loginRequired")}
+              </Link>
+            )}
+          </div>
+
+          {showModal && candidateApplyData && (
+            <ApplyModal
+              jobId={job.jobDbId!}
+              jobTitle={job.title}
+              company={job.company}
+              candidateName={candidateApplyData.fullName}
+              candidateEmail={candidateApplyData.email}
+              cvs={candidateApplyData.cvs}
+              onClose={() => setShowModal(false)}
+              onSuccess={() => setHasApplied(true)}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <h2 className="text-base font-semibold text-foreground dark:text-foreground">
+            {t("applyOnCompanySite")}
+          </h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">
+            {t("applyRedirectText")}
+          </p>
+          <motion.a
+            href={job.applyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {t("applyNow")}
+          </motion.a>
+        </>
+      )}
+
       <Link
         href="/jobs"
         className="mt-3 flex w-full items-center justify-center rounded-lg border border-border-card px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-muted dark:text-foreground/80 dark:hover:bg-card-active"
@@ -112,9 +174,12 @@ function DescriptionBlock({ title, content, delay = 0 }: { title: string; conten
   );
 }
 
-type JobDetailContentProps = { job: DemoJob };
+type JobDetailContentProps = {
+  job: DemoJob;
+  candidateApplyData: CandidateApplyData;
+};
 
-export function JobDetailContent({ job }: JobDetailContentProps) {
+export function JobDetailContent({ job, candidateApplyData }: JobDetailContentProps) {
   const t = useTranslations("JobDetail");
   const locale = useLocale();
 
@@ -173,14 +238,18 @@ export function JobDetailContent({ job }: JobDetailContentProps) {
             )}
           </motion.dl>
 
-          <div className="mt-6 lg:hidden"><ApplyCard job={job} /></div>
+          <div className="mt-6 lg:hidden">
+            <ApplyCard job={job} candidateApplyData={candidateApplyData} />
+          </div>
 
           <DescriptionBlock title={t("aboutRole")} content={job.description} delay={0.25} />
           {job.requirements && <DescriptionBlock title={t("requirements")} content={job.requirements} delay={0.35} />}
           {job.benefits && <DescriptionBlock title={t("benefits")} content={job.benefits} delay={0.45} />}
         </div>
 
-        <div className="hidden lg:block"><ApplyCard job={job} /></div>
+        <div className="hidden lg:block">
+          <ApplyCard job={job} candidateApplyData={candidateApplyData} />
+        </div>
       </div>
     </>
   );

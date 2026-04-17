@@ -16,7 +16,12 @@
       "Bash(git show:*)",
       "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/dashboard/my-jobs/)",
       "Bash(cat c:/Users/elioa/Desktop/euro-remote-career/app/\\\\[locale\\\\]/dashboard/SignOutButton.tsx)",
-      "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/admin/)"
+      "Bash(ls c:/Users/elioa/Desktop/euro-remote-career/app/[locale]/admin/)",
+      "Bash(DATABASE_URL=\"postgresql://postgres.smowjtkcrruvefjpowfi:sRuvXzC3961rvcPp@aws-1-eu-central-1.pooler.supabase.com:6543/postgres\" DIRECT_URL=\"postgresql://postgres.smowjtkcrruvefjpowfi:sRuvXzC3961rvcPp@aws-1-eu-central-1.pooler.supabase.com:5432/postgres\" npx prisma:*)",
+      "Bash(DIRECT_URL=\"postgresql://postgres.smowjtkcrruvefjpowfi:sRuvXzC3961rvcPp@aws-1-eu-central-1.pooler.supabase.com:6543/postgres\" npx prisma:*)",
+      "Bash(wait)",
+      "Bash(mkdir -p /home/eliodev/Documents/Projects/euro-remote-career/app/api/candidate/cvs/\\\\[id\\\\])",
+      "Bash(mkdir -p /home/eliodev/Documents/Projects/euro-remote-career/app/api/applications/\\\\[id\\\\]/cv)"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",

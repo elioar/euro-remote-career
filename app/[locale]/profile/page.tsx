@@ -19,7 +19,9 @@ export default async function ProfilePage() {
     where: { id: authUser.id },
     include: {
       employerProfile: true,
-      candidateProfile: true,
+      candidateProfile: {
+        include: { cvs: { orderBy: { uploadedAt: "desc" } } },
+      },
     },
   });
 
@@ -37,7 +39,19 @@ export default async function ProfilePage() {
         {user.role === "EMPLOYER" ? (
           <EmployerProfileForm profile={user.employerProfile} />
         ) : (
-          <CandidateProfileForm profile={user.candidateProfile} userEmail={user.email} />
+          <CandidateProfileForm
+          profile={user.candidateProfile ? {
+            fullName: user.candidateProfile.fullName,
+            email: user.candidateProfile.email,
+            cvs: user.candidateProfile.cvs.map((cv) => ({
+              id: cv.id,
+              fileName: cv.fileName,
+              storagePath: cv.storagePath,
+              uploadedAt: cv.uploadedAt.toISOString(),
+            })),
+          } : null}
+          userEmail={user.email}
+        />
         )}
       </div>
     </main>

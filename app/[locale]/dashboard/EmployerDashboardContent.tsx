@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Briefcase, FileText, CheckCircle, Send, Eye, ShieldCheck, Zap, LifeBuoy, TrendingUp, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import MyJobsList from "./my-jobs/MyJobsList";
-import LatestApplications from "./LatestApplications";
+import LatestApplications, { type RealApplication } from "./LatestApplications";
 
 type JobData = any;
-type ApplicationData = any;
+type ApplicationData = RealApplication;
 
 interface Props {
   employerJobs: JobData[];
@@ -197,7 +197,7 @@ export default function EmployerDashboardContent({
           )}
           {activeTab === "applications" && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <LatestApplications />
+              <LatestApplications initialApplications={employerApplications} />
             </div>
           )}
         </div>
@@ -207,7 +207,7 @@ export default function EmployerDashboardContent({
       <div className="hidden lg:grid grid-cols-12 gap-8">
         {/* Column 1: Applications (sidebar) */}
         <div className="col-span-3">
-          <LatestApplications />
+          <LatestApplications initialApplications={employerApplications} />
         </div>
 
         {/* Column 2: My Jobs (full featured) */}

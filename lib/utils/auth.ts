@@ -37,6 +37,20 @@ export async function requireEmployer() {
   return { ...result, profile };
 }
 
+export async function requireCandidate() {
+  const result = await getCurrentUser();
+  if (!result) return { error: "Unauthorized" as const, status: 401 as const };
+  if (result.user.role !== "CANDIDATE")
+    return { error: "Forbidden" as const, status: 403 as const };
+
+  const profile = await prisma.candidateProfile.findUnique({
+    where: { userId: result.user.id },
+    include: { cvs: true },
+  });
+
+  return { ...result, profile };
+}
+
 export async function requireAdmin() {
   const result = await getCurrentUser();
   if (!result) return { error: "Unauthorized" as const, status: 401 as const };

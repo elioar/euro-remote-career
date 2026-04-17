@@ -409,7 +409,10 @@
       "restore": "Επαναφορά",
       "shortlist": "Shortlist",
       "reject": "Απόρριψη"
-    }
+    },
+    "appliedFor": "Αίτηση για",
+    "coverLetter": "Συνοδευτική επιστολή",
+    "noCVAttached": "Δεν έχει επισυναφθεί βιογραφικό"
   },
   "Profile": {
     "title": "Το προφίλ μου",
@@ -452,7 +455,31 @@
     "errorGeneric": "Κάτι πήγε στραβά. Προσπάθησε ξανά.",
     "save": "Αποθήκευση προφίλ",
     "saving": "Αποθήκευση...",
-    "savedSuccess": "Το προφίλ αποθηκεύτηκε!"
+    "savedSuccess": "Το προφίλ αποθηκεύτηκε!",
+    "cvUploadAnother": "Ανέβασε άλλο βιογραφικό",
+    "cvCount": "{count, plural, one {1 βιογραφικό} other {# βιογραφικά}}"
+  },
+  "Apply": {
+    "title": "Αίτηση για τη θέση",
+    "intro": "Αίτηση ως υποψήφιος",
+    "selectCV": "Επίλεξε βιογραφικό",
+    "noCVDesc": "Ανέβασε βιογραφικό στο προφίλ σου για να κάνεις αίτηση.",
+    "uploadNew": "Ανέβασε νέο βιογραφικό",
+    "uploading": "Ανέβασμα...",
+    "coverLetterLabel": "Συνοδευτική επιστολή (προαιρετική)",
+    "coverLetterPlaceholder": "Γιατί είσαι κατάλληλος/η για αυτή τη θέση;",
+    "submit": "Υποβολή αίτησης",
+    "submitting": "Υποβολή...",
+    "cancel": "Ακύρωση",
+    "alreadyApplied": "Η αίτηση υποβλήθηκε",
+    "loginRequired": "Σύνδεση για αίτηση",
+    "successTitle": "Η αίτηση υποβλήθηκε!",
+    "successDesc": "Η αίτησή σου εστάλη στον εργοδότη. Καλή επιτυχία!",
+    "errorInvalidType": "Ανέβασε αρχείο PDF ή Word (.pdf, .doc, .docx)",
+    "errorFileSize": "Το μέγεθος αρχείου πρέπει να είναι κάτω από 5MB",
+    "errorNotAuth": "Δεν είσαι συνδεδεμένος",
+    "errorUpload": "Αποτυχία ανεβάσματος. Προσπάθησε ξανά.",
+    "errorGeneric": "Κάτι πήγε στραβά. Προσπάθησε ξανά."
   },
   "DashboardCandidate": {
     "welcomeBack": "Καλώς ήρθες ξανά {name}",
@@ -477,6 +504,12 @@
     "profileSettings": "Ρυθμίσεις προφίλ",
     "messages": "Μηνύματα",
     "notifications": "Ειδοποιήσεις",
+    "browseJobsTab": "Αναζήτηση Θέσεων",
+    "myApplicationsTab": "Οι Αιτήσεις μου",
+    "noApplications": "Δεν υπάρχουν αιτήσεις ακόμα",
+    "noApplicationsDesc": "Κάνε αίτηση σε θέσεις και παρακολούθησε την πρόοδό σου εδώ.",
+    "browseJobs": "Αναζήτηση θέσεων",
+    "viewJob": "Δες τη θέση",
     "profileSidebar": {
       "fallbackName": "Χρήστης",
       "fallbackRole": "UI Designer",
