@@ -2,6 +2,7 @@
 
 import { usePathname } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +16,10 @@ export function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [userDisplayName, setUserDisplayName] = useState("");
+  const [userRole, setUserRole] = useState<string>("CANDIDATE");
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const fullPath = searchParams.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
   const t = useTranslations("Header");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => {
@@ -23,12 +27,20 @@ export function Header() {
     return !window.matchMedia("(min-width: 768px)").matches;
   });
 
-  const navLinks = [
+  const defaultNavLinks = [
     { href: "/" as const, label: t("home") },
     { href: "/jobs" as const, label: t("jobs") },
     { href: "/about" as const, label: t("about") },
     { href: "/contact" as const, label: t("contact") },
   ];
+
+  const candidateNavLinks = [
+    { href: "/dashboard" as const, label: t("browseJobs") },
+    { href: "/dashboard/applications" as const, label: t("myApplications") },
+    { href: "/profile" as const, label: t("profile") },
+  ];
+
+  const navLinks = isLoggedIn && userRole === "CANDIDATE" ? candidateNavLinks : defaultNavLinks;
 
   function applyAuthUser(
     user:
@@ -49,6 +61,8 @@ export function Header() {
         : "";
     const fallback = email ? email.split("@")[0] : "";
     setUserDisplayName(fullName || fallback);
+    const role = typeof metadata?.role === "string" ? metadata.role : "CANDIDATE";
+    setUserRole(role);
   }
 
   useEffect(() => {
@@ -112,7 +126,7 @@ export function Header() {
           aria-label={t("mainNav")}
         >
           {navLinks.map(({ href, label }) => {
-            const isActive = pathname === href;
+            const isActive = fullPath === href;
             return (
               <Link
                 key={href}
@@ -260,7 +274,7 @@ export function Header() {
               >
                 <ul className="space-y-1">
                   {navLinks.map(({ href, label }) => {
-                    const isActive = pathname === href;
+                    const isActive = fullPath === href;
                     return (
                       <motion.li
                         key={href}

@@ -72,17 +72,6 @@ export default async function DashboardPage() {
 
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
-    const candidateApplications = user.candidateProfile
-      ? await prisma.application.findMany({
-          where: { candidateId: user.candidateProfile.id },
-          include: {
-            job: {
-              include: { employer: { select: { companyName: true, logoUrl: true } } },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-        })
-      : [];
     return (
       <main className="min-h-screen bg-background text-foreground">
         <Header />
@@ -90,7 +79,6 @@ export default async function DashboardPage() {
           displayName={displayName}
           email={authUser.email}
           dbJobs={dbJobs}
-          candidateApplications={JSON.parse(JSON.stringify(candidateApplications))}
           cvs={JSON.parse(JSON.stringify(user.candidateProfile?.cvs ?? []))}
         />
       </main>

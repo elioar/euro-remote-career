@@ -27,6 +27,8 @@
     "dashboard": "Dashboard",
     "signOut": "Sign out",
     "profile": "Profile",
+    "browseJobs": "Browse Jobs",
+    "myApplications": "My Applications",
     "user": "User"
   },
   "Footer": {
