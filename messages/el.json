@@ -29,6 +29,8 @@
     "profile": "Προφίλ",
     "browseJobs": "Αγγελίες",
     "myApplications": "Οι Αιτήσεις μου",
+    "myJobs": "Οι Θέσεις μου",
+    "postAJob": "Δημοσίευση Θέσης",
     "user": "Χρήστης"
   },
   "Footer": {
@@ -470,7 +472,16 @@
     "saving": "Αποθήκευση...",
     "savedSuccess": "Το προφίλ αποθηκεύτηκε!",
     "cvUploadAnother": "Ανέβασε άλλο βιογραφικό",
-    "cvCount": "{count, plural, one {1 βιογραφικό} other {# βιογραφικά}}"
+    "cvCount": "{count, plural, one {1 βιογραφικό} other {# βιογραφικά}}",
+    "occupation": "Τίτλος / Επάγγελμα",
+    "occupationPlaceholder": "π.χ. Frontend Developer",
+    "age": "Ηλικία",
+    "agePlaceholder": "π.χ. 28",
+    "address": "Τοποθεσία / Διεύθυνση",
+    "addressPlaceholder": "π.χ. Αθήνα, Ελλάδα",
+    "profileImageHint": "Κλικ για ανέβασμα φωτογραφίας προφίλ (JPG, PNG, WebP · Μέγ. 5MB)",
+    "errorInvalidImageType": "Ανέβασε αρχείο εικόνας (JPG, PNG, WebP)",
+    "errorInvalidAge": "Εισάγαγε έγκυρη ηλικία μεταξύ 16 και 100"
   },
   "Apply": {
     "title": "Αίτηση για τη θέση",
@@ -526,8 +537,6 @@
     "viewJob": "Δες τη θέση",
     "profileSidebar": {
       "fallbackName": "Χρήστης",
-      "fallbackRole": "UI Designer",
-      "fallbackLocation": "Surakarta, Central Java, ID",
       "editProfile": "Επεξεργασία προφίλ",
       "profileViews": "Προβολές προφίλ",
       "searchResult": "Αποτελέσματα αναζήτησης",
@@ -536,7 +545,8 @@
       "job": "Θέσεις",
       "postViews": "Προβολές αγγελίας",
       "experience": "Εμπειρία",
-      "month": "Μήνες"
+      "month": "Μήνες",
+      "yearsOld": "ετών"
     }
   },
   "PostJob": {

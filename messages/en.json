@@ -29,6 +29,8 @@
     "profile": "Profile",
     "browseJobs": "Browse Jobs",
     "myApplications": "My Applications",
+    "myJobs": "My Jobs",
+    "postAJob": "Post a Job",
     "user": "User"
   },
   "Footer": {
@@ -470,7 +472,16 @@
     "saving": "Saving...",
     "savedSuccess": "Profile saved successfully!",
     "cvUploadAnother": "Upload another CV",
-    "cvCount": "{count, plural, one {1 CV} other {# CVs}}"
+    "cvCount": "{count, plural, one {1 CV} other {# CVs}}",
+    "occupation": "Job Title / Occupation",
+    "occupationPlaceholder": "e.g. Frontend Developer",
+    "age": "Age",
+    "agePlaceholder": "e.g. 28",
+    "address": "Location / Address",
+    "addressPlaceholder": "e.g. Athens, Greece",
+    "profileImageHint": "Click to upload a profile photo (JPG, PNG, WebP · Max 5MB)",
+    "errorInvalidImageType": "Please upload an image file (JPG, PNG, WebP)",
+    "errorInvalidAge": "Please enter a valid age between 16 and 100"
   },
   "Apply": {
     "title": "Apply for this role",
@@ -526,8 +537,6 @@
     "viewJob": "View job",
     "profileSidebar": {
       "fallbackName": "User",
-      "fallbackRole": "UI Designer",
-      "fallbackLocation": "Surakarta, Central Java, ID",
       "editProfile": "Edit Profile",
       "profileViews": "Profile Views",
       "searchResult": "Search Result",
@@ -536,7 +545,8 @@
       "job": "Job",
       "postViews": "Post Views",
       "experience": "Experience",
-      "month": "Month"
+      "month": "Month",
+      "yearsOld": "yrs"
     }
   },
   "PostJob": {

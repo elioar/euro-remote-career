@@ -40,7 +40,18 @@ export function Header() {
     { href: "/profile" as const, label: t("profile") },
   ];
 
-  const navLinks = isLoggedIn && userRole === "CANDIDATE" ? candidateNavLinks : defaultNavLinks;
+  const employerNavLinks = [
+    { href: "/dashboard" as const, label: t("dashboard") },
+    { href: "/dashboard/my-jobs" as const, label: t("myJobs") },
+    { href: "/dashboard/post-job" as const, label: t("postAJob") },
+    { href: "/profile" as const, label: t("profile") },
+  ];
+
+  const navLinks = isLoggedIn && userRole === "CANDIDATE"
+    ? candidateNavLinks
+    : isLoggedIn && userRole === "EMPLOYER"
+      ? employerNavLinks
+      : defaultNavLinks;
 
   function applyAuthUser(
     user:
@@ -157,23 +168,14 @@ export function Header() {
             <LanguageSwitcher />
           </div>
           <ThemeToggle />
-          {isLoggedIn && !pathname.includes("/dashboard") && (
-            <>
-              <Link
-                href="/dashboard"
-                className="hidden whitespace-nowrap text-sm font-medium text-navy-primary transition-colors hover:text-navy-hover md:inline-block dark:text-navy-accent dark:hover:text-navy-accent/80"
-              >
-                {t("dashboard")}
-              </Link>
-              <button
-                onClick={() => handleSignOut()}
-                className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
-              >
-                {t("signOut")}
-              </button>
-            </>
+          {isLoggedIn && (
+            <button
+              onClick={() => handleSignOut()}
+              className="hidden whitespace-nowrap rounded-full bg-navy-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-navy-hover md:inline-block"
+            >
+              {t("signOut")}
+            </button>
           )}
-          {isLoggedIn && pathname.includes("/dashboard") && null}
           {!isLoggedIn && (
             <>
               <Link
@@ -351,22 +353,6 @@ export function Header() {
                           {userEmail}
                         </p>
                       </div>
-                    </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <Link
-                        href="/profile"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-white dark:border-border-muted dark:text-foreground dark:hover:bg-card-background"
-                      >
-                        {t("profile")}
-                      </Link>
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setMobileOpen(false)}
-                        className="flex items-center justify-center rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-white dark:border-border-muted dark:text-foreground dark:hover:bg-card-background"
-                      >
-                        {t("dashboard")}
-                      </Link>
                     </div>
                   </div>
                 )}

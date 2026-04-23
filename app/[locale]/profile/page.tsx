@@ -43,6 +43,10 @@ export default async function ProfilePage() {
           profile={user.candidateProfile ? {
             fullName: user.candidateProfile.fullName,
             email: user.candidateProfile.email,
+            address: user.candidateProfile.address,
+            occupation: user.candidateProfile.occupation,
+            age: user.candidateProfile.age,
+            profileImageUrl: user.candidateProfile.profileImageUrl,
             cvs: user.candidateProfile.cvs.map((cv) => ({
               id: cv.id,
               fileName: cv.fileName,

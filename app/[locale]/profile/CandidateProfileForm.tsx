@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { Loader2, ArrowLeft, CheckCircle, Upload, FileText, X, Download, Trash2 } from "lucide-react";
+import { Loader2, ArrowLeft, CheckCircle, Upload, FileText, X, Download, Trash2, Camera, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 
@@ -16,6 +16,10 @@ type CandidateCV = {
 type CandidateProfile = {
   fullName: string;
   email: string;
+  address?: string | null;
+  occupation?: string | null;
+  age?: number | null;
+  profileImageUrl?: string | null;
   cvs: CandidateCV[];
 } | null;
 
@@ -29,12 +33,61 @@ export default function CandidateProfileForm({
   const t = useTranslations("Profile");
   const [fullName, setFullName] = useState(profile?.fullName ?? "");
   const [email, setEmail] = useState(profile?.email ?? userEmail);
+  const [address, setAddress] = useState(profile?.address ?? "");
+  const [occupation, setOccupation] = useState(profile?.occupation ?? "");
+  const [age, setAge] = useState(profile?.age?.toString() ?? "");
+  const [profileImageUrl, setProfileImageUrl] = useState(profile?.profileImageUrl ?? "");
   const [cvs, setCvs] = useState<CandidateCV[]>(profile?.cvs ?? []);
   const [uploading, setUploading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleProfileImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setError(t("errorInvalidImageType"));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError(t("errorFileSize"));
+      return;
+    }
+
+    setError("");
+    setUploadingImage(true);
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setError(t("errorNotAuth")); return; }
+
+      const ext = file.name.split(".").pop();
+      const storagePath = `${user.id}/avatar.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("profile-images")
+        .upload(storagePath, file, { cacheControl: "3600", upsert: true, contentType: file.type });
+
+      if (uploadError) { setError(t("errorUpload")); return; }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("profile-images")
+        .getPublicUrl(storagePath);
+
+      setProfileImageUrl(publicUrl);
+    } catch {
+      setError(t("errorUpload"));
+    } finally {
+      setUploadingImage(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+    }
+  }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -69,7 +122,6 @@ export default function CandidateProfileForm({
 
       if (uploadError) { setError(t("errorUpload")); return; }
 
-      // Save CV record via API
       const res = await fetch("/api/candidate/cvs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +129,6 @@ export default function CandidateProfileForm({
       });
 
       if (!res.ok) {
-        // Rollback upload
         await supabase.storage.from("cv-uploads").remove([storagePath]);
         setError(t("errorUpload"));
         return;
@@ -104,9 +155,7 @@ export default function CandidateProfileForm({
 
   async function handleRemoveCv(cv: CandidateCV) {
     const supabase = createClient();
-    // Delete from storage
     await supabase.storage.from("cv-uploads").remove([cv.storagePath]);
-    // Delete from DB
     const res = await fetch(`/api/candidate/cvs/${cv.id}`, { method: "DELETE" });
     if (!res.ok) { setError(t("errorRemove")); return; }
     setCvs((prev) => prev.filter((c) => c.id !== cv.id));
@@ -117,13 +166,17 @@ export default function CandidateProfileForm({
     setError("");
     setSuccess(false);
     if (!fullName.trim()) { setError(`${t("fullName")} ${t("errorRequired")}`); return; }
+    if (age && (isNaN(Number(age)) || Number(age) < 16 || Number(age) > 100)) {
+      setError(t("errorInvalidAge"));
+      return;
+    }
 
     setLoading(true);
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, email }),
+        body: JSON.stringify({ fullName, email, address, occupation, age: age ? Number(age) : null, profileImageUrl: profileImageUrl || null }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -149,6 +202,37 @@ export default function CandidateProfileForm({
       </Link>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Profile Image */}
+        <div className="flex flex-col items-center gap-3 py-2">
+          <div
+            className="relative h-24 w-24 rounded-full border-2 border-dashed border-foreground/20 overflow-hidden cursor-pointer hover:border-navy-primary/60 transition-colors group"
+            onClick={() => imageInputRef.current?.click()}
+          >
+            {profileImageUrl ? (
+              <img src={profileImageUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center bg-slate-50 dark:bg-card-active">
+                <User className="w-10 h-10 text-slate-300 dark:text-foreground/20" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              {uploadingImage ? (
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              ) : (
+                <Camera className="w-5 h-5 text-white" />
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-foreground/40">{t("profileImageHint")}</p>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleProfileImageUpload}
+            className="hidden"
+          />
+        </div>
+
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-foreground mb-1.5">
             {t("fullName")} <span className="text-red-500">*</span>
@@ -179,6 +263,51 @@ export default function CandidateProfileForm({
           <p className="text-xs text-foreground/40 mt-1">{t("contactEmailHint")}</p>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="occupation" className="block text-sm font-medium text-foreground mb-1.5">
+              {t("occupation")}
+            </label>
+            <input
+              id="occupation"
+              type="text"
+              value={occupation}
+              onChange={(e) => setOccupation(e.target.value)}
+              placeholder={t("occupationPlaceholder")}
+              className="w-full px-4 py-3 rounded-xl border border-foreground/20 bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent transition"
+            />
+          </div>
+          <div>
+            <label htmlFor="age" className="block text-sm font-medium text-foreground mb-1.5">
+              {t("age")}
+            </label>
+            <input
+              id="age"
+              type="number"
+              min={16}
+              max={100}
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              placeholder={t("agePlaceholder")}
+              className="w-full px-4 py-3 rounded-xl border border-foreground/20 bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent transition"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="address" className="block text-sm font-medium text-foreground mb-1.5">
+            {t("address")}
+          </label>
+          <input
+            id="address"
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder={t("addressPlaceholder")}
+            className="w-full px-4 py-3 rounded-xl border border-foreground/20 bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent transition"
+          />
+        </div>
+
         {/* CV Management */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -192,7 +321,6 @@ export default function CandidateProfileForm({
             </label>
           </div>
 
-          {/* CV list */}
           {cvs.length > 0 && (
             <div className="space-y-2 mb-3">
               {cvs.map((cv) => (
@@ -223,7 +351,6 @@ export default function CandidateProfileForm({
             </div>
           )}
 
-          {/* Upload button */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -263,7 +390,7 @@ export default function CandidateProfileForm({
 
         <button
           type="submit"
-          disabled={loading || uploading}
+          disabled={loading || uploading || uploadingImage}
           className="w-full py-3 px-6 rounded-xl bg-navy-primary text-white font-semibold hover:bg-navy-hover transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading && <Loader2 className="w-4 h-4 animate-spin" />}

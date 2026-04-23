@@ -336,6 +336,10 @@ type CandidateDashboardContentProps = {
   email?: string | null;
   dbJobs?: DemoJob[];
   cvs?: CandidateCV[];
+  occupation?: string | null;
+  address?: string | null;
+  age?: number | null;
+  profileImageUrl?: string | null;
 };
 
 export function CandidateDashboardContent({
@@ -343,6 +347,10 @@ export function CandidateDashboardContent({
   email,
   dbJobs = [],
   cvs = [],
+  occupation,
+  address,
+  age,
+  profileImageUrl,
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
   const td = useTranslations("DashboardCandidate");
@@ -769,8 +777,12 @@ export function CandidateDashboardContent({
 
         {/* Column 3: Profile Sidebar */}
         <div className="hidden self-start flex-col gap-6 lg:sticky lg:top-8 lg:flex" ref={sidebarRef}>
-            <ProfileSidebar 
+            <ProfileSidebar
               displayName={displayName}
+              occupation={occupation}
+              address={address}
+              age={age}
+              profileImageUrl={profileImageUrl}
             />
         </div>
 

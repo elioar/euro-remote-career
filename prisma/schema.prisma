@@ -33,15 +33,19 @@ model EmployerProfile {
 }
 
 model CandidateProfile {
-  id           String        @id @default(cuid())
-  userId       String        @unique @db.Uuid
-  fullName     String
-  email        String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  applications Application[]
-  cvs          CandidateCV[]
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String        @id @default(cuid())
+  userId          String        @unique @db.Uuid
+  fullName        String
+  email           String
+  address         String?
+  occupation      String?
+  age             Int?
+  profileImageUrl String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  applications    Application[]
+  cvs             CandidateCV[]
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CandidateCV {
