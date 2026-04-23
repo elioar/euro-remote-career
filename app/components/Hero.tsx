@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { HeroSearch } from "./HeroSearch";
 import { DecorativeVideo } from "./DecorativeVideo";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -29,6 +31,15 @@ const wordItem = {
 export function Hero() {
   const t = useTranslations("Hero");
   const tc = useTranslations("Common");
+  const [browseHref, setBrowseHref] = useState<"/jobs" | "/dashboard">("/jobs");
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const role = (user.user_metadata?.role as string) ?? "CANDIDATE";
+      if (role !== "EMPLOYER") setBrowseHref("/dashboard");
+    });
+  }, []);
 
   return (
     <motion.section
@@ -108,7 +119,7 @@ export function Hero() {
             >
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
                 <Link
-                  href="/jobs"
+                  href={browseHref}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy-primary px-5 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-hover sm:w-auto"
                 >
                   {tc("browseJobs")}

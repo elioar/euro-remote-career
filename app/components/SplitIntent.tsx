@@ -1,9 +1,17 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { PostJobCard } from "./PostJobCard";
 
 export async function SplitIntent() {
   const t = await getTranslations("SplitIntent");
   const tc = await getTranslations("Common");
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const role = (user?.user_metadata?.role as string) ?? "CANDIDATE";
+  const seekerHref = user && role !== "EMPLOYER" ? "/dashboard" : "/jobs";
+  const isCandidate = !!user && role !== "EMPLOYER";
 
   const seekerBullets = [t("seekerBullet1"), t("seekerBullet2"), t("seekerBullet3")];
   const employerBullets = [t("employerBullet1"), t("employerBullet2"), t("employerBullet3")];
@@ -13,7 +21,7 @@ export async function SplitIntent() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-6 sm:grid-cols-2">
           <Link
-            href="/jobs"
+            href={seekerHref}
             className="group flex flex-col rounded-2xl border border-border-card bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-border-card dark:bg-card-background hover:dark:bg-card-active"
           >
             <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-foreground">
@@ -32,26 +40,13 @@ export async function SplitIntent() {
               <ArrowIcon className="h-4 w-4" />
             </span>
           </Link>
-          <Link
-            href="/jobs"
-            className="group flex flex-col rounded-2xl border border-border-card bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 dark:border-border-card dark:bg-card-background hover:dark:bg-card-active"
-          >
-            <h2 className="text-lg font-semibold text-[#0E1A2B] sm:text-xl dark:text-foreground">
-              {t("employerTitle")}
-            </h2>
-            <ul className="mt-4 space-y-2">
-              {employerBullets.map((item) => (
-                <li key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-foreground/70">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-[#0E1A2B] dark:text-foreground/80" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-navy-primary px-4 py-2.5 text-sm font-medium text-white transition-colors group-hover:bg-navy-hover">
-              {tc("postAJob")}
-              <ArrowIcon className="h-4 w-4" />
-            </span>
-          </Link>
+
+          <PostJobCard
+            title={t("employerTitle")}
+            bullets={employerBullets}
+            buttonLabel={tc("postAJob")}
+            isCandidate={isCandidate}
+          />
         </div>
       </div>
     </section>

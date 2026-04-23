@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Briefcase, User, Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -10,13 +10,15 @@ import GoogleSignInButton from "@/app/components/GoogleSignInButton";
 
 type Role = "EMPLOYER" | "CANDIDATE";
 
-export default function RegisterForm() {
+function RegisterFormInner() {
   const t = useTranslations("Register");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialRole = searchParams.get("role") === "EMPLOYER" ? "EMPLOYER" : "CANDIDATE";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState<Role>("CANDIDATE");
+  const [role, setRole] = useState<Role>(initialRole);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -259,5 +261,13 @@ export default function RegisterForm() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function RegisterForm() {
+  return (
+    <Suspense fallback={<div className="w-full max-w-md h-96 animate-pulse bg-foreground/5 rounded-xl" />}>
+      <RegisterFormInner />
+    </Suspense>
   );
 }

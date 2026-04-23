@@ -2,13 +2,23 @@
 
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export function HeroSearch() {
   const router = useRouter();
   const t = useTranslations("HeroSearch");
   const formRef = useRef<HTMLFormElement>(null);
   const [location, setLocation] = useState("");
+  const [jobsBase, setJobsBase] = useState("/jobs");
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const role = (user.user_metadata?.role as string) ?? "CANDIDATE";
+      if (role !== "EMPLOYER") setJobsBase("/dashboard");
+    });
+  }, []);
 
   const LOCATIONS = [
     { value: "", label: t("allLocations") },
@@ -25,7 +35,7 @@ export function HeroSearch() {
     const params = new URLSearchParams();
     if (q) params.set("query", q);
     if (location) params.set("location", location);
-    router.push(`/jobs?${params.toString()}`);
+    router.push(`${jobsBase}?${params.toString()}`);
   }
 
   return (

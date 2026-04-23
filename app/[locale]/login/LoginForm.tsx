@@ -138,7 +138,7 @@ function LoginFormInner() {
           </div>
         </div>
 
-        <GoogleSignInButton text={t("signInWithGoogle")} />
+        <GoogleSignInButton text={t("signInWithGoogle")} callbackUrl={callbackUrl} />
       </form>
 
       <p className="text-center text-sm text-foreground/60 mt-6">

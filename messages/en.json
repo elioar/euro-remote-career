@@ -66,7 +66,14 @@
     "employerTitle": "Hiring Remote-First Talent?",
     "employerBullet1": "Reach async-ready professionals",
     "employerBullet2": "Premium curated exposure",
-    "employerBullet3": "No spam traffic"
+    "employerBullet3": "No spam traffic",
+    "candidateCannotPostTitle": "Employer account required",
+    "candidateCannotPostDesc": "Posting jobs requires an employer account. Create a separate employer account to start hiring.",
+    "createEmployerAccount": "Create employer account",
+    "employerCannotApplyTitle": "Candidate account required",
+    "employerCannotApplyDesc": "Applying for jobs requires a candidate account. Create a separate candidate account to start applying.",
+    "createCandidateAccount": "Create candidate account",
+    "cancel": "Cancel"
   },
   "HowItWorks": {
     "title": "How It Works",
@@ -91,7 +98,10 @@
   },
   "FeaturedJobs": {
     "title": "Featured Jobs",
-    "viewMoreJobs": "View more jobs"
+    "subtitle": "Hand-picked remote & async-friendly roles, updated regularly.",
+    "viewMoreJobs": "View all jobs",
+    "perYear": "/yr",
+    "urgent": "Urgent"
   },
   "EmployerTrustStrip": {
     "text": "Built for quality over quantity. Every job is manually reviewed before publishing."

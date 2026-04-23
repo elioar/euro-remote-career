@@ -100,37 +100,39 @@ export default async function JobPage({ params }: Props) {
 
   const schema = jobPostingSchema(job, slug);
 
+  // Always check auth so we can gate Apply for non-logged-in users
+  const supabase = await createClient();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  const isLoggedIn = !!authUser;
+  const isEmployer = (authUser?.user_metadata?.role as string) === "EMPLOYER";
+
   // Fetch candidate apply data for internal DB jobs
   let candidateApplyData: CandidateApplyData = null;
-  if (job.isInternalJob && job.jobDbId) {
-    const supabase = await createClient();
-    const { data: { user: authUser } } = await supabase.auth.getUser();
-    if (authUser) {
-      const dbUser = await prisma.user.findUnique({
-        where: { id: authUser.id },
-        include: {
-          candidateProfile: {
-            include: { cvs: { orderBy: { uploadedAt: "desc" } } },
+  if (job.isInternalJob && job.jobDbId && authUser) {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: authUser.id },
+      include: {
+        candidateProfile: {
+          include: { cvs: { orderBy: { uploadedAt: "desc" } } },
+        },
+      },
+    });
+    if (dbUser?.role === "CANDIDATE" && dbUser.candidateProfile) {
+      const existing = await prisma.application.findUnique({
+        where: {
+          jobId_candidateId: {
+            jobId: job.jobDbId,
+            candidateId: dbUser.candidateProfile.id,
           },
         },
       });
-      if (dbUser?.role === "CANDIDATE" && dbUser.candidateProfile) {
-        const existing = await prisma.application.findUnique({
-          where: {
-            jobId_candidateId: {
-              jobId: job.jobDbId,
-              candidateId: dbUser.candidateProfile.id,
-            },
-          },
-        });
-        candidateApplyData = {
-          candidateProfileId: dbUser.candidateProfile.id,
-          fullName: dbUser.candidateProfile.fullName,
-          email: dbUser.candidateProfile.email,
-          cvs: dbUser.candidateProfile.cvs,
-          hasApplied: !!existing,
-        };
-      }
+      candidateApplyData = {
+        candidateProfileId: dbUser.candidateProfile.id,
+        fullName: dbUser.candidateProfile.fullName,
+        email: dbUser.candidateProfile.email,
+        cvs: dbUser.candidateProfile.cvs,
+        hasApplied: !!existing,
+      };
     }
   }
 
@@ -142,7 +144,7 @@ export default async function JobPage({ params }: Props) {
       />
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-        <JobDetailContent job={job} candidateApplyData={candidateApplyData} />
+        <JobDetailContent job={job} candidateApplyData={candidateApplyData} isLoggedIn={isLoggedIn} isEmployer={isEmployer} />
       </main>
       <Footer />
     </div>

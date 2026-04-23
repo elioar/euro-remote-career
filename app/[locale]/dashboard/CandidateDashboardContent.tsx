@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
@@ -350,7 +351,8 @@ export function CandidateDashboardContent({
   const locale = useLocale();
 
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("query") ?? "");
   const [category, setCategory] = useState<JobCategory | "">("");
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [asyncOnly, setAsyncOnly] = useState(false);
@@ -444,6 +446,15 @@ export function CandidateDashboardContent({
     }
     return visibleJobs[0];
   }, [visibleJobs, selectedJob, isDesktop]);
+
+  const searchSectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!searchParams.get("query")) return;
+    const el = searchSectionRef.current;
+    if (!el) return;
+    setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 150);
+  }, []);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const leftColumnRef = useRef<HTMLDivElement>(null);
@@ -570,7 +581,7 @@ export function CandidateDashboardContent({
 
 
       {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,2fr)_1fr] gap-6 items-start">
+      <div ref={searchSectionRef} className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(0,2fr)_1fr] gap-6 items-start">
 
         {/* Column 1: Job List */}
         <div className="self-start flex min-h-0 flex-col gap-6 lg:sticky lg:top-8" ref={leftColumnRef}>

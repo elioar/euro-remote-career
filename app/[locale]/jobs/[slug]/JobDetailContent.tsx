@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { DemoJob } from "../../../../lib/demo-jobs";
 import type { CandidateApplyData } from "./page";
 import { ApplyModal } from "./ApplyModal";
+import { RoleBlockModal } from "@/app/components/RoleBlockModal";
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
 const fadeUp = {
@@ -18,10 +19,16 @@ const fadeUp = {
 function ApplyCard({
   job,
   candidateApplyData,
+  isLoggedIn,
+  isEmployer,
 }: {
   job: DemoJob;
   candidateApplyData: CandidateApplyData;
+  isLoggedIn: boolean;
+  isEmployer: boolean;
 }) {
+  const [showEmployerModal, setShowEmployerModal] = useState(false);
+  const loginHref = `/login?callbackUrl=/jobs/${job.slug}`;
   const t = useTranslations("JobDetail");
   const ta = useTranslations("Apply");
   const [showModal, setShowModal] = useState(false);
@@ -52,7 +59,19 @@ function ApplyCard({
           <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">{ta("intro")}</p>
 
           <div className="mt-4">
-            {hasApplied ? (
+            {isEmployer ? (
+              <>
+                <motion.button
+                  onClick={() => setShowEmployerModal(true)}
+                  className="w-full flex items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {ta("submit")} →
+                </motion.button>
+                <RoleBlockModal open={showEmployerModal} onClose={() => setShowEmployerModal(false)} variant="employerCannotApply" />
+              </>
+            ) : hasApplied ? (
               <div className="flex items-center justify-center gap-2 w-full py-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm font-medium">
                 <CheckCircle className="w-4 h-4" />
                 {ta("alreadyApplied")}
@@ -68,7 +87,7 @@ function ApplyCard({
               </motion.button>
             ) : (
               <Link
-                href="/login"
+                href={loginHref}
                 className="w-full flex items-center justify-center gap-2 rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
               >
                 <LogIn className="w-4 h-4" />
@@ -98,16 +117,38 @@ function ApplyCard({
           <p className="mt-2 text-sm text-slate-600 dark:text-foreground/70">
             {t("applyRedirectText")}
           </p>
-          <motion.a
-            href={job.applyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {t("applyNow")}
-          </motion.a>
+          {isEmployer ? (
+            <>
+              <motion.button
+                onClick={() => setShowEmployerModal(true)}
+                className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {t("applyNow")}
+              </motion.button>
+              <RoleBlockModal open={showEmployerModal} onClose={() => setShowEmployerModal(false)} variant="employerCannotApply" />
+            </>
+          ) : isLoggedIn ? (
+            <motion.a
+              href={job.applyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex w-full items-center justify-center rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {t("applyNow")}
+            </motion.a>
+          ) : (
+            <Link
+              href={loginHref}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-navy-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-navy-hover"
+            >
+              <LogIn className="w-4 h-4" />
+              {ta("loginRequired")}
+            </Link>
+          )}
         </>
       )}
 
@@ -177,9 +218,11 @@ function DescriptionBlock({ title, content, delay = 0 }: { title: string; conten
 type JobDetailContentProps = {
   job: DemoJob;
   candidateApplyData: CandidateApplyData;
+  isLoggedIn: boolean;
+  isEmployer: boolean;
 };
 
-export function JobDetailContent({ job, candidateApplyData }: JobDetailContentProps) {
+export function JobDetailContent({ job, candidateApplyData, isLoggedIn, isEmployer }: JobDetailContentProps) {
   const t = useTranslations("JobDetail");
   const locale = useLocale();
 
@@ -239,7 +282,7 @@ export function JobDetailContent({ job, candidateApplyData }: JobDetailContentPr
           </motion.dl>
 
           <div className="mt-6 lg:hidden">
-            <ApplyCard job={job} candidateApplyData={candidateApplyData} />
+            <ApplyCard job={job} candidateApplyData={candidateApplyData} isLoggedIn={isLoggedIn} isEmployer={isEmployer} />
           </div>
 
           <DescriptionBlock title={t("aboutRole")} content={job.description} delay={0.25} />
@@ -248,7 +291,7 @@ export function JobDetailContent({ job, candidateApplyData }: JobDetailContentPr
         </div>
 
         <div className="hidden lg:block">
-          <ApplyCard job={job} candidateApplyData={candidateApplyData} />
+          <ApplyCard job={job} candidateApplyData={candidateApplyData} isLoggedIn={isLoggedIn} isEmployer={isEmployer} />
         </div>
       </div>
     </>

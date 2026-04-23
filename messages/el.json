@@ -66,7 +66,14 @@
     "employerTitle": "Προσλαμβάνετε Remote Talent;",
     "employerBullet1": "Προσεγγίστε async-ready επαγγελματίες",
     "employerBullet2": "Premium επιλεγμένη προβολή",
-    "employerBullet3": "Χωρίς spam traffic"
+    "employerBullet3": "Χωρίς spam traffic",
+    "candidateCannotPostTitle": "Απαιτείται λογαριασμός εργοδότη",
+    "candidateCannotPostDesc": "Η δημοσίευση θέσεων απαιτεί λογαριασμό εργοδότη. Δημιούργησε ξεχωριστό λογαριασμό εργοδότη για να ξεκινήσεις.",
+    "createEmployerAccount": "Δημιουργία λογαριασμού εργοδότη",
+    "employerCannotApplyTitle": "Απαιτείται λογαριασμός υποψηφίου",
+    "employerCannotApplyDesc": "Η αίτηση για θέσεις απαιτεί λογαριασμό υποψηφίου. Δημιούργησε ξεχωριστό λογαριασμό υποψηφίου για να ξεκινήσεις.",
+    "createCandidateAccount": "Δημιουργία λογαριασμού υποψηφίου",
+    "cancel": "Ακύρωση"
   },
   "HowItWorks": {
     "title": "Πώς Λειτουργεί",
@@ -91,7 +98,10 @@
   },
   "FeaturedJobs": {
     "title": "Προτεινόμενες Θέσεις",
-    "viewMoreJobs": "Δες περισσότερες θέσεις"
+    "subtitle": "Επιλεγμένες remote & async-friendly θέσεις, ενημερωμένες τακτικά.",
+    "viewMoreJobs": "Δες όλες τις θέσεις",
+    "perYear": "/έτος",
+    "urgent": "Επείγον"
   },
   "EmployerTrustStrip": {
     "text": "Χτισμένο για ποιότητα, όχι ποσότητα. Κάθε θέση ελέγχεται χειροκίνητα πριν τη δημοσίευση."

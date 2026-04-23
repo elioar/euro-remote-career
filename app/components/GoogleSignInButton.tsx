@@ -4,12 +4,14 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 
-export default function GoogleSignInButton({ 
-  text, 
-  role 
-}: { 
-  text: string; 
+export default function GoogleSignInButton({
+  text,
+  role,
+  callbackUrl,
+}: {
+  text: string;
   role?: string;
+  callbackUrl?: string;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -18,14 +20,14 @@ export default function GoogleSignInButton({
     try {
       const supabase = createClient();
       const origin = window.location.origin;
-      
-      // We pass the role in the metadata/options if needed, 
-      // but usually we handle it in the callback or a post-login check.
-      // For now, let's just trigger the flow.
+      const params = new URLSearchParams();
+      if (role) params.set("role", role);
+      if (callbackUrl) params.set("next", callbackUrl);
+      const paramStr = params.toString();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${origin}/api/auth/callback${role ? `?role=${role}` : ""}`,
+          redirectTo: `${origin}/api/auth/callback${paramStr ? `?${paramStr}` : ""}`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
