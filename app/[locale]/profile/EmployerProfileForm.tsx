@@ -20,7 +20,7 @@ function extractFileName(url: string): string {
   return parts[parts.length - 1] ?? url;
 }
 
-export default function EmployerProfileForm({ profile }: { profile: EmployerProfile }) {
+export default function EmployerProfileForm({ profile, hideBackLink = false }: { profile: EmployerProfile; hideBackLink?: boolean }) {
   const t = useTranslations("Profile");
   const [companyName, setCompanyName] = useState(profile?.companyName ?? "");
   // logoUrl now stores the full public URL (or empty string)
@@ -130,17 +130,19 @@ export default function EmployerProfileForm({ profile }: { profile: EmployerProf
 
   return (
     <div className="w-full">
-      <div className="mb-6 pl-1">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/50 hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t("backToDashboard")}
-        </Link>
-      </div>
+      {!hideBackLink && (
+        <div className="mb-6 pl-1">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground/50 hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {t("backToDashboard")}
+          </Link>
+        </div>
+      )}
 
-      <div className="p-6 sm:p-8 border border-foreground/10 bg-card-background rounded-[24px] shadow-sm">
+      <div className={hideBackLink ? "" : "p-6 sm:p-8 border border-foreground/10 bg-card-background rounded-[24px] shadow-sm"}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-1.5">

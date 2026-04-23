@@ -10,13 +10,23 @@ interface ProfileSidebarProps {
   email?: string;
   occupation?: string | null;
   address?: string | null;
-  age?: number | null;
+  birthDate?: Date | string | null;
   profileImageUrl?: string | null;
   appliedCount?: number;
 }
 
-export function ProfileSidebar({ displayName, occupation, address, age, profileImageUrl, appliedCount = 0 }: ProfileSidebarProps) {
+function calcAge(birthDate: Date | string): number {
+  const dob = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
+}
+
+export function ProfileSidebar({ displayName, occupation, address, birthDate, profileImageUrl, appliedCount = 0 }: ProfileSidebarProps) {
   const t = useTranslations("DashboardCandidate.profileSidebar");
+  const age = birthDate ? calcAge(birthDate) : null;
 
   return (
     <aside className="flex flex-col gap-6">

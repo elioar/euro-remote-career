@@ -39,7 +39,7 @@ model CandidateProfile {
   email           String
   address         String?
   occupation      String?
-  age             Int?
+  birthDate       DateTime?
   profileImageUrl String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt

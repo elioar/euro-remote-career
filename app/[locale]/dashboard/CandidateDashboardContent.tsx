@@ -338,7 +338,7 @@ type CandidateDashboardContentProps = {
   cvs?: CandidateCV[];
   occupation?: string | null;
   address?: string | null;
-  age?: number | null;
+  birthDate?: string | null;
   profileImageUrl?: string | null;
 };
 
@@ -349,7 +349,7 @@ export function CandidateDashboardContent({
   cvs = [],
   occupation,
   address,
-  age,
+  birthDate,
   profileImageUrl,
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
@@ -781,7 +781,7 @@ export function CandidateDashboardContent({
               displayName={displayName}
               occupation={occupation}
               address={address}
-              age={age}
+              birthDate={birthDate}
               profileImageUrl={profileImageUrl}
             />
         </div>

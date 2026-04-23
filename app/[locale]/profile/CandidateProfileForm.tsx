@@ -18,7 +18,7 @@ type CandidateProfile = {
   email: string;
   address?: string | null;
   occupation?: string | null;
-  age?: number | null;
+  birthDate?: Date | string | null;
   profileImageUrl?: string | null;
   cvs: CandidateCV[];
 } | null;
@@ -26,16 +26,20 @@ type CandidateProfile = {
 export default function CandidateProfileForm({
   profile,
   userEmail,
+  hideBackLink = false,
 }: {
   profile: CandidateProfile;
   userEmail: string;
+  hideBackLink?: boolean;
 }) {
   const t = useTranslations("Profile");
   const [fullName, setFullName] = useState(profile?.fullName ?? "");
   const [email, setEmail] = useState(profile?.email ?? userEmail);
   const [address, setAddress] = useState(profile?.address ?? "");
   const [occupation, setOccupation] = useState(profile?.occupation ?? "");
-  const [age, setAge] = useState(profile?.age?.toString() ?? "");
+  const [birthDate, setBirthDate] = useState(
+    profile?.birthDate ? new Date(profile.birthDate).toISOString().split("T")[0] : ""
+  );
   const [profileImageUrl, setProfileImageUrl] = useState(profile?.profileImageUrl ?? "");
   const [cvs, setCvs] = useState<CandidateCV[]>(profile?.cvs ?? []);
   const [uploading, setUploading] = useState(false);
@@ -166,17 +170,12 @@ export default function CandidateProfileForm({
     setError("");
     setSuccess(false);
     if (!fullName.trim()) { setError(`${t("fullName")} ${t("errorRequired")}`); return; }
-    if (age && (isNaN(Number(age)) || Number(age) < 16 || Number(age) > 100)) {
-      setError(t("errorInvalidAge"));
-      return;
-    }
-
     setLoading(true);
     try {
       const res = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName, email, address, occupation, age: age ? Number(age) : null, profileImageUrl: profileImageUrl || null }),
+        body: JSON.stringify({ fullName, email, address, occupation, birthDate: birthDate || null, profileImageUrl: profileImageUrl || null }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -193,14 +192,15 @@ export default function CandidateProfileForm({
 
   return (
     <div>
-      <Link
-        href="/dashboard"
-        className="inline-flex items-center gap-1.5 text-sm text-foreground/60 hover:text-foreground mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        {t("backToDashboard")}
-      </Link>
-
+      {!hideBackLink && (
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-sm text-foreground/60 hover:text-foreground mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t("backToDashboard")}
+        </Link>
+      )}
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Profile Image */}
         <div className="flex flex-col items-center gap-3 py-2">
@@ -278,17 +278,15 @@ export default function CandidateProfileForm({
             />
           </div>
           <div>
-            <label htmlFor="age" className="block text-sm font-medium text-foreground mb-1.5">
-              {t("age")}
+            <label htmlFor="birthDate" className="block text-sm font-medium text-foreground mb-1.5">
+              {t("birthDate")}
             </label>
             <input
-              id="age"
-              type="number"
-              min={16}
-              max={100}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              placeholder={t("agePlaceholder")}
+              id="birthDate"
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              max={new Date().toISOString().split("T")[0]}
               className="w-full px-4 py-3 rounded-xl border border-foreground/20 bg-background text-foreground placeholder-foreground/40 focus:outline-none focus:ring-2 focus:ring-navy-primary focus:border-transparent transition"
             />
           </div>

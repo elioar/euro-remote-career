@@ -1,13 +1,12 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import EmployerProfileForm from "./EmployerProfileForm";
-import CandidateProfileForm from "./CandidateProfileForm";
 import { getTranslations } from "next-intl/server";
 import { Header } from "@/app/components/Header";
+import ProfilePageClient from "./ProfilePageClient";
 
 export default async function ProfilePage() {
-  const t = await getTranslations("Profile");
+  await getTranslations("Profile");
   const supabase = await createClient();
   const {
     data: { user: authUser },
@@ -27,37 +26,40 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/dashboard");
 
+  const isEmployer = user.role === "EMPLOYER";
+  const displayName = isEmployer
+    ? (user.employerProfile?.companyName ?? user.email)
+    : (user.candidateProfile?.fullName ?? user.email);
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="mb-8 pl-1">
-          <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
-          <p className="text-foreground/60 mt-1">{user.email}</p>
-        </div>
-
-        {user.role === "EMPLOYER" ? (
-          <EmployerProfileForm profile={user.employerProfile} />
-        ) : (
-          <CandidateProfileForm
-          profile={user.candidateProfile ? {
-            fullName: user.candidateProfile.fullName,
-            email: user.candidateProfile.email,
-            address: user.candidateProfile.address,
-            occupation: user.candidateProfile.occupation,
-            age: user.candidateProfile.age,
-            profileImageUrl: user.candidateProfile.profileImageUrl,
-            cvs: user.candidateProfile.cvs.map((cv) => ({
-              id: cv.id,
-              fileName: cv.fileName,
-              storagePath: cv.storagePath,
-              uploadedAt: cv.uploadedAt.toISOString(),
-            })),
-          } : null}
-          userEmail={user.email}
-        />
-        )}
-      </div>
+      <ProfilePageClient
+        role={user.role as "CANDIDATE" | "EMPLOYER" | "ADMIN"}
+        email={user.email}
+        displayName={displayName}
+        profileImageUrl={user.candidateProfile?.profileImageUrl ?? null}
+        candidateProfile={user.candidateProfile ? {
+          fullName: user.candidateProfile.fullName,
+          email: user.candidateProfile.email,
+          address: user.candidateProfile.address,
+          occupation: user.candidateProfile.occupation,
+          birthDate: user.candidateProfile.birthDate?.toISOString() ?? null,
+          profileImageUrl: user.candidateProfile.profileImageUrl,
+          cvs: user.candidateProfile.cvs.map((cv) => ({
+            id: cv.id,
+            fileName: cv.fileName,
+            storagePath: cv.storagePath,
+            uploadedAt: cv.uploadedAt.toISOString(),
+          })),
+        } : null}
+        employerProfile={user.employerProfile ? {
+          companyName: user.employerProfile.companyName,
+          logoUrl: user.employerProfile.logoUrl,
+          website: user.employerProfile.website,
+          description: user.employerProfile.description,
+        } : null}
+      />
     </main>
   );
 }

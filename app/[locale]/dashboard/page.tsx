@@ -82,7 +82,7 @@ export default async function DashboardPage() {
           cvs={JSON.parse(JSON.stringify(user.candidateProfile?.cvs ?? []))}
           occupation={user.candidateProfile?.occupation ?? null}
           address={user.candidateProfile?.address ?? null}
-          age={user.candidateProfile?.age ?? null}
+          birthDate={user.candidateProfile?.birthDate?.toISOString() ?? null}
           profileImageUrl={user.candidateProfile?.profileImageUrl ?? null}
         />
       </main>
