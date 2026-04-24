@@ -72,6 +72,37 @@ export default async function DashboardPage() {
 
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
+
+    const cp = user.candidateProfile;
+
+    // Fetch all candidate applications (status + date for stats)
+    const candidateApplications = cp
+      ? await prisma.application.findMany({
+          where: { candidateId: cp.id },
+          select: { status: true, createdAt: true },
+          orderBy: { createdAt: "asc" },
+        })
+      : [];
+
+    // Monthly counts — last 6 months (oldest → newest)
+    const now = new Date();
+    const monthlyCounts = Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+      return candidateApplications.filter((a) => {
+        const ad = new Date(a.createdAt);
+        return ad.getFullYear() === d.getFullYear() && ad.getMonth() === d.getMonth();
+      }).length;
+    });
+
+    // Status counts
+    const appTotal = candidateApplications.length;
+    const appAccepted = candidateApplications.filter((a) => a.status === "ACCEPTED").length;
+    const cvCount = cp?.cvs.length ?? 0;
+
+    // Profile completeness (6 fields × equal weight)
+    const fields = [cp?.fullName, cp?.occupation, cp?.address, cp?.birthDate, cp?.profileImageUrl, cvCount > 0];
+    const completeness = Math.round((fields.filter(Boolean).length / fields.length) * 100);
+
     return (
       <main className="min-h-screen bg-background text-foreground">
         <Header />
@@ -79,11 +110,16 @@ export default async function DashboardPage() {
           displayName={displayName}
           email={authUser.email}
           dbJobs={dbJobs}
-          cvs={JSON.parse(JSON.stringify(user.candidateProfile?.cvs ?? []))}
-          occupation={user.candidateProfile?.occupation ?? null}
-          address={user.candidateProfile?.address ?? null}
-          birthDate={user.candidateProfile?.birthDate?.toISOString() ?? null}
-          profileImageUrl={user.candidateProfile?.profileImageUrl ?? null}
+          cvs={JSON.parse(JSON.stringify(cp?.cvs ?? []))}
+          occupation={cp?.occupation ?? null}
+          address={cp?.address ?? null}
+          birthDate={cp?.birthDate?.toISOString() ?? null}
+          profileImageUrl={cp?.profileImageUrl ?? null}
+          monthlyCounts={monthlyCounts}
+          appTotal={appTotal}
+          appAccepted={appAccepted}
+          cvCount={cvCount}
+          completeness={completeness}
         />
       </main>
     );

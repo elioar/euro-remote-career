@@ -550,15 +550,19 @@
     "profileSidebar": {
       "fallbackName": "User",
       "editProfile": "Edit Profile",
-      "profileViews": "Profile Views",
-      "searchResult": "Search Result",
-      "appliedJob": "Applied Job",
-      "views": "Views",
-      "job": "Job",
-      "postViews": "Post Views",
-      "experience": "Experience",
-      "month": "Month",
-      "yearsOld": "yrs"
+      "yearsOld": "yrs",
+      "profileComplete": "Profile Complete",
+      "applicationsOverTime": "Applications",
+      "last6Months": "Last 6 months",
+      "noApplicationsYet": "No applications yet",
+      "cvsUploaded": "CVs Uploaded",
+      "files": "Files",
+      "appliedJob": "Applied",
+      "total": "Total",
+      "accepted": "Accepted",
+      "applications": "Applications",
+      "complete": "Complete!",
+      "fillProfile": "Fill your profile"
     }
   },
   "PostJob": {

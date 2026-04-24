@@ -340,6 +340,11 @@ type CandidateDashboardContentProps = {
   address?: string | null;
   birthDate?: string | null;
   profileImageUrl?: string | null;
+  monthlyCounts?: number[];
+  appTotal?: number;
+  appAccepted?: number;
+  cvCount?: number;
+  completeness?: number;
 };
 
 export function CandidateDashboardContent({
@@ -351,6 +356,11 @@ export function CandidateDashboardContent({
   address,
   birthDate,
   profileImageUrl,
+  monthlyCounts = [0, 0, 0, 0, 0, 0],
+  appTotal = 0,
+  appAccepted = 0,
+  cvCount = 0,
+  completeness = 0,
 }: CandidateDashboardContentProps) {
   const t = useTranslations("Dashboard");
   const td = useTranslations("DashboardCandidate");
@@ -783,6 +793,11 @@ export function CandidateDashboardContent({
               address={address}
               birthDate={birthDate}
               profileImageUrl={profileImageUrl}
+              monthlyCounts={monthlyCounts}
+              appTotal={appTotal}
+              appAccepted={appAccepted}
+              cvCount={cvCount}
+              completeness={completeness}
             />
         </div>
 

@@ -550,15 +550,19 @@
     "profileSidebar": {
       "fallbackName": "Χρήστης",
       "editProfile": "Επεξεργασία προφίλ",
-      "profileViews": "Προβολές προφίλ",
-      "searchResult": "Αποτελέσματα αναζήτησης",
+      "yearsOld": "ετών",
+      "profileComplete": "Πληρότητα Προφίλ",
+      "applicationsOverTime": "Αιτήσεις",
+      "last6Months": "Τελευταίοι 6 μήνες",
+      "noApplicationsYet": "Δεν υπάρχουν αιτήσεις ακόμα",
+      "cvsUploaded": "Βιογραφικά",
+      "files": "Αρχεία",
       "appliedJob": "Αιτήσεις",
-      "views": "Προβολές",
-      "job": "Θέσεις",
-      "postViews": "Προβολές αγγελίας",
-      "experience": "Εμπειρία",
-      "month": "Μήνες",
-      "yearsOld": "ετών"
+      "total": "Σύνολο",
+      "accepted": "Αποδεκτές",
+      "applications": "Αιτήσεις",
+      "complete": "Ολοκληρώθηκε!",
+      "fillProfile": "Συμπλήρωσε το προφίλ"
     }
   },
   "PostJob": {
