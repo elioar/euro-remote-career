@@ -78,7 +78,7 @@ export default function CandidateProfileForm({
         .from("profile-images")
         .upload(storagePath, file, { cacheControl: "3600", upsert: true, contentType: file.type });
 
-      if (uploadError) { setError(t("errorUpload")); return; }
+      if (uploadError) { setError(uploadError.message || t("errorUpload")); return; }
 
       const { data: { publicUrl } } = supabase.storage
         .from("profile-images")

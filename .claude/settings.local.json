@@ -29,7 +29,8 @@
       "Bash(npm install *)",
       "Bash(cmd //c \"taskkill /F /IM node.exe 2>nul & rd /s /q \\\\\"C:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\.next\\\\\" 2>nul & echo done\")",
       "Bash(node -e \"const j=require\\('./messages/en.json'\\); console.log\\(JSON.stringify\\(j.FeaturedJobs,null,2\\)\\)\")",
-      "Bash(node -e \"const j=require\\('./messages/en.json'\\); console.log\\(JSON.stringify\\(j.Common,null,2\\)\\)\")"
+      "Bash(node -e \"const j=require\\('./messages/en.json'\\); console.log\\(JSON.stringify\\(j.Common,null,2\\)\\)\")",
+      "Bash(node -e \"const jobs = require\\('./lib/demo-jobs.ts'\\); \")"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",

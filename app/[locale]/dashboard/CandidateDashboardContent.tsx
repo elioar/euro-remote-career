@@ -16,7 +16,6 @@ import {
   Mail,
   Search,
   Bookmark,
-  Check,
   Bell,
   Settings,
   SlidersHorizontal,
@@ -61,12 +60,160 @@ function timeAgo(dateStr: string, locale: string): string {
   return rtf.format(-Math.floor(safeDiff / 1440), "day");
 }
 
+const EMPLOYMENT_TYPES = ["Full-time", "Part-time", "Contract", "Freelance"];
+const SENIORITY_LEVELS = ["Junior", "Mid", "Senior", "Lead"];
+
+function Toggle({ active, onToggle, label, icon }: { active: boolean; onToggle: () => void; label: React.ReactNode; icon?: React.ReactNode }) {
+  return (
+    <button onClick={onToggle} className="flex items-center justify-between w-full group py-0.5">
+      <span className="text-sm text-foreground/80 group-hover:text-foreground transition-colors flex items-center gap-1.5">
+        {icon}{label}
+      </span>
+      <div className={`w-9 h-5 rounded-full transition-colors relative shrink-0 ${active ? "bg-navy-primary" : "bg-slate-200 dark:bg-white/10"}`}>
+        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${active ? "translate-x-4" : "translate-x-0.5"}`} />
+      </div>
+    </button>
+  );
+}
+
+function PillGroup({ label, options, value, onChange }: { label: string; options: string[]; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="px-4 py-3 border-b border-border-card dark:border-slate-700/50">
+      <p className="text-[11px] font-bold text-slate-400 dark:text-foreground/40 uppercase tracking-wider mb-2">{label}</p>
+      <div className="flex flex-wrap gap-1.5">
+        <button
+          onClick={() => onChange("")}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-all border ${
+            value === "" ? "bg-navy-primary text-white border-navy-primary" : "border-slate-200 text-slate-600 hover:border-navy-primary/40 dark:border-border-muted dark:text-foreground/70"
+          }`}
+        >
+          All
+        </button>
+        {options.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => onChange(value === opt ? "" : opt)}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-all border ${
+              value === opt ? "bg-navy-primary text-white border-navy-primary" : "border-slate-200 text-slate-600 hover:border-navy-primary/40 dark:border-border-muted dark:text-foreground/70"
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FilterPopover({
+  category, setCategory,
+  asyncOnly, setAsyncOnly,
+  savedOnly, setSavedOnly,
+  savedCount,
+  employmentType, setEmploymentType,
+  seniority, setSeniority,
+  urgentOnly, setUrgentOnly,
+  hasSalary, setHasSalary,
+  onReset,
+  td, tc,
+}: {
+  category: JobCategory | ""; setCategory: (c: JobCategory | "") => void;
+  asyncOnly: boolean; setAsyncOnly: (v: boolean) => void;
+  savedOnly: boolean; setSavedOnly: (v: boolean) => void;
+  savedCount: number;
+  employmentType: string; setEmploymentType: (v: string) => void;
+  seniority: string; setSeniority: (v: string) => void;
+  urgentOnly: boolean; setUrgentOnly: (v: boolean) => void;
+  hasSalary: boolean; setHasSalary: (v: boolean) => void;
+  onReset: () => void;
+  td: ReturnType<typeof useTranslations>;
+  tc: ReturnType<typeof useTranslations>;
+}) {
+  const activeCount = (asyncOnly ? 1 : 0) + (savedOnly ? 1 : 0) + (category ? 1 : 0) + (employmentType ? 1 : 0) + (seniority ? 1 : 0) + (urgentOnly ? 1 : 0) + (hasSalary ? 1 : 0);
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+      transition={{ duration: 0.15 }}
+      className="absolute right-0 top-full mt-2 z-50 w-72 rounded-2xl border border-border-card bg-white dark:bg-card-background shadow-xl dark:border-slate-700/50 overflow-hidden max-h-[80vh] overflow-y-auto no-scrollbar"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border-card dark:border-slate-700/50 sticky top-0 bg-white dark:bg-card-background z-10">
+        <span className="text-sm font-semibold text-foreground">{td("filters")}</span>
+        {activeCount > 0 && (
+          <button onClick={onReset} className="text-xs text-navy-primary hover:underline font-medium">
+            {td("clearFilters")}
+          </button>
+        )}
+      </div>
+
+      {/* Category */}
+      <PillGroup
+        label={td("allCategories")}
+        options={["Tech", "Design", "Marketing", "Product"]}
+        value={category}
+        onChange={(v) => setCategory(v as JobCategory | "")}
+      />
+
+      {/* Employment Type */}
+      <PillGroup
+        label={td("employmentType")}
+        options={EMPLOYMENT_TYPES}
+        value={employmentType}
+        onChange={setEmploymentType}
+      />
+
+      {/* Seniority */}
+      <PillGroup
+        label={td("seniority")}
+        options={SENIORITY_LEVELS}
+        value={seniority}
+        onChange={setSeniority}
+      />
+
+      {/* Toggles */}
+      <div className="px-4 py-3 space-y-3">
+        <Toggle
+          active={asyncOnly}
+          onToggle={() => setAsyncOnly(!asyncOnly)}
+          label={tc("asyncFriendly")}
+        />
+        <Toggle
+          active={urgentOnly}
+          onToggle={() => setUrgentOnly(!urgentOnly)}
+          label={td("urgentOnly")}
+          icon={<span className="text-[10px] font-bold text-red-500 uppercase">Urgent</span>}
+        />
+        <Toggle
+          active={hasSalary}
+          onToggle={() => setHasSalary(!hasSalary)}
+          label={td("hasSalary")}
+        />
+        <Toggle
+          active={savedOnly}
+          onToggle={() => setSavedOnly(!savedOnly)}
+          label={
+            <span className="flex items-center gap-1.5">
+              <Bookmark size={12} fill={savedOnly ? "currentColor" : "none"} className={savedOnly ? "text-navy-primary" : ""} />
+              {td("savedJobs")}
+              {savedCount > 0 && <span className="text-[10px] font-bold text-slate-400">({savedCount})</span>}
+            </span>
+          }
+        />
+      </div>
+    </motion.div>
+  );
+}
+
 function JobCard({
   job,
   tc,
   td,
   locale,
   selected,
+  isSaved,
+  onToggleSave,
   onClick,
 }: {
   job: DemoJob;
@@ -74,6 +221,8 @@ function JobCard({
   td: ReturnType<typeof useTranslations>;
   locale: string;
   selected: boolean;
+  isSaved: boolean;
+  onToggleSave: (e: React.MouseEvent) => void;
   onClick: () => void;
 }) {
   const accent = CATEGORY_COLORS[job.category];
@@ -87,7 +236,7 @@ function JobCard({
           : "border-border-card bg-white dark:border-border-card dark:bg-card-background hover:dark:bg-card-active hover:dark:border-white/20"
       }`}
     >
-      {/* Top row: logo + title/company + salary */}
+      {/* Top row: logo + title/company + salary + bookmark */}
       <div className="flex items-start gap-3">
         {job.companyLogo && (
           <img
@@ -104,11 +253,24 @@ function JobCard({
             {job.timezone && <span className="ml-1.5 text-slate-400 dark:text-foreground/50"> - {job.timezone}</span>}
           </p>
         </div>
-        {job.salary && (
-          <p className="shrink-0 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            {job.salary}<span className="text-xs font-normal text-slate-400">/yr</span>
-          </p>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {job.salary && (
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              {job.salary}<span className="text-xs font-normal text-slate-400">/yr</span>
+            </p>
+          )}
+          <button
+            onClick={onToggleSave}
+            aria-label={isSaved ? td("unsaveJob") : td("saveJob")}
+            className={`p-1.5 rounded-lg transition-all ${
+              isSaved
+                ? "text-navy-primary dark:text-blue-400"
+                : "text-slate-300 hover:text-slate-500 dark:text-foreground/20 dark:hover:text-foreground/50"
+            }`}
+          >
+            <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} />
+          </button>
+        </div>
       </div>
 
       {/* Tags row */}
@@ -158,12 +320,16 @@ function JobDetailInner({
   td,
   onApply,
   isApplied,
+  isSaved,
+  onToggleSave,
 }: {
   job: DemoJob;
   tc: ReturnType<typeof useTranslations>;
   td: ReturnType<typeof useTranslations>;
   onApply?: (job: DemoJob) => void;
   isApplied?: boolean;
+  isSaved?: boolean;
+  onToggleSave?: (e: React.MouseEvent) => void;
 }) {
   const locale = useLocale();
   const accent = CATEGORY_COLORS[job.category];
@@ -187,10 +353,15 @@ function JobDetailInner({
             <p className="mt-0.5 text-sm text-slate-500 dark:text-foreground/60">{job.company}</p>
           </div>
           <button
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-            aria-label={td("saveJob")}
+            onClick={onToggleSave}
+            className={`rounded-lg p-1.5 transition-colors ${
+              isSaved
+                ? "text-navy-primary dark:text-blue-400"
+                : "text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+            }`}
+            aria-label={isSaved ? td("unsaveJob") : td("saveJob")}
           >
-            <Bookmark size={16} />
+            <Bookmark size={16} fill={isSaved ? "currentColor" : "none"} />
           </button>
         </div>
 
@@ -274,6 +445,8 @@ function MobileJobSheet({
   onClose,
   onApply,
   isApplied,
+  isSaved,
+  onToggleSave,
 }: {
   job: DemoJob;
   tc: ReturnType<typeof useTranslations>;
@@ -281,6 +454,8 @@ function MobileJobSheet({
   onClose: () => void;
   onApply?: (job: DemoJob) => void;
   isApplied?: boolean;
+  isSaved?: boolean;
+  onToggleSave?: (e: React.MouseEvent) => void;
 }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -324,7 +499,7 @@ function MobileJobSheet({
         </div>
 
         <div className="min-h-0 flex-1 overflow-hidden">
-          <JobDetailInner job={job} tc={tc} td={td} onApply={onApply} isApplied={isApplied} />
+          <JobDetailInner job={job} tc={tc} td={td} onApply={onApply} isApplied={isApplied} isSaved={isSaved} onToggleSave={onToggleSave} />
         </div>
       </motion.div>
     </motion.div>
@@ -372,13 +547,50 @@ export function CandidateDashboardContent({
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(() => searchParams.get("query") ?? "");
   const [category, setCategory] = useState<JobCategory | "">("");
-  const [remoteOnly, setRemoteOnly] = useState(false);
   const [asyncOnly, setAsyncOnly] = useState(false);
+  const [savedOnly, setSavedOnly] = useState(false);
+  const [employmentType, setEmploymentType] = useState("");
+  const [seniority, setSeniority] = useState("");
+  const [urgentOnly, setUrgentOnly] = useState(false);
+  const [hasSalary, setHasSalary] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const filterPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showFilters) return;
+    const handler = (e: MouseEvent) => {
+      if (filterPanelRef.current && !filterPanelRef.current.contains(e.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showFilters]);
+
+  const activeFilterCount = (asyncOnly ? 1 : 0) + (savedOnly ? 1 : 0) + (category ? 1 : 0) + (employmentType ? 1 : 0) + (seniority ? 1 : 0) + (urgentOnly ? 1 : 0) + (hasSalary ? 1 : 0);
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const raw = localStorage.getItem("saved_jobs");
+      return raw ? new Set<string>(JSON.parse(raw)) : new Set<string>();
+    } catch { return new Set<string>(); }
+  });
   const [selectedJob, setSelectedJob] = useState<DemoJob | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PER_PAGE);
   const [applyModalJob, setApplyModalJob] = useState<DemoJob | null>(null);
   const [localAppliedIds, setLocalAppliedIds] = useState<Set<string>>(new Set());
+
+  const toggleSaved = (slug: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSavedSlugs((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      try { localStorage.setItem("saved_jobs", JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
 
   const isJobApplied = (job: DemoJob) =>
     !!job.jobDbId && localAppliedIds.has(job.jobDbId);
@@ -437,10 +649,14 @@ export function CandidateDashboardContent({
     const q = query.trim().toLowerCase();
     if (q) list = list.filter((j) => j.title.toLowerCase().includes(q) || j.company.toLowerCase().includes(q));
     if (category) list = list.filter((j) => j.category === category);
-    if (remoteOnly) list = list.filter((j) => j.location.toLowerCase() === "remote");
     if (asyncOnly) list = list.filter((j) => j.async === true);
+    if (savedOnly) list = list.filter((j) => savedSlugs.has(j.slug));
+    if (employmentType) list = list.filter((j) => j.employmentType === employmentType);
+    if (seniority) list = list.filter((j) => j.seniority === seniority);
+    if (urgentOnly) list = list.filter((j) => j.urgent === true);
+    if (hasSalary) list = list.filter((j) => !!j.salary);
     return list;
-  }, [query, category, remoteOnly, asyncOnly]);
+  }, [query, category, asyncOnly, savedOnly, savedSlugs, employmentType, seniority, urgentOnly, hasSalary]);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -604,6 +820,69 @@ export function CandidateDashboardContent({
         {/* Column 1: Job List */}
         <div className="self-start flex min-h-0 flex-col gap-6 lg:sticky lg:top-8" ref={leftColumnRef}>
           <div className="flex flex-col gap-6 shrink-0" ref={leftChromeRef}>
+            {/* Mobile Search Bar — hidden on desktop (desktop has it in column 2) */}
+            <div className="lg:hidden flex items-center gap-2">
+              <div className="flex-1 flex items-center gap-1.5 rounded-2xl bg-slate-100 p-1 dark:bg-card-active border border-slate-200 dark:border-slate-700/50">
+                <label className="relative flex-1 rounded-xl focus-within:bg-white focus-within:shadow-sm dark:focus-within:bg-card-background">
+                  <span className="sr-only">{td("search")}</span>
+                  <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-300" />
+                  <input
+                    type="search"
+                    placeholder={td("searchPlaceholder")}
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      setVisibleCount(PER_PAGE);
+                    }}
+                    className="w-full rounded-full border-0 bg-transparent py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-slate-500 focus:outline-none focus:ring-0 dark:placeholder:text-foreground/50"
+                  />
+                </label>
+              </div>
+              <div className="relative shrink-0" ref={filterPanelRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters((v) => !v)}
+                  aria-label={td("filters")}
+                  className={`h-11 w-11 flex items-center justify-center rounded-full border transition-colors shadow-sm relative ${
+                    showFilters || activeFilterCount > 0
+                      ? "bg-navy-primary border-navy-primary text-white"
+                      : "bg-slate-100 dark:bg-card-active border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-300"
+                  }`}
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  {activeFilterCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+                <AnimatePresence>
+                  {showFilters && (
+                    <FilterPopover
+                      category={category}
+                      setCategory={(c) => { setCategory(c); setVisibleCount(PER_PAGE); }}
+                      asyncOnly={asyncOnly}
+                      setAsyncOnly={(v) => { setAsyncOnly(v); setVisibleCount(PER_PAGE); }}
+                      savedOnly={savedOnly}
+                      setSavedOnly={(v) => { setSavedOnly(v); setVisibleCount(PER_PAGE); }}
+                      savedCount={savedSlugs.size}
+                      employmentType={employmentType}
+                      setEmploymentType={(v) => { setEmploymentType(v); setVisibleCount(PER_PAGE); }}
+                      seniority={seniority}
+                      setSeniority={(v) => { setSeniority(v); setVisibleCount(PER_PAGE); }}
+                      urgentOnly={urgentOnly}
+                      setUrgentOnly={(v) => { setUrgentOnly(v); setVisibleCount(PER_PAGE); }}
+                      hasSalary={hasSalary}
+                      setHasSalary={(v) => { setHasSalary(v); setVisibleCount(PER_PAGE); }}
+                      onReset={() => { setCategory(""); setAsyncOnly(false); setSavedOnly(false); setEmploymentType(""); setSeniority(""); setUrgentOnly(false); setHasSalary(false); setVisibleCount(PER_PAGE); }}
+                      td={td}
+                      tc={tc}
+                    />
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
             {/* Categories - Redesigned as header-style pills */}
             <div className="relative group shrink-0">
               <div 
@@ -645,49 +924,6 @@ export function CandidateDashboardContent({
               </div>
             </div>
 
-            {/* Quick Filters */}
-            <div className="flex flex-wrap gap-2 shrink-0">
-              <button
-                onClick={() => {
-                  setRemoteOnly(!remoteOnly);
-                  setVisibleCount(PER_PAGE);
-                }}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all border ${
-                  remoteOnly
-                    ? "bg-navy-primary/10 border-navy-primary/50 text-navy-primary dark:bg-card-selected-bg dark:border-card-selected-border dark:text-blue-400"
-                    : "bg-white/50 border-slate-200 text-slate-500 dark:bg-card-active/50 dark:border-white/5 dark:text-slate-400"
-                }`}
-              >
-                <div className={`h-4 w-4 rounded-full flex items-center justify-center border transition-all ${
-                  remoteOnly 
-                    ? "bg-navy-primary border-navy-primary dark:bg-blue-500 dark:border-blue-500" 
-                    : "bg-transparent border-slate-300 dark:border-slate-600"
-                }`}>
-                  {remoteOnly && <Check className="h-3 w-3 text-white" />}
-                </div>
-                {tp("remoteOnly")}
-              </button>
-              <button
-                onClick={() => {
-                  setAsyncOnly(!asyncOnly);
-                  setVisibleCount(PER_PAGE);
-                }}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium transition-all border ${
-                  asyncOnly
-                    ? "bg-navy-primary/10 border-navy-primary/50 text-navy-primary dark:bg-card-selected-bg dark:border-card-selected-border dark:text-blue-400"
-                    : "bg-white/50 border-slate-200 text-slate-500 dark:bg-card-active/50 dark:border-white/5 dark:text-slate-400"
-                }`}
-              >
-                <div className={`h-4 w-4 rounded-full flex items-center justify-center border transition-all ${
-                  asyncOnly 
-                    ? "bg-navy-primary border-navy-primary dark:bg-blue-500 dark:border-blue-500" 
-                    : "bg-transparent border-slate-300 dark:border-slate-600"
-                }`}>
-                  {asyncOnly && <Check className="h-3 w-3 text-white" />}
-                </div>
-                {tc("asyncFriendly")}
-              </button>
-            </div>
           </div>
 
           {/* List */}
@@ -705,6 +941,8 @@ export function CandidateDashboardContent({
                   td={td}
                   locale={locale}
                   selected={(isDesktop ? activeDesktopJob : selectedJob)?.id === job.id}
+                  isSaved={savedSlugs.has(job.slug)}
+                  onToggleSave={(e) => toggleSaved(job.slug, e)}
                   onClick={() => setSelectedJob(job)}
                 />
               ))}
@@ -750,13 +988,49 @@ export function CandidateDashboardContent({
                 />
               </label>
             </div>
-            <button
-              type="button"
-              aria-label={td("filters")}
-              className="h-12 w-12 flex items-center justify-center rounded-full bg-slate-100 dark:bg-card-active border border-slate-200 dark:border-white/5 hover:bg-white dark:hover:bg-card-active transition-colors shadow-sm shrink-0"
-            >
-              <SlidersHorizontal className="h-4.5 w-4.5 text-slate-400 dark:text-slate-300" />
-            </button>
+            <div className="relative shrink-0" ref={filterPanelRef}>
+              <button
+                type="button"
+                onClick={() => setShowFilters((v) => !v)}
+                aria-label={td("filters")}
+                className={`h-12 w-12 flex items-center justify-center rounded-full border transition-colors shadow-sm relative ${
+                  showFilters || activeFilterCount > 0
+                    ? "bg-navy-primary border-navy-primary text-white"
+                    : "bg-slate-100 dark:bg-card-active border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-300 hover:bg-white dark:hover:bg-card-active"
+                }`}
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+              <AnimatePresence>
+                {showFilters && (
+                  <FilterPopover
+                    category={category}
+                    setCategory={(c) => { setCategory(c); setVisibleCount(PER_PAGE); }}
+                    asyncOnly={asyncOnly}
+                    setAsyncOnly={(v) => { setAsyncOnly(v); setVisibleCount(PER_PAGE); }}
+                    savedOnly={savedOnly}
+                    setSavedOnly={(v) => { setSavedOnly(v); setVisibleCount(PER_PAGE); }}
+                    savedCount={savedSlugs.size}
+                    employmentType={employmentType}
+                    setEmploymentType={(v) => { setEmploymentType(v); setVisibleCount(PER_PAGE); }}
+                    seniority={seniority}
+                    setSeniority={(v) => { setSeniority(v); setVisibleCount(PER_PAGE); }}
+                    urgentOnly={urgentOnly}
+                    setUrgentOnly={(v) => { setUrgentOnly(v); setVisibleCount(PER_PAGE); }}
+                    hasSalary={hasSalary}
+                    setHasSalary={(v) => { setHasSalary(v); setVisibleCount(PER_PAGE); }}
+                    onReset={() => { setCategory(""); setAsyncOnly(false); setSavedOnly(false); setEmploymentType(""); setSeniority(""); setUrgentOnly(false); setHasSalary(false); setVisibleCount(PER_PAGE); }}
+                    td={td}
+                    tc={tc}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Preview Panel */}
@@ -774,7 +1048,7 @@ export function CandidateDashboardContent({
                 transition={{ duration: 0.2 }}
                 className="h-full"
               >
-                <JobDetailInner job={activeDesktopJob} tc={tc} td={td} onApply={setApplyModalJob} isApplied={isJobApplied(activeDesktopJob)} />
+                <JobDetailInner job={activeDesktopJob} tc={tc} td={td} onApply={setApplyModalJob} isApplied={isJobApplied(activeDesktopJob)} isSaved={savedSlugs.has(activeDesktopJob.slug)} onToggleSave={(e) => toggleSaved(activeDesktopJob.slug, e)} />
               </motion.div>
             ) : (
               <div className="flex h-full items-center justify-center p-12 text-center">
@@ -805,7 +1079,7 @@ export function CandidateDashboardContent({
 
       <AnimatePresence>
         {!isDesktop && selectedJob && (
-          <MobileJobSheet job={selectedJob} tc={tc} td={td} onClose={() => setSelectedJob(null)} onApply={setApplyModalJob} isApplied={isJobApplied(selectedJob)} />
+          <MobileJobSheet job={selectedJob} tc={tc} td={td} onClose={() => setSelectedJob(null)} onApply={setApplyModalJob} isApplied={isJobApplied(selectedJob)} isSaved={savedSlugs.has(selectedJob.slug)} onToggleSave={(e) => toggleSaved(selectedJob.slug, e)} />
         )}
       </AnimatePresence>
 

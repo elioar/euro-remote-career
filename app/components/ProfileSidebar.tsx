@@ -105,21 +105,23 @@ export function ProfileSidebar({
         )}
         <div className="mb-8" />
 
-        {/* Profile completeness bar */}
-        <div className="w-full mb-6">
-          <div className="flex justify-between items-center mb-1.5">
-            <span className="text-[11px] font-semibold text-slate-400 dark:text-foreground/40 uppercase tracking-wider">{t("profileComplete")}</span>
-            <span className="text-[11px] font-bold text-navy-primary">{completeness}%</span>
+        {/* Profile completeness bar — hidden when 100% */}
+        {completeness < 100 && (
+          <div className="w-full mb-6">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-[11px] font-semibold text-slate-400 dark:text-foreground/40 uppercase tracking-wider">{t("profileComplete")}</span>
+              <span className="text-[11px] font-bold text-navy-primary">{completeness}%</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-navy-primary"
+                initial={{ width: 0 }}
+                animate={{ width: `${completeness}%` }}
+                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </div>
           </div>
-          <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-navy-primary"
-              initial={{ width: 0 }}
-              animate={{ width: `${completeness}%` }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            />
-          </div>
-        </div>
+        )}
 
         <Link
           href="/profile"
@@ -232,21 +234,21 @@ export function ProfileSidebar({
           <p className="text-[10px] font-medium text-slate-400 mt-2">{t("applications")}</p>
         </div>
 
-        {/* Profile Completeness block */}
-        <div className="rounded-[32px] bg-white dark:bg-card-background p-6 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
-          <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("profileComplete")}</p>
-          <motion.h4
-            className={`text-2xl font-bold leading-none ${completeness === 100 ? "text-emerald-500" : "text-foreground"}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            {completeness}%
-          </motion.h4>
-          <p className="text-[10px] font-medium text-slate-400 mt-2">
-            {completeness === 100 ? t("complete") : t("fillProfile")}
-          </p>
-        </div>
+        {/* Profile Completeness block — hidden when 100% */}
+        {completeness < 100 && (
+          <div className="rounded-[32px] bg-white dark:bg-card-background p-6 border border-slate-50 dark:border-slate-800 shadow-sm text-center">
+            <p className="text-[10px] font-bold text-slate-400 dark:text-foreground/40 mb-2">{t("profileComplete")}</p>
+            <motion.h4
+              className="text-2xl font-bold leading-none text-foreground"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              {completeness}%
+            </motion.h4>
+            <p className="text-[10px] font-medium text-slate-400 mt-2">{t("fillProfile")}</p>
+          </div>
+        )}
 
       </div>
     </aside>

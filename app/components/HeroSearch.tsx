@@ -20,11 +20,12 @@ export function HeroSearch() {
     });
   }, []);
 
-  const LOCATIONS = [
-    { value: "", label: t("allLocations") },
-    { value: "athens", label: t("athens") },
-    { value: "thessaloniki", label: t("thessaloniki") },
-    { value: "abroad", label: t("abroad") },
+  const CATEGORIES = [
+    { value: "", label: t("allCategories") },
+    { value: "Tech", label: "Tech" },
+    { value: "Design", label: "Design" },
+    { value: "Marketing", label: "Marketing" },
+    { value: "Product", label: "Product" },
   ] as const;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -34,25 +35,25 @@ export function HeroSearch() {
     const q = (form.querySelector('[name="q"]') as HTMLInputElement)?.value?.trim() || "";
     const params = new URLSearchParams();
     if (q) params.set("query", q);
-    if (location) params.set("location", location);
+    if (location) params.set("category", location);
     router.push(`${jobsBase}?${params.toString()}`);
   }
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="w-full space-y-3">
       <div className="flex flex-wrap gap-2">
-        {LOCATIONS.map((loc) => (
+        {CATEGORIES.map((cat) => (
           <button
-            key={loc.value || "all"}
+            key={cat.value || "all"}
             type="button"
-            onClick={() => setLocation(loc.value)}
+            onClick={() => setLocation(cat.value)}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              location === loc.value
+              location === cat.value
                 ? "bg-navy-primary text-white hover:bg-navy-hover"
                 : "border border-border-muted bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50 dark:border-border-muted dark:bg-card-background dark:text-slate-200 dark:hover:border-white/20 dark:hover:bg-card-active"
-            } ${loc.value === "abroad" ? "hidden sm:inline-flex" : ""}`}
+            }`}
           >
-            {loc.label}
+            {cat.label}
           </button>
         ))}
       </div>
@@ -67,7 +68,7 @@ export function HeroSearch() {
             className="w-full rounded-full border-0 bg-transparent py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-slate-500 focus:outline-none focus:ring-0 sm:py-2.5 dark:placeholder:text-foreground/50"
           />
         </label>
-        <input type="hidden" name="location" value={location} readOnly />
+        <input type="hidden" name="category" value={location} readOnly />
         <button
           type="submit"
           className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-navy-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-navy-hover sm:rounded-full sm:px-5"

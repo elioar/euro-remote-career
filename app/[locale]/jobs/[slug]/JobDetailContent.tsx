@@ -3,7 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { motion } from "framer-motion";
-import { MapPin, Banknote, CalendarDays, CheckCircle, LogIn } from "lucide-react";
+import { MapPin, Banknote, CalendarDays, CheckCircle, LogIn, Bookmark } from "lucide-react";
 import { useState } from "react";
 import type { DemoJob } from "../../../../lib/demo-jobs";
 import type { CandidateApplyData } from "./page";
@@ -33,6 +33,27 @@ function ApplyCard({
   const ta = useTranslations("Apply");
   const [showModal, setShowModal] = useState(false);
   const [hasApplied, setHasApplied] = useState(candidateApplyData?.hasApplied ?? false);
+  const [isSaved, setIsSaved] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const raw = localStorage.getItem("saved_jobs");
+      const slugs: string[] = raw ? JSON.parse(raw) : [];
+      return slugs.includes(job.slug);
+    } catch { return false; }
+  });
+
+  const toggleSaved = () => {
+    setIsSaved((prev) => {
+      const next = !prev;
+      try {
+        const raw = localStorage.getItem("saved_jobs");
+        const slugs: string[] = raw ? JSON.parse(raw) : [];
+        const updated = next ? [...new Set([...slugs, job.slug])] : slugs.filter((s) => s !== job.slug);
+        localStorage.setItem("saved_jobs", JSON.stringify(updated));
+      } catch {}
+      return next;
+    });
+  };
 
   return (
     <motion.aside
@@ -152,12 +173,27 @@ function ApplyCard({
         </>
       )}
 
-      <Link
-        href="/jobs"
-        className="mt-3 flex w-full items-center justify-center rounded-lg border border-border-card px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-muted dark:text-foreground/80 dark:hover:bg-card-active"
-      >
-        {t("backToJobs")}
-      </Link>
+      <div className="mt-3 flex gap-2">
+        <Link
+          href="/jobs"
+          className="flex-1 flex items-center justify-center rounded-lg border border-border-card px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-border-muted dark:text-foreground/80 dark:hover:bg-card-active"
+        >
+          {t("backToJobs")}
+        </Link>
+        <motion.button
+          onClick={toggleSaved}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          aria-label={isSaved ? t("unsaveJob") : t("saveJob")}
+          className={`flex items-center justify-center rounded-lg border px-3 py-2 transition-all ${
+            isSaved
+              ? "border-navy-primary/40 bg-navy-primary/10 text-navy-primary dark:border-navy-primary/30 dark:bg-navy-primary/10 dark:text-blue-400"
+              : "border-border-card text-slate-400 hover:border-navy-primary/30 hover:bg-navy-primary/5 hover:text-navy-primary dark:border-border-muted dark:hover:bg-card-active"
+          }`}
+        >
+          <Bookmark size={16} fill={isSaved ? "currentColor" : "none"} />
+        </motion.button>
+      </div>
       <dl className="mt-5 space-y-2 border-t border-border-muted pt-4 text-sm dark:border-border-muted">
         <div className="flex justify-between gap-2">
           <dt className="text-slate-500 dark:text-foreground/50">{t("company")}</dt>
