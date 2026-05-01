@@ -382,6 +382,7 @@
     "freePlan": "Free Plan",
     "activeCredits": "Active Job Credits",
     "upgradeToPro": "Upgrade to Pro",
+    "getStarted": "Get Started",
     "profileStrength": "Profile Strength",
     "excellentReach": "EXCELLENT REACH",
     "completeProfile": "Complete Profile",
@@ -701,7 +702,63 @@
     "allJobs": "All Jobs",
     "viewAll": "View all →",
     "noJobsPending": "No jobs pending review.",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "payments": "Payments"
+  },
+  "Checkout": {
+    "title": "Choose a plan",
+    "subtitle": "Select a plan to publish your job listing on Euro Remote Career.",
+    "popular": "Popular",
+    "oneJobSlot": "1 job listing",
+    "jobSlots": "{count} job listings",
+    "days": "{count} days",
+    "addons": "Add-ons",
+    "proceedToPayment": "Proceed to Payment",
+    "processing": "Processing...",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "securePayment": "Secure payment powered by Stripe · Cancel anytime",
+    "successTitle": "Payment successful!",
+    "successDesc": "Your job listing has been submitted for review. We'll publish it shortly.",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "Billing": {
+    "title": "Billing History",
+    "subtitle": "Your payment history and invoices.",
+    "date": "Date",
+    "plan": "Plan",
+    "job": "Job",
+    "amount": "Amount",
+    "status": "Status",
+    "noPayments": "No payments yet",
+    "noPaymentsHint": "Your payment history will appear here after your first purchase.",
+    "statusLabels": {
+      "succeeded": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    }
+  },
+  "AdminPayments": {
+    "title": "Payments",
+    "subtitle": "Revenue overview and transaction log.",
+    "totalRevenue": "Total Revenue",
+    "thisMonth": "This Month",
+    "transactions": "Transactions",
+    "employer": "Employer",
+    "plan": "Plan",
+    "job": "Job",
+    "amount": "Amount",
+    "date": "Date",
+    "status": "Status",
+    "filterAll": "All",
+    "markAsPaid": "Mark as Paid",
+    "noPayments": "No transactions found.",
+    "statusLabels": {
+      "succeeded": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    }
   },
   "AdminReview": {
     "pageTitle": "Review Queue",

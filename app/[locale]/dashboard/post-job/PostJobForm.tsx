@@ -151,19 +151,7 @@ export default function PostJobForm({
       }
 
       const job = await createRes.json();
-
-      const submitRes = await fetch(`/api/jobs/${job.id}/submit`, {
-        method: "POST",
-      });
-
-      if (!submitRes.ok) {
-        const json = await submitRes.json();
-        setError(json.error || t("errorGeneric"));
-        return;
-      }
-
-      setSuccess(t("successSubmitted"));
-      setTimeout(() => router.push("/dashboard"), 1500);
+      router.push(`/checkout?jobId=${job.id}`);
     } catch {
       setError(t("errorGeneric"));
     } finally {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Briefcase, FileText, CheckCircle, Send, Eye, ShieldCheck, Zap, LifeBuoy, TrendingUp, ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import MyJobsList from "./my-jobs/MyJobsList";
@@ -23,6 +23,8 @@ interface Props {
     website: string | null;
     description: string | null;
   } | null;
+  activePlan?: { name: string; slug: string; totalSlots: number; slotsUsed: number; daysLeft: number } | null;
+  usedJobSlots?: number;
 }
 
 export default function EmployerDashboardContent({
@@ -33,6 +35,8 @@ export default function EmployerDashboardContent({
   totalApplications,
   draftJobs,
   employerProfile,
+  activePlan = null,
+  usedJobSlots = 0,
 }: Props) {
   const t = useTranslations("Dashboard");
   const [activeTab, setActiveTab] = useState<"applications" | "jobs">("applications");
@@ -72,16 +76,26 @@ export default function EmployerDashboardContent({
         </div>
         <div className="relative">
           <div className="flex items-center gap-2 mb-3">
-            <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">{t("freePlan")}</span>
+            <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
+              {activePlan ? activePlan.name : t("freePlan")}
+            </span>
+            {activePlan && (
+              <span className="text-[10px] text-white/60">{activePlan.daysLeft}d left</span>
+            )}
           </div>
           <p className="text-xs text-white/70 mb-1">{t("activeCredits")}</p>
           <div className="flex items-end gap-2 mb-4">
-            <span className="text-3xl font-bold">2/2</span>
+            <span className="text-3xl font-bold">
+              {activePlan ? `${usedJobSlots}/${activePlan.totalSlots}` : `${usedJobSlots}/0`}
+            </span>
             <span className="text-sm text-white/50 mb-1">Used</span>
           </div>
-          <button className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10">
-            {t("upgradeToPro")} <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <Link
+            href="/checkout"
+            className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+          >
+            {activePlan ? t("upgradeToPro") : t("getStarted")} <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
       </div>
 

@@ -106,25 +106,8 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
 
-  async function handleSubmit(jobId: string) {
-    if (actionLoading) return;
-    setError("");
-    setActionLoading(jobId);
-    try {
-      const res = await fetch(`/api/jobs/${jobId}/submit`, { method: "POST" });
-      if (!res.ok) {
-        const json = await res.json();
-        setError(json.error || t("errorGeneric"));
-        return;
-      }
-      setJobs((prev) =>
-        prev.map((j) => (j.id === jobId ? { ...j, status: "PENDING_REVIEW" as JobStatus } : j))
-      );
-    } catch {
-      setError(t("errorGeneric"));
-    } finally {
-      setActionLoading(null);
-    }
+  function handleSubmit(jobId: string) {
+    router.push(`/checkout?jobId=${jobId}`);
   }
 
   async function handleArchive(jobId: string) {

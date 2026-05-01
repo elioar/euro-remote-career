@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Header } from "@/app/components/Header";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { LayoutDashboard, ClipboardList, Briefcase, Settings, ShieldCheck, PieChart } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Briefcase, Settings, ShieldCheck, PieChart, CreditCard } from "lucide-react";
 
 export default async function AdminLayout({
   children,
@@ -33,6 +33,7 @@ export default async function AdminLayout({
     { href: "/admin", label: t("pageTitle"), icon: LayoutDashboard },
     { href: "/admin/review", label: t("reviewQueue"), icon: ClipboardList },
     { href: "/admin/jobs", label: t("allJobs"), icon: Briefcase },
+    { href: "/admin/payments", label: t("payments"), icon: CreditCard },
   ];
 
   return (

@@ -11,6 +11,7 @@ import { getPublishedJobs } from "@/lib/jobs/queries";
 import MyJobsList from "./my-jobs/MyJobsList";
 import LatestApplications from "./LatestApplications";
 import EmployerDashboardContent from "./EmployerDashboardContent";
+import { getActivePlanForEmployer, getUsedJobSlots } from "@/lib/payments/queries";
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const supabase = await createClient();
@@ -69,6 +70,13 @@ export default async function DashboardPage() {
   const publishedJobs = employerJobs.filter((j) => j.status === "PUBLISHED").length;
   const totalApplications = employerJobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
   const draftJobs = employerJobs.filter((j) => j.status === "DRAFT").length;
+
+  const [activePlan, usedJobSlots] = user.employerProfile
+    ? await Promise.all([
+        getActivePlanForEmployer(user.employerProfile.id),
+        getUsedJobSlots(user.employerProfile.id),
+      ])
+    : [null, 0];
 
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
@@ -241,6 +249,8 @@ export default async function DashboardPage() {
             totalApplications={totalApplications}
             draftJobs={draftJobs}
             employerProfile={user.employerProfile ? JSON.parse(JSON.stringify(user.employerProfile)) : null}
+            activePlan={activePlan}
+            usedJobSlots={usedJobSlots}
           />
         )}
       </div>

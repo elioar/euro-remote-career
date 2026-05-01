@@ -22,6 +22,13 @@ export async function POST(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
+  const payment = await prisma.payment.findFirst({
+    where: { jobId: id, status: "SUCCEEDED" },
+  });
+  if (!payment) {
+    return NextResponse.json({ error: "Payment required before submitting for review" }, { status: 402 });
+  }
+
   try {
     const updated = await submitForReview(id, auth.user.id);
     return NextResponse.json(updated);
