@@ -410,16 +410,18 @@ export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]
                         <Users className="w-3.5 h-3.5" /> 0 Applies
                       </span>
                     )}
-                    {job.status === "PUBLISHED" && days !== null && (
+                    {days !== null && (
                       <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg whitespace-nowrap ${
-                        days <= 3
+                        days < 0
+                          ? "bg-gray-500/10 text-gray-400"
+                          : days <= 3
                           ? "bg-red-500/10 text-red-500"
                           : days <= 7
                           ? "bg-amber-500/10 text-amber-500"
                           : "bg-blue-500/10 text-blue-400 dark:text-blue-400"
                       }`}>
                         <Clock className="w-3.5 h-3.5" />
-                        {days <= 0 ? t("expiresToday") : `${days}d left`}
+                        {days < 0 ? t("expired") : days === 0 ? t("expiresToday") : `${days}d left`}
                       </span>
                     )}
                     {job.status === "PUBLISHED" && (

@@ -5,7 +5,11 @@ import { Header } from "@/app/components/Header";
 import { getTranslations } from "next-intl/server";
 import PostJobForm from "./PostJobForm";
 
-export default async function PostJobPage() {
+export default async function PostJobPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ slPaymentId?: string }>;
+}) {
   const t = await getTranslations("PostJob");
   const supabase = await createClient();
   const {
@@ -21,6 +25,8 @@ export default async function PostJobPage() {
 
   if (!user || user.role !== "EMPLOYER") redirect("/dashboard");
 
+  const { slPaymentId } = await searchParams;
+
   return (
     <main className="min-h-screen bg-background">
       <Header />
@@ -28,6 +34,7 @@ export default async function PostJobPage() {
         <PostJobForm
           hasProfile={!!user.employerProfile}
           companyName={user.employerProfile?.companyName}
+          slPaymentId={slPaymentId}
         />
       </div>
     </main>

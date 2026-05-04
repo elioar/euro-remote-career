@@ -32,9 +32,11 @@ const CATEGORY_ICONS: Record<string, string> = {
 export default function PostJobForm({
   hasProfile,
   companyName,
+  slPaymentId,
 }: {
   hasProfile: boolean;
   companyName?: string | null;
+  slPaymentId?: string;
 }) {
   const t = useTranslations("PostJob");
   const router = useRouter();
@@ -154,6 +156,24 @@ export default function PostJobForm({
       }
 
       const job = await createRes.json();
+
+      if (slPaymentId) {
+        // Auto-submit using the Short Listing payment — no modal needed
+        const useRes = await fetch(`/api/jobs/${job.id}/use-slot`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentId: slPaymentId }),
+        });
+        if (!useRes.ok) {
+          const j = await useRes.json();
+          setError(j.error || t("errorGeneric"));
+          return;
+        }
+        setSuccess(t("successSubmitted"));
+        setTimeout(() => router.push("/dashboard/my-jobs"), 1500);
+        return;
+      }
+
       setSubmitModalJobId(job.id);
     } catch {
       setError(t("errorGeneric"));

@@ -18,25 +18,36 @@ export async function POST(req: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    const { paymentId, jobId } = session.metadata ?? {};
+    const { paymentIds, jobId } = session.metadata ?? {};
 
-    if (!paymentId) return NextResponse.json({ ok: true });
+    if (!paymentIds) return NextResponse.json({ ok: true });
 
-    const payment = await prisma.payment.update({
-      where: { id: paymentId },
-      data: {
-        status: "SUCCEEDED",
-        paidAt: new Date(),
-        stripePaymentIntentId: typeof session.payment_intent === "string" ? session.payment_intent : null,
-      },
-      include: { employer: { include: { user: true } } },
-    });
+    const ids = paymentIds.split(",").filter(Boolean);
+    const now = new Date();
+    const intentId = typeof session.payment_intent === "string" ? session.payment_intent : null;
 
+    // Mark all payments as SUCCEEDED
+    const payments = await Promise.all(
+      ids.map((id) =>
+        prisma.payment.update({
+          where: { id },
+          data: { status: "SUCCEEDED", paidAt: now, stripePaymentIntentId: intentId },
+          include: { employer: { include: { user: true } }, plan: true },
+        })
+      )
+    );
+
+    // Submit job for review using the payment that has a jobId linked
     if (jobId) {
-      const job = await prisma.job.findUnique({ where: { id: jobId } });
-      if (job && (job.status === "DRAFT" || job.status === "REJECTED")) {
-        await submitForReview(jobId, payment.employer.user.id);
+      const paymentWithJob = payments.find((p) => p.jobId === jobId);
+      const userId = payments[0]?.employer.user.id;
+      if (userId) {
+        const job = await prisma.job.findUnique({ where: { id: jobId } });
+        if (job && (job.status === "DRAFT" || job.status === "REJECTED")) {
+          await submitForReview(jobId, userId);
+        }
       }
+      void paymentWithJob; // used for type narrowing only
     }
   }
 

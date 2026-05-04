@@ -23,9 +23,14 @@ interface Props {
     website: string | null;
     description: string | null;
   } | null;
-  activePlan?: { name: string; slug: string; totalSlots: number; slotsUsed: number; daysLeft: number } | null;
+  activePlan?: { name: string; slug: string; basePlanSlots: number; totalSlots: number; slotsUsed: number; daysLeft: number } | null;
   usedJobSlots?: number;
   activeQuickListings?: number;
+  totalQuickListings?: number;
+  unusedShortListingPaymentId?: string | null;
+  unusedShortListingsCount?: number;
+  unusedExtraJobSlots?: number;
+  usedExtraJobSlots?: number;
 }
 
 export default function EmployerDashboardContent({
@@ -39,6 +44,11 @@ export default function EmployerDashboardContent({
   activePlan = null,
   usedJobSlots = 0,
   activeQuickListings = 0,
+  totalQuickListings = 0,
+  unusedShortListingPaymentId = null,
+  unusedShortListingsCount = 0,
+  unusedExtraJobSlots = 0,
+  usedExtraJobSlots = 0,
 }: Props) {
   const t = useTranslations("Dashboard");
   const locale = useLocale();
@@ -87,34 +97,53 @@ export default function EmployerDashboardContent({
             )}
           </div>
           {/* Stats row */}
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-4 mb-4 flex-wrap">
             <div>
-              <p className="text-[10px] text-white/60 mb-0.5">{t("activeCredits")}</p>
+              <p className="text-[10px] text-white/60 mb-0.5">{t("postingSlots")}</p>
               <div className="flex items-end gap-1">
                 <span className="text-2xl font-bold">
-                  {activePlan ? `${usedJobSlots}/${activePlan.totalSlots}` : `${usedJobSlots}/0`}
+                  {activePlan ? `${activePlan.slotsUsed}/${activePlan.totalSlots}` : "0/0"}
                 </span>
-                <span className="text-xs text-white/50 mb-0.5">Used</span>
               </div>
+              <span className="text-xs text-white/50">{t("used")}</span>
             </div>
-            {activeQuickListings > 0 && (
+            {(unusedExtraJobSlots + usedExtraJobSlots) > 0 && (
+              <div className="border-l border-white/20 pl-4">
+                <p className="text-[10px] text-white/60 mb-0.5">{t("extraSlots")}</p>
+                <div className="flex items-end gap-1">
+                  <span className="text-2xl font-bold">{usedExtraJobSlots}/{usedExtraJobSlots + unusedExtraJobSlots}</span>
+                </div>
+                <span className="text-xs text-white/50">{t("used")}</span>
+              </div>
+            )}
+            {totalQuickListings > 0 && (
               <div className="border-l border-white/20 pl-4">
                 <p className="text-[10px] text-white/60 mb-0.5">{t("quickListings")}</p>
                 <div className="flex items-end gap-1">
-                  <span className="text-2xl font-bold">{activeQuickListings}</span>
-                  <span className="text-xs text-white/50 mb-0.5">{t("active")}</span>
+                  <span className="text-2xl font-bold">{activeQuickListings}/{totalQuickListings}</span>
                 </div>
+                <span className="text-xs text-white/50">{t("used")}</span>
               </div>
             )}
           </div>
           {/* Buttons */}
           <div className="flex flex-col gap-2">
-            <Link
-              href="/checkout"
-              className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
-            >
-              {activePlan ? t("upgradeToPro") : t("getStarted")} <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {unusedShortListingPaymentId && (
+              <Link
+                href={`/dashboard/post-job?slPaymentId=${unusedShortListingPaymentId}`}
+                className="w-full py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-emerald-900 text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+              >
+                {t("postShortListingJob")} <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
+            {(!activePlan || activePlan.slug === "basic") && (
+              <Link
+                href="/checkout"
+                className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+              >
+                {!activePlan ? t("getStarted") : t("upgradeToPro")} <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            )}
             <Link
               href="/dashboard/billing"
               className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-2"

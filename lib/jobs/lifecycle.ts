@@ -8,20 +8,14 @@ export async function submitForReview(jobId: string, userId: string): Promise<Jo
     throw new Error("Only draft or rejected jobs can be submitted for review");
   }
 
-  // Validate required fields
   if (!job.title || !job.description || !job.category || !job.remoteType) {
     throw new Error("Title, description, category, and remote type are required");
   }
 
-  const [updated] = await prisma.$transaction([
-    prisma.job.update({
-      where: { id: jobId },
-      data: { status: "PENDING_REVIEW" },
-    }),
-    prisma.moderationLog.create({
-      data: { jobId, adminId: userId, action: "PENDING" },
-    }),
-  ]);
+  const updated = await prisma.job.update({
+    where: { id: jobId },
+    data: { status: "PENDING_REVIEW", rejectionReason: null },
+  });
 
   return updated;
 }

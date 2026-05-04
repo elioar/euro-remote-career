@@ -71,20 +71,39 @@ export default async function DashboardPage() {
   const totalApplications = employerJobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
   const draftJobs = employerJobs.filter((j) => j.status === "DRAFT").length;
 
-  const [activePlan, usedJobSlots, activeQuickListings] = user.employerProfile
+  const [activePlan, usedJobSlots, shortListingPayments, extraJobPayments] = user.employerProfile
     ? await Promise.all([
         getActivePlanForEmployer(user.employerProfile.id),
         getUsedJobSlots(user.employerProfile.id),
-        prisma.payment.count({
-          where: {
-            employerId: user.employerProfile.id,
-            status: "SUCCEEDED",
-            plan: { slug: "short-listing" },
-            job: { status: { in: ["PENDING_REVIEW", "PUBLISHED"] } },
-          },
+        prisma.payment.findMany({
+          where: { employerId: user.employerProfile.id, status: "SUCCEEDED", plan: { slug: "short-listing" } },
+          include: { job: { select: { status: true } } },
+          orderBy: { paidAt: "asc" },
+        }),
+        prisma.payment.findMany({
+          where: { employerId: user.employerProfile.id, status: "SUCCEEDED", plan: { slug: "extra-job" } },
+          select: { id: true, jobId: true, paidAt: true },
+          orderBy: { paidAt: "asc" },
         }),
       ])
-    : [null, 0, 0];
+    : [null, 0, [], []];
+
+  const slPayments = shortListingPayments as { id: string; jobId: string | null; job: { status: string } | null }[];
+  const activeQuickListings = slPayments.filter(
+    (p) => p.job && ["PENDING_REVIEW", "PUBLISHED"].includes(p.job.status)
+  ).length;
+  const totalQuickListings = slPayments.length;
+  const unusedShortListingPayments = slPayments.filter((p) => p.jobId === null);
+
+  const now = new Date();
+  const ejPayments = extraJobPayments as { id: string; jobId: string | null; paidAt: Date | null }[];
+  const unusedExtraJobSlots = ejPayments.filter((p) => {
+    if (p.jobId !== null || !p.paidAt) return false;
+    const exp = new Date(p.paidAt);
+    exp.setDate(exp.getDate() + 30);
+    return now <= exp;
+  }).length;
+  const usedExtraJobSlots = ejPayments.filter((p) => p.jobId !== null).length;
 
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
@@ -260,6 +279,11 @@ export default async function DashboardPage() {
             activePlan={activePlan}
             usedJobSlots={usedJobSlots}
             activeQuickListings={activeQuickListings}
+            totalQuickListings={totalQuickListings}
+            unusedShortListingPaymentId={unusedShortListingPayments[0]?.id ?? null}
+            unusedShortListingsCount={unusedShortListingPayments.length}
+            unusedExtraJobSlots={unusedExtraJobSlots}
+            usedExtraJobSlots={usedExtraJobSlots}
           />
         )}
       </div>
