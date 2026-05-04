@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { Briefcase, FileText, CheckCircle, Send, Eye, ShieldCheck, Zap, LifeBuoy, TrendingUp, ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import MyJobsList from "./my-jobs/MyJobsList";
 import LatestApplications, { type RealApplication } from "./LatestApplications";
 
@@ -25,6 +25,7 @@ interface Props {
   } | null;
   activePlan?: { name: string; slug: string; totalSlots: number; slotsUsed: number; daysLeft: number } | null;
   usedJobSlots?: number;
+  activeQuickListings?: number;
 }
 
 export default function EmployerDashboardContent({
@@ -37,8 +38,10 @@ export default function EmployerDashboardContent({
   employerProfile,
   activePlan = null,
   usedJobSlots = 0,
+  activeQuickListings = 0,
 }: Props) {
   const t = useTranslations("Dashboard");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState<"applications" | "jobs">("applications");
 
   // Calculate Profile Strength
@@ -83,19 +86,42 @@ export default function EmployerDashboardContent({
               <span className="text-[10px] text-white/60">{activePlan.daysLeft}d left</span>
             )}
           </div>
-          <p className="text-xs text-white/70 mb-1">{t("activeCredits")}</p>
-          <div className="flex items-end gap-2 mb-4">
-            <span className="text-3xl font-bold">
-              {activePlan ? `${usedJobSlots}/${activePlan.totalSlots}` : `${usedJobSlots}/0`}
-            </span>
-            <span className="text-sm text-white/50 mb-1">Used</span>
+          {/* Stats row */}
+          <div className="flex items-center gap-4 mb-4">
+            <div>
+              <p className="text-[10px] text-white/60 mb-0.5">{t("activeCredits")}</p>
+              <div className="flex items-end gap-1">
+                <span className="text-2xl font-bold">
+                  {activePlan ? `${usedJobSlots}/${activePlan.totalSlots}` : `${usedJobSlots}/0`}
+                </span>
+                <span className="text-xs text-white/50 mb-0.5">Used</span>
+              </div>
+            </div>
+            {activeQuickListings > 0 && (
+              <div className="border-l border-white/20 pl-4">
+                <p className="text-[10px] text-white/60 mb-0.5">{t("quickListings")}</p>
+                <div className="flex items-end gap-1">
+                  <span className="text-2xl font-bold">{activeQuickListings}</span>
+                  <span className="text-xs text-white/50 mb-0.5">{t("active")}</span>
+                </div>
+              </div>
+            )}
           </div>
-          <Link
-            href="/checkout"
-            className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
-          >
-            {activePlan ? t("upgradeToPro") : t("getStarted")} <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          {/* Buttons */}
+          <div className="flex flex-col gap-2">
+            <Link
+              href="/checkout"
+              className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+            >
+              {activePlan ? t("upgradeToPro") : t("getStarted")} <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/dashboard/billing"
+              className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+            >
+              {t("billingHistory")}
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -206,7 +232,7 @@ export default function EmployerDashboardContent({
         <div className="min-h-[400px]">
           {activeTab === "jobs" && (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <MyJobsList initialJobs={employerJobs} />
+              <MyJobsList initialJobs={employerJobs} locale={locale} />
             </div>
           )}
           {activeTab === "applications" && (
@@ -226,7 +252,7 @@ export default function EmployerDashboardContent({
 
         {/* Column 2: My Jobs (full featured) */}
         <div className="col-span-6">
-          <MyJobsList initialJobs={employerJobs} />
+          <MyJobsList initialJobs={employerJobs} locale={locale} />
         </div>
 
         {/* Column 3: Quick Actions & Stats */}

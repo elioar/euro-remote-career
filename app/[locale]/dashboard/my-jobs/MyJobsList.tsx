@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { SubmitJobModal } from "@/app/components/SubmitJobModal";
 import {
   Plus, Send, Archive, ArchiveRestore, Pencil, Eye, Trash2,
   Search, ArrowUpDown, LinkIcon, Clock, RefreshCw, Users,
@@ -64,7 +65,7 @@ function daysUntil(dateStr: string | null): number | null {
   return Math.ceil(diff / (1000 * 60 * 60 * 24));
 }
 
-export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
+export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]; locale: string }) {
   const t = useTranslations("MyJobs");
   const router = useRouter();
   const [jobs, setJobs] = useState(initialJobs);
@@ -76,6 +77,7 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
   const [copied, setCopied] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const perPage = 4;
+  const [submitModalJobId, setSubmitModalJobId] = useState<string | null>(null);
 
   // Reset to page 1 when filter, search, or sort changes
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
 
   function handleSubmit(jobId: string) {
-    router.push(`/checkout?jobId=${jobId}`);
+    setSubmitModalJobId(jobId);
   }
 
   async function handleArchive(jobId: string) {
@@ -179,6 +181,14 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
 
   // Full version
   return (
+    <>
+    <SubmitJobModal
+      jobId={submitModalJobId}
+      isOpen={submitModalJobId !== null}
+      onClose={() => setSubmitModalJobId(null)}
+      onSuccess={() => router.refresh()}
+      locale={locale}
+    />
     <div id="my-jobs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
@@ -463,5 +473,6 @@ export default function MyJobsList({ initialJobs }: { initialJobs: Job[] }) {
         </div>
       )}
     </div>
+    </>
   );
 }

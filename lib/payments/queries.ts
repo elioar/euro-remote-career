@@ -28,12 +28,11 @@ export async function getActivePlanForEmployer(employerId: string) {
 
   const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
-  const slotsUsed = await prisma.payment.count({
+  const slotsUsed = await prisma.job.count({
     where: {
       employerId,
-      status: "SUCCEEDED",
-      paidAt: { gte: payment.paidAt },
-      job: { status: { in: ["PENDING_REVIEW", "PUBLISHED"] } },
+      status: { in: ["PENDING_REVIEW", "PUBLISHED"] },
+      createdAt: { gte: payment.paidAt },
     },
   });
 
@@ -43,6 +42,7 @@ export async function getActivePlanForEmployer(employerId: string) {
     totalSlots: payment.plan.jobSlots,
     slotsUsed,
     daysLeft,
+    planPaymentPaidAt: payment.paidAt,
   };
 }
 

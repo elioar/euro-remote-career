@@ -4,7 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { Header } from "@/app/components/Header";
 import MyJobsList from "./MyJobsList";
 
-export default async function MyJobsPage() {
+export default async function MyJobsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const supabase = await createClient();
   const {
     data: { user: authUser },
@@ -31,7 +36,7 @@ export default async function MyJobsPage() {
     <main className="min-h-screen bg-background">
       <Header />
       <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10 lg:py-12">
-        <MyJobsList initialJobs={JSON.parse(JSON.stringify(employerJobs))} />
+        <MyJobsList initialJobs={JSON.parse(JSON.stringify(employerJobs))} locale={locale} />
       </div>
     </main>
   );

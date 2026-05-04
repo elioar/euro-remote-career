@@ -34,7 +34,14 @@ export async function approveJob(jobId: string, adminId: string): Promise<Job> {
   }
 
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  // Use the plan's durationDays if a payment exists for this job (e.g. Short Listing = 10 days)
+  const payment = await prisma.payment.findFirst({
+    where: { jobId, status: "SUCCEEDED" },
+    include: { plan: { select: { durationDays: true } } },
+  });
+  const durationDays = payment?.plan.durationDays ?? 30;
+  const expiresAt = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
   const [updated] = await prisma.$transaction([
     prisma.job.update({

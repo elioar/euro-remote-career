@@ -16,7 +16,8 @@ import {
   Send,
   Save,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { SubmitJobModal } from "@/app/components/SubmitJobModal";
 
 const CATEGORIES = ["Tech", "Design", "Marketing", "Product"] as const;
 const ASYNC_LEVELS = ["full", "friendly", "sync"] as const;
@@ -37,6 +38,8 @@ export default function PostJobForm({
 }) {
   const t = useTranslations("PostJob");
   const router = useRouter();
+  const locale = useLocale();
+  const [submitModalJobId, setSubmitModalJobId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -151,7 +154,7 @@ export default function PostJobForm({
       }
 
       const job = await createRes.json();
-      router.push(`/checkout?jobId=${job.id}`);
+      setSubmitModalJobId(job.id);
     } catch {
       setError(t("errorGeneric"));
     } finally {
@@ -180,6 +183,14 @@ export default function PostJobForm({
   );
 
   return (
+    <>
+    <SubmitJobModal
+      jobId={submitModalJobId}
+      isOpen={submitModalJobId !== null}
+      onClose={() => setSubmitModalJobId(null)}
+      onSuccess={() => router.push("/dashboard/my-jobs")}
+      locale={locale}
+    />
     <div>
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -557,5 +568,6 @@ export default function PostJobForm({
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Lock, Building2, ArrowLeft } from "lucide-react";
+import { User, Lock, Building2, ArrowLeft, CreditCard } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import CandidateProfileForm from "./CandidateProfileForm";
@@ -95,6 +95,15 @@ export default function ProfilePageClient({ role, email, displayName, profileIma
                 {item.label}
               </button>
             ))}
+            {isEmployer && (
+              <Link
+                href="/dashboard/billing"
+                className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium transition-all text-left text-foreground/70 hover:bg-slate-50 dark:hover:bg-card-active hover:text-foreground"
+              >
+                <CreditCard className="w-4 h-4" />
+                {t("billingHistory")}
+              </Link>
+            )}
           </nav>
         </aside>
 

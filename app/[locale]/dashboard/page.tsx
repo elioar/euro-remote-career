@@ -71,12 +71,20 @@ export default async function DashboardPage() {
   const totalApplications = employerJobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
   const draftJobs = employerJobs.filter((j) => j.status === "DRAFT").length;
 
-  const [activePlan, usedJobSlots] = user.employerProfile
+  const [activePlan, usedJobSlots, activeQuickListings] = user.employerProfile
     ? await Promise.all([
         getActivePlanForEmployer(user.employerProfile.id),
         getUsedJobSlots(user.employerProfile.id),
+        prisma.payment.count({
+          where: {
+            employerId: user.employerProfile.id,
+            status: "SUCCEEDED",
+            plan: { slug: "short-listing" },
+            job: { status: { in: ["PENDING_REVIEW", "PUBLISHED"] } },
+          },
+        }),
       ])
-    : [null, 0];
+    : [null, 0, 0];
 
   if (!isEmployer) {
     const dbJobs = await getPublishedJobs();
@@ -251,6 +259,7 @@ export default async function DashboardPage() {
             employerProfile={user.employerProfile ? JSON.parse(JSON.stringify(user.employerProfile)) : null}
             activePlan={activePlan}
             usedJobSlots={usedJobSlots}
+            activeQuickListings={activeQuickListings}
           />
         )}
       </div>
