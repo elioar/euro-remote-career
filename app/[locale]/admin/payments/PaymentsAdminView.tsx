@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
 
 type PaymentRow = {
   id: string;
@@ -26,30 +25,9 @@ const ALL_STATUSES = ["ALL", "SUCCEEDED", "PENDING", "FAILED", "REFUNDED"];
 
 export function PaymentsAdminView({ payments }: { payments: PaymentRow[] }) {
   const t = useTranslations("AdminPayments");
-  const router = useRouter();
   const [filter, setFilter] = useState("ALL");
-  const [overriding, setOverriding] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const filtered = filter === "ALL" ? payments : payments.filter((p) => p.status === filter);
-
-  async function handleOverride(id: string) {
-    setOverriding(id);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/payments/${id}/override`, { method: "POST" });
-      if (!res.ok) {
-        const j = await res.json();
-        setError(j.error ?? "Failed");
-        return;
-      }
-      router.refresh();
-    } catch {
-      setError("Something went wrong");
-    } finally {
-      setOverriding(null);
-    }
-  }
 
   return (
     <div>
@@ -70,8 +48,6 @@ export function PaymentsAdminView({ payments }: { payments: PaymentRow[] }) {
         ))}
       </div>
 
-      {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
-
       <div className="rounded-[28px] border border-border-card bg-white dark:bg-card-background overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -83,13 +59,12 @@ export function PaymentsAdminView({ payments }: { payments: PaymentRow[] }) {
                 <th className="px-5 py-3.5 text-right text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("amount")}</th>
                 <th className="px-5 py-3.5 text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("date")}</th>
                 <th className="px-5 py-3.5 text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("status")}</th>
-                <th className="px-5 py-3.5" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border-card dark:divide-slate-700/50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-slate-400 dark:text-foreground/30">
+                  <td colSpan={6} className="px-5 py-10 text-center text-slate-400 dark:text-foreground/30">
                     {t("noPayments")}
                   </td>
                 </tr>
@@ -110,17 +85,6 @@ export function PaymentsAdminView({ payments }: { payments: PaymentRow[] }) {
                     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold ${STATUS_STYLES[p.status] ?? STATUS_STYLES.PENDING}`}>
                       {t(`statusLabels.${p.status.toLowerCase()}`)}
                     </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    {p.status === "PENDING" && (
-                      <button
-                        onClick={() => handleOverride(p.id)}
-                        disabled={overriding === p.id}
-                        className="text-xs font-semibold text-navy-primary hover:underline disabled:opacity-50"
-                      >
-                        {overriding === p.id ? "..." : t("markAsPaid")}
-                      </button>
-                    )}
                   </td>
                 </tr>
               ))}
