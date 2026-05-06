@@ -129,11 +129,18 @@ export function CheckoutPlanSelector({
               {isShort ? `/ ${plan.durationDays} ${t("days", { count: plan.durationDays })}` : t("perMonth")}
             </span>
           </div>
+          {plan.isSubscription && (
+            <p className="text-[10px] text-slate-400 dark:text-foreground/40 mb-2">{t("autoRenewsMonthly")}</p>
+          )}
           <div className="flex items-center gap-2 mb-5">
-            {plan.originalPriceInCents && (
-              <span className="text-sm text-slate-400 line-through">{(plan.originalPriceInCents / 100).toFixed(0)}€</span>
+            {plan.originalPriceInCents && plan.originalPriceInCents > plan.priceInCents && (
+              <>
+                <span className="text-sm text-slate-400 line-through">{(plan.originalPriceInCents / 100).toFixed(0)}€</span>
+                <DiscountBadge
+                  pct={Math.round(((plan.originalPriceInCents - plan.priceInCents) / plan.originalPriceInCents) * 100)}
+                />
+              </>
             )}
-            <DiscountBadge pct={80} />
           </div>
           <button
             onClick={(e) => { e.stopPropagation(); if (!anyLoading) onClick(); }}
@@ -202,19 +209,32 @@ export function CheckoutPlanSelector({
           <p className="text-xs font-bold text-slate-400 dark:text-foreground/40 uppercase tracking-wider mb-3">{t("orderSummary")}</p>
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-sm">
-              <span className="text-foreground/70">{selectedPlan.name}</span>
+              <span className="text-foreground/70">
+                {selectedPlan.name}
+                {selectedPlan.isSubscription && (
+                  <span className="text-[10px] text-slate-400 ml-1">({t("monthlyRecurring")})</span>
+                )}
+              </span>
               <span className="font-semibold text-foreground">{(selectedPlan.priceInCents / 100).toFixed(0)}€</span>
             </div>
             {addShortListing && shortListing && (
               <div className="flex justify-between text-sm">
-                <span className="text-foreground/70">{shortListing.name}</span>
+                <span className="text-foreground/70">
+                  {shortListing.name}
+                  <span className="text-[10px] text-slate-400 ml-1">({t("oneTime")})</span>
+                </span>
                 <span className="font-semibold text-foreground">{(shortListing.priceInCents / 100).toFixed(0)}€</span>
               </div>
             )}
             <div className="border-t border-slate-200 dark:border-slate-700/50 pt-2 flex justify-between text-sm font-bold">
-              <span className="text-foreground">{t("total")}</span>
+              <span className="text-foreground">{t("totalToday")}</span>
               <span className="text-blue-600 dark:text-blue-400">{(total / 100).toFixed(0)}€</span>
             </div>
+            {selectedPlan.isSubscription && (
+              <p className="text-[11px] text-slate-500 dark:text-foreground/50 leading-relaxed">
+                {t("subscriptionDisclaimer", { price: (selectedPlan.priceInCents / 100).toFixed(0) })}
+              </p>
+            )}
           </div>
           <button
             onClick={handlePay}
@@ -222,7 +242,7 @@ export function CheckoutPlanSelector({
             className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-            {t("payNow")} — {(total / 100).toFixed(0)}€
+            {selectedPlan.isSubscription ? t("subscribeNow") : t("payNow")} — {(total / 100).toFixed(0)}€
           </button>
         </div>
       )}

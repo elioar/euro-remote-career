@@ -1,9 +1,24 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CheckCircle } from "lucide-react";
+import { syncCheckoutSession } from "@/lib/payments/sync";
 
-export default async function CheckoutSuccessPage() {
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>;
+}) {
+  const { session_id } = await searchParams;
   const t = await getTranslations("Checkout");
+
+  // Fallback sync: ensures subscription/payment is saved even if webhook hasn't fired yet
+  if (session_id) {
+    try {
+      await syncCheckoutSession(session_id);
+    } catch (err) {
+      console.error("Session sync failed:", err);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-background flex items-center justify-center px-4">

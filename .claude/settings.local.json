@@ -40,7 +40,13 @@
       "Bash(Select-Object -First 20)",
       "Bash(npx ts-node *)",
       "Bash(npx tsx *)",
-      "Bash(dir \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\[locale]\\\\dashboard\" /b)"
+      "Bash(dir \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\[locale]\\\\dashboard\" /b)",
+      "Bash(rm \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\api\\\\admin\\\\payments\\\\[id]\\\\override\\\\route.ts\")",
+      "Bash(rmdir \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\api\\\\admin\\\\payments\\\\[id]\\\\override\")",
+      "Bash(rmdir \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\api\\\\admin\\\\payments\\\\[id]\")",
+      "Bash(tee /tmp/tsc.log)",
+      "Read(//tmp/**)",
+      "Bash(echo \"EXIT_CODE: $?\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",

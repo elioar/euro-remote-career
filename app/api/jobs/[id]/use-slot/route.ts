@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { requireEmployer } from "@/lib/utils/auth";
 import { prisma } from "@/lib/prisma";
 import { getActivePlanForEmployer } from "@/lib/payments/queries";
-import { submitForReview } from "@/lib/jobs/lifecycle";
 
 export async function POST(
   req: Request,
@@ -20,10 +19,17 @@ export async function POST(
   if (job.status !== "DRAFT" && job.status !== "REJECTED") {
     return NextResponse.json({ error: "Job is not in a submittable state" }, { status: 400 });
   }
+  if (!job.title || !job.description || !job.category || !job.remoteType) {
+    return NextResponse.json(
+      { error: "Title, description, category, and remote type are required" },
+      { status: 400 }
+    );
+  }
 
   const body = await req.json().catch(() => ({}));
   const { paymentId } = body as { paymentId?: string };
 
+  // Path A: one-time payment slot (short-listing or extra-job)
   if (paymentId) {
     const payment = await prisma.payment.findUnique({
       where: { id: paymentId },
@@ -32,55 +38,78 @@ export async function POST(
     if (!payment || payment.employerId !== auth.profile.id || payment.status !== "SUCCEEDED") {
       return NextResponse.json({ error: "Invalid payment" }, { status: 400 });
     }
+    if (payment.plan.slug !== "short-listing" && payment.plan.slug !== "extra-job") {
+      return NextResponse.json({ error: "This payment cannot be used as a one-time slot" }, { status: 400 });
+    }
+    if (payment.jobId) {
+      return NextResponse.json({ error: "This slot has already been used" }, { status: 409 });
+    }
+    const expiresAt = new Date(payment.paidAt!);
+    expiresAt.setDate(expiresAt.getDate() + payment.plan.durationDays);
+    if (new Date() > expiresAt) {
+      return NextResponse.json({ error: "This slot has expired" }, { status: 402 });
+    }
+    if (payment.plan.slug === "extra-job") {
+      const activePlan = await getActivePlanForEmployer(auth.profile.id);
+      if (!activePlan) {
+        return NextResponse.json(
+          { error: "An active subscription is required to use extra job slots" },
+          { status: 402 }
+        );
+      }
+    }
 
-    if (payment.plan.slug === "short-listing" || payment.plan.slug === "extra-job") {
-      // Single-use payments: must be unused (jobId null) and not expired
-      if (payment.jobId) {
-        return NextResponse.json({ error: "This slot has already been used" }, { status: 409 });
-      }
-      const expiresAt = new Date(payment.paidAt!);
-      expiresAt.setDate(expiresAt.getDate() + payment.plan.durationDays);
-      if (new Date() > expiresAt) {
-        return NextResponse.json({ error: "This slot has expired" }, { status: 402 });
-      }
-      // Extra-job requires an active base plan
-      if (payment.plan.slug === "extra-job") {
-        const activePlan = await getActivePlanForEmployer(auth.profile.id);
-        if (!activePlan) {
-          return NextResponse.json({ error: "An active plan is required to use extra job slots" }, { status: 402 });
-        }
-      }
-      // Link job to this payment
-      await prisma.payment.update({ where: { id: paymentId }, data: { jobId: id } });
-    } else if (!payment.plan.isAddon) {
-      // Regular plan: check slots
-      const expiresAt = new Date(payment.paidAt!);
-      expiresAt.setDate(expiresAt.getDate() + payment.plan.durationDays);
-      if (new Date() > expiresAt) {
-        return NextResponse.json({ error: "Plan has expired" }, { status: 402 });
-      }
-      const slotsUsed = await prisma.job.count({
-        where: {
-          employerId: auth.profile.id,
-          status: { in: ["PENDING_REVIEW", "PUBLISHED"] },
-          createdAt: { gte: payment.paidAt! },
-          payments: { none: { status: "SUCCEEDED", plan: { slug: { in: ["short-listing", "extra-job"] } } } },
-        },
+    // Atomic claim + publish in single transaction
+    try {
+      await prisma.$transaction(async (tx) => {
+        const claimed = await tx.payment.updateMany({
+          where: { id: paymentId, jobId: null },
+          data: { jobId: id },
+        });
+        if (claimed.count === 0) throw new Error("This slot was just used");
+        await tx.job.update({
+          where: { id, status: { in: ["DRAFT", "REJECTED"] } },
+          data: { status: "PENDING_REVIEW", rejectionReason: null },
+        });
       });
-      if (slotsUsed >= payment.plan.jobSlots) {
-        return NextResponse.json({ error: "No available slots in this plan" }, { status: 402 });
-      }
-    } else {
-      return NextResponse.json({ error: "Invalid plan type" }, { status: 400 });
+    } catch (err) {
+      const msg = (err as Error).message;
+      return NextResponse.json({ error: msg || "Failed to claim slot" }, { status: 409 });
     }
-  } else {
-    const activePlan = await getActivePlanForEmployer(auth.profile.id);
-    if (!activePlan) return NextResponse.json({ error: "No active plan" }, { status: 402 });
-    if (activePlan.totalSlots - activePlan.slotsUsed <= 0) {
-      return NextResponse.json({ error: "No available slots in your plan" }, { status: 402 });
-    }
+
+    return NextResponse.json({ ok: true });
   }
 
-  await submitForReview(id, auth.authUser.id);
+  // Path B: use base subscription slot
+  const activePlan = await getActivePlanForEmployer(auth.profile.id);
+  if (!activePlan) {
+    return NextResponse.json({ error: "No active subscription" }, { status: 402 });
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const slotsUsed = await tx.job.count({
+        where: {
+          employerId: auth.profile!.id,
+          status: { in: ["PENDING_REVIEW", "PUBLISHED"] },
+          createdAt: { gte: activePlan.periodStart },
+          payments: {
+            none: { status: "SUCCEEDED", plan: { slug: { in: ["short-listing", "extra-job"] } } },
+          },
+        },
+      });
+      if (slotsUsed >= activePlan.totalSlots) {
+        throw new Error("No available slots in your plan");
+      }
+      await tx.job.update({
+        where: { id, status: { in: ["DRAFT", "REJECTED"] } },
+        data: { status: "PENDING_REVIEW", rejectionReason: null },
+      });
+    });
+  } catch (err) {
+    const msg = (err as Error).message;
+    return NextResponse.json({ error: msg || "Failed to claim slot" }, { status: 402 });
+  }
+
   return NextResponse.json({ ok: true });
 }

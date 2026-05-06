@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireEmployer } from "@/lib/utils/auth";
 import { prisma } from "@/lib/prisma";
-
-const NON_PLAN_SLUGS = ["short-listing", "extra-job"];
+import { countBaseSlotJobs, getActivePlanForEmployer } from "@/lib/payments/queries";
 
 export async function GET() {
   const auth = await requireEmployer();
@@ -12,14 +11,9 @@ export async function GET() {
   const employerId = auth.profile.id;
   const now = new Date();
 
-  const payments = await prisma.payment.findMany({
-    where: { employerId, status: "SUCCEEDED" },
-    include: { plan: true },
-    orderBy: { paidAt: "desc" },
-  });
-
   const usablePlans: {
-    paymentId: string;
+    paymentId?: string;
+    subscriptionId?: string;
     name: string;
     slug: string;
     totalSlots: number;
@@ -28,29 +22,43 @@ export async function GET() {
     daysLeft: number;
   }[] = [];
 
-  // Determine if there's an active base plan first
-  const hasActivePlan = payments.some((p) => {
-    if (p.plan.isAddon || p.plan.slug === "short-listing" || !p.paidAt) return false;
-    const exp = new Date(p.paidAt);
-    exp.setDate(exp.getDate() + p.plan.durationDays);
-    return now <= exp;
-  });
+  const activePlan = await getActivePlanForEmployer(employerId);
+  const hasActivePlan = !!activePlan;
 
-  for (const payment of payments) {
-    if (!payment.paidAt) continue;
+  if (activePlan) {
+    const availableSlots = Math.max(0, activePlan.totalSlots - activePlan.slotsUsed);
+    if (availableSlots > 0) {
+      usablePlans.push({
+        subscriptionId: activePlan.subscriptionId,
+        name: activePlan.name,
+        slug: activePlan.slug,
+        totalSlots: activePlan.totalSlots,
+        slotsUsed: activePlan.slotsUsed,
+        availableSlots,
+        daysLeft: activePlan.daysLeft,
+      });
+    }
+  }
 
-    const expiresAt = new Date(payment.paidAt);
-    expiresAt.setDate(expiresAt.getDate() + payment.plan.durationDays);
-    if (now > expiresAt) continue;
+  // Extra-job: only when an active base plan exists
+  if (hasActivePlan) {
+    const extraJobPayments = await prisma.payment.findMany({
+      where: {
+        employerId,
+        status: "SUCCEEDED",
+        plan: { slug: "extra-job" },
+        jobId: null,
+      },
+      include: { plan: true },
+      orderBy: { paidAt: "desc" },
+    });
 
-    const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (payment.plan.slug === "short-listing") continue;
-
-    if (payment.plan.slug === "extra-job") {
-      // Extra-job only usable when an active base plan exists
-      if (!hasActivePlan) continue;
-      if (payment.jobId !== null) continue;
+    for (const payment of extraJobPayments) {
+      if (!payment.paidAt) continue;
+      const expiresAt = new Date(payment.paidAt);
+      expiresAt.setDate(expiresAt.getDate() + payment.plan.durationDays);
+      if (now > expiresAt) continue;
+      const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       usablePlans.push({
         paymentId: payment.id,
         name: payment.plan.name,
@@ -58,32 +66,6 @@ export async function GET() {
         totalSlots: 1,
         slotsUsed: 0,
         availableSlots: 1,
-        daysLeft,
-      });
-      continue;
-    }
-
-    if (payment.plan.isAddon) continue;
-
-    // Base plan: count only jobs NOT submitted via short-listing or extra-job
-    const slotsUsed = await prisma.job.count({
-      where: {
-        employerId,
-        status: { in: ["PENDING_REVIEW", "PUBLISHED"] },
-        createdAt: { gte: payment.paidAt },
-        payments: { none: { status: "SUCCEEDED", plan: { slug: { in: NON_PLAN_SLUGS } } } },
-      },
-    });
-
-    const availableSlots = Math.max(0, payment.plan.jobSlots - slotsUsed);
-    if (availableSlots > 0) {
-      usablePlans.push({
-        paymentId: payment.id,
-        name: payment.plan.name,
-        slug: payment.plan.slug,
-        totalSlots: payment.plan.jobSlots,
-        slotsUsed,
-        availableSlots,
         daysLeft,
       });
     }
@@ -99,6 +81,9 @@ export async function GET() {
       select: { id: true, name: true, priceInCents: true },
     }),
   ]);
+
+  // Suppress reference to keep linter quiet — still useful to keep around
+  void countBaseSlotJobs;
 
   return NextResponse.json({
     usablePlans,

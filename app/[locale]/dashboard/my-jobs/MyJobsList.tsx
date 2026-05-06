@@ -381,7 +381,7 @@ export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]
                         onClick={() => handleUnarchive(job.id)}
                         disabled={actionLoading === job.id}
                         className="p-2 rounded-lg text-foreground/50 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors disabled:opacity-50"
-                        title={job.status === "EXPIRED" ? "Repost" : "Unarchive"}
+                        title={job.status === "EXPIRED" ? t("repost") : t("unarchive")}
                       >
                         {job.status === "EXPIRED" ? <RefreshCw className="w-4 h-4" /> : <ArchiveRestore className="w-4 h-4" />}
                       </button>
@@ -402,12 +402,12 @@ export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]
                   <div className="flex flex-row flex-nowrap items-center gap-2 mt-4 pt-4 border-t border-foreground/5 text-[11px] font-semibold text-foreground/70 overflow-x-auto no-scrollbar">
                     {appCount > 0 && (
                       <span className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-2.5 py-1 rounded-lg whitespace-nowrap">
-                        <Users className="w-3.5 h-3.5" /> {appCount} {appCount === 1 ? "Apply" : "Applies"}
+                        <Users className="w-3.5 h-3.5" /> {appCount} {appCount === 1 ? t("applyOne") : t("applyMany")}
                       </span>
                     )}
                     {appCount === 0 && (
                       <span className="flex items-center gap-1.5 text-foreground/40 px-1 py-1 whitespace-nowrap">
-                        <Users className="w-3.5 h-3.5" /> 0 Applies
+                        <Users className="w-3.5 h-3.5" /> 0 {t("applyMany")}
                       </span>
                     )}
                     {days !== null && (
@@ -421,12 +421,12 @@ export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]
                           : "bg-blue-500/10 text-blue-400 dark:text-blue-400"
                       }`}>
                         <Clock className="w-3.5 h-3.5" />
-                        {days < 0 ? t("expired") : days === 0 ? t("expiresToday") : `${days}d left`}
+                        {days < 0 ? t("expired") : days === 0 ? t("expiresToday") : t("daysLeft", { days })}
                       </span>
                     )}
                     {job.status === "PUBLISHED" && (
                       <span className="flex items-center gap-1.5 bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-2.5 py-1 rounded-lg whitespace-nowrap">
-                        <Eye className="w-3.5 h-3.5" /> {(job.id.charCodeAt(0) * 17) % 500 + 40} Views
+                        <Eye className="w-3.5 h-3.5" /> {(job.id.charCodeAt(0) * 17) % 500 + 40} {t("views")}
                       </span>
                     )}
                   </div>

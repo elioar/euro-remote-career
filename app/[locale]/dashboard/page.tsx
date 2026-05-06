@@ -2,16 +2,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Briefcase, User, Settings, Mail, Bell, LogOut, Eye, Send, FileText, CheckCircle } from "lucide-react";
+import { Briefcase, User, Settings, Mail, Bell } from "lucide-react";
 import SignOutButton from "./SignOutButton";
 import { getTranslations } from "next-intl/server";
 import { CandidateDashboardContent } from "./CandidateDashboardContent";
 import { Header } from "@/app/components/Header";
 import { getPublishedJobs } from "@/lib/jobs/queries";
-import MyJobsList from "./my-jobs/MyJobsList";
-import LatestApplications from "./LatestApplications";
 import EmployerDashboardContent from "./EmployerDashboardContent";
-import { getActivePlanForEmployer, getUsedJobSlots } from "@/lib/payments/queries";
+import { getActivePlanForEmployer } from "@/lib/payments/queries";
 export default async function DashboardPage() {
   const t = await getTranslations("Dashboard");
   const supabase = await createClient();
@@ -71,36 +69,43 @@ export default async function DashboardPage() {
   const totalApplications = employerJobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
   const draftJobs = employerJobs.filter((j) => j.status === "DRAFT").length;
 
-  const [activePlan, usedJobSlots, shortListingPayments, extraJobPayments] = user.employerProfile
+  const now = new Date();
+  const [activePlan, shortListingPayments, extraJobPayments] = user.employerProfile
     ? await Promise.all([
         getActivePlanForEmployer(user.employerProfile.id),
-        getUsedJobSlots(user.employerProfile.id),
         prisma.payment.findMany({
           where: { employerId: user.employerProfile.id, status: "SUCCEEDED", plan: { slug: "short-listing" } },
-          include: { job: { select: { status: true } } },
+          include: { job: { select: { status: true } }, plan: { select: { durationDays: true } } },
           orderBy: { paidAt: "asc" },
         }),
         prisma.payment.findMany({
           where: { employerId: user.employerProfile.id, status: "SUCCEEDED", plan: { slug: "extra-job" } },
-          select: { id: true, jobId: true, paidAt: true },
+          select: { id: true, jobId: true, paidAt: true, plan: { select: { durationDays: true } } },
           orderBy: { paidAt: "asc" },
         }),
       ])
-    : [null, 0, [], []];
+    : [null, [], []];
 
-  const slPayments = shortListingPayments as { id: string; jobId: string | null; job: { status: string } | null }[];
+  type SlPayment = { id: string; jobId: string | null; paidAt: Date | null; job: { status: string } | null; plan: { durationDays: number } };
+  const slPayments = shortListingPayments as SlPayment[];
   const activeQuickListings = slPayments.filter(
     (p) => p.job && ["PENDING_REVIEW", "PUBLISHED"].includes(p.job.status)
   ).length;
   const totalQuickListings = slPayments.length;
-  const unusedShortListingPayments = slPayments.filter((p) => p.jobId === null);
+  // Unused = no jobId AND not expired
+  const unusedShortListingPayments = slPayments.filter((p) => {
+    if (p.jobId !== null || !p.paidAt) return false;
+    const exp = new Date(p.paidAt);
+    exp.setDate(exp.getDate() + p.plan.durationDays);
+    return now <= exp;
+  });
 
-  const now = new Date();
-  const ejPayments = extraJobPayments as { id: string; jobId: string | null; paidAt: Date | null }[];
+  type EjPayment = { id: string; jobId: string | null; paidAt: Date | null; plan: { durationDays: number } };
+  const ejPayments = extraJobPayments as EjPayment[];
   const unusedExtraJobSlots = ejPayments.filter((p) => {
     if (p.jobId !== null || !p.paidAt) return false;
     const exp = new Date(p.paidAt);
-    exp.setDate(exp.getDate() + 30);
+    exp.setDate(exp.getDate() + p.plan.durationDays);
     return now <= exp;
   }).length;
   const usedExtraJobSlots = ejPayments.filter((p) => p.jobId !== null).length;
@@ -179,7 +184,7 @@ export default async function DashboardPage() {
               className="px-5 py-2.5 rounded-xl bg-navy-primary text-white text-[13px] font-bold hover:bg-navy-hover transition-all shadow-md hover:shadow-lg flex items-center gap-2 group mr-2"
             >
               <Briefcase className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              Post a Job
+              {t("postAJob")}
             </Link>
 
             <button
@@ -236,7 +241,7 @@ export default async function DashboardPage() {
             className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-navy-primary text-white text-sm font-bold shadow-xl shadow-navy-primary/20 active:scale-[0.98] transition-all"
           >
             <Briefcase className="w-5 h-5 transition-transform group-active:scale-90" />
-            <span>Post a Job</span>
+            <span>{t("postAJob")}</span>
           </Link>
           <div className="flex items-center gap-2">
             <button className="h-12 w-12 flex items-center justify-center rounded-2xl bg-card-background border border-foreground/10 text-foreground/70 active:bg-foreground/5 shadow-sm transition-all active:scale-95">
@@ -277,7 +282,6 @@ export default async function DashboardPage() {
             draftJobs={draftJobs}
             employerProfile={user.employerProfile ? JSON.parse(JSON.stringify(user.employerProfile)) : null}
             activePlan={activePlan}
-            usedJobSlots={usedJobSlots}
             activeQuickListings={activeQuickListings}
             totalQuickListings={totalQuickListings}
             unusedShortListingPaymentId={unusedShortListingPayments[0]?.id ?? null}

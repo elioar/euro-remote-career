@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { PaymentWithDetails } from "@/lib/payments/queries";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -16,6 +16,8 @@ function formatPrice(cents: number) {
 
 export function BillingHistory({ payments }: { payments: PaymentWithDetails[] }) {
   const t = useTranslations("Billing");
+  const locale = useLocale();
+  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
 
   if (payments.length === 0) {
     return (
@@ -43,7 +45,7 @@ export function BillingHistory({ payments }: { payments: PaymentWithDetails[] })
             {payments.map((p) => (
               <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-card-active transition-colors">
                 <td className="px-6 py-4 text-slate-600 dark:text-foreground/70 whitespace-nowrap">
-                  {new Date(p.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  {new Date(p.createdAt).toLocaleDateString(dateLocale, { day: "numeric", month: "short", year: "numeric" })}
                 </td>
                 <td className="px-6 py-4 font-medium text-foreground">{p.plan.name}</td>
                 <td className="px-6 py-4 text-slate-500 dark:text-foreground/50">

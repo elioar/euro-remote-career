@@ -18,6 +18,7 @@ async function main() {
       durationDays: 30,
       jobSlots: 1,
       isAddon: false,
+      isSubscription: true,
       sortOrder: 0,
     },
     {
@@ -29,6 +30,7 @@ async function main() {
       durationDays: 30,
       jobSlots: 1,
       isAddon: true,
+      isSubscription: false,
       sortOrder: 1,
     },
     {
@@ -40,6 +42,7 @@ async function main() {
       durationDays: 30,
       jobSlots: 6,
       isAddon: false,
+      isSubscription: true,
       sortOrder: 2,
     },
     {
@@ -51,6 +54,7 @@ async function main() {
       durationDays: 10,
       jobSlots: 1,
       isAddon: false,
+      isSubscription: false,
       sortOrder: 3,
     },
   ];

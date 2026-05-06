@@ -1,14 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
-import { Briefcase, FileText, CheckCircle, Send, Eye, ShieldCheck, Zap, LifeBuoy, TrendingUp, ArrowRight } from "lucide-react";
+import { Link, useRouter } from "@/i18n/navigation";
+import { FileText, CheckCircle, Send, Eye, ShieldCheck, Zap, LifeBuoy, TrendingUp, ArrowRight, AlertTriangle } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import MyJobsList from "./my-jobs/MyJobsList";
 import LatestApplications, { type RealApplication } from "./LatestApplications";
 
 type JobData = any;
 type ApplicationData = RealApplication;
+
+interface ActivePlan {
+  subscriptionId: string;
+  name: string;
+  slug: string;
+  basePlanSlots: number;
+  totalSlots: number;
+  slotsUsed: number;
+  daysLeft: number;
+  cancelAtPeriodEnd: boolean;
+  status: string;
+}
 
 interface Props {
   employerJobs: JobData[];
@@ -23,8 +35,7 @@ interface Props {
     website: string | null;
     description: string | null;
   } | null;
-  activePlan?: { name: string; slug: string; basePlanSlots: number; totalSlots: number; slotsUsed: number; daysLeft: number } | null;
-  usedJobSlots?: number;
+  activePlan?: ActivePlan | null;
   activeQuickListings?: number;
   totalQuickListings?: number;
   unusedShortListingPaymentId?: string | null;
@@ -42,24 +53,47 @@ export default function EmployerDashboardContent({
   draftJobs,
   employerProfile,
   activePlan = null,
-  usedJobSlots = 0,
   activeQuickListings = 0,
   totalQuickListings = 0,
   unusedShortListingPaymentId = null,
-  unusedShortListingsCount = 0,
+  unusedShortListingsCount: _unusedShortListingsCount = 0,
   unusedExtraJobSlots = 0,
   usedExtraJobSlots = 0,
 }: Props) {
   const t = useTranslations("Dashboard");
   const locale = useLocale();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"applications" | "jobs">("applications");
+  const [cancelLoading, setCancelLoading] = useState(false);
+  void _unusedShortListingsCount;
+
+  async function handleCancelSubscription() {
+    if (!confirm(t("confirmCancelSubscription"))) return;
+    setCancelLoading(true);
+    try {
+      const res = await fetch("/api/employer/subscription/cancel", { method: "POST" });
+      if (res.ok) router.refresh();
+    } finally {
+      setCancelLoading(false);
+    }
+  }
+
+  async function handleReactivateSubscription() {
+    setCancelLoading(true);
+    try {
+      const res = await fetch("/api/employer/subscription/reactivate", { method: "POST" });
+      if (res.ok) router.refresh();
+    } finally {
+      setCancelLoading(false);
+    }
+  }
 
   // Calculate Profile Strength
   const profileSteps = [
-    { label: "Company Name", done: !!employerProfile?.companyName },
-    { label: "Company Logo", done: !!employerProfile?.logoUrl },
-    { label: "Website", done: !!employerProfile?.website },
-    { label: "Description", done: !!employerProfile?.description },
+    { label: t("profileCompanyName"), done: !!employerProfile?.companyName },
+    { label: t("profileCompanyLogo"), done: !!employerProfile?.logoUrl },
+    { label: t("profileWebsite"), done: !!employerProfile?.website },
+    { label: t("profileDescription"), done: !!employerProfile?.description },
   ];
   const completedSteps = profileSteps.filter(s => s.done).length;
   const strengthPercentage = Math.round((completedSteps / profileSteps.length) * 100);
@@ -88,44 +122,75 @@ export default function EmployerDashboardContent({
           <Zap className="w-20 h-20" />
         </div>
         <div className="relative">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold uppercase tracking-wider">
               {activePlan ? activePlan.name : t("freePlan")}
             </span>
             {activePlan && (
-              <span className="text-[10px] text-white/60">{activePlan.daysLeft}d left</span>
+              <span
+                className={`text-[10px] ${
+                  activePlan.daysLeft <= 7 ? "text-amber-200 font-bold" : "text-white/60"
+                }`}
+                title={t("renewsIn", { days: activePlan.daysLeft })}
+              >
+                {activePlan.cancelAtPeriodEnd
+                  ? t("endsInDays", { days: activePlan.daysLeft })
+                  : t("renewsInDays", { days: activePlan.daysLeft })}
+              </span>
+            )}
+            {activePlan?.cancelAtPeriodEnd && (
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/30 text-amber-100 text-[9px] font-bold uppercase tracking-wider">
+                {t("canceling")}
+              </span>
             )}
           </div>
+          {/* Empty state explanation */}
+          {!activePlan && (
+            <p className="text-xs text-white/70 mb-4 leading-relaxed">
+              {t("noPlanDesc")}
+            </p>
+          )}
           {/* Stats row */}
-          <div className="flex items-center gap-4 mb-4 flex-wrap">
-            <div>
-              <p className="text-[10px] text-white/60 mb-0.5">{t("postingSlots")}</p>
-              <div className="flex items-end gap-1">
-                <span className="text-2xl font-bold">
-                  {activePlan ? `${activePlan.slotsUsed}/${activePlan.totalSlots}` : "0/0"}
-                </span>
+          {activePlan && (
+            <div className="flex items-center gap-4 mb-4 flex-wrap">
+              <div>
+                <p className="text-[10px] text-white/60 mb-0.5">{t("postingSlots")}</p>
+                <div className="flex items-end gap-1">
+                  <span className="text-2xl font-bold">
+                    {activePlan.slotsUsed}/{activePlan.totalSlots}
+                  </span>
+                </div>
+                <span className="text-xs text-white/50">{t("used")}</span>
               </div>
-              <span className="text-xs text-white/50">{t("used")}</span>
+              {(unusedExtraJobSlots + usedExtraJobSlots) > 0 && (
+                <div className="border-l border-white/20 pl-4">
+                  <p className="text-[10px] text-white/60 mb-0.5">{t("extraSlots")}</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-2xl font-bold">{usedExtraJobSlots}/{usedExtraJobSlots + unusedExtraJobSlots}</span>
+                  </div>
+                  <span className="text-xs text-white/50">{t("used")}</span>
+                </div>
+              )}
+              {totalQuickListings > 0 && (
+                <div className="border-l border-white/20 pl-4">
+                  <p className="text-[10px] text-white/60 mb-0.5">{t("quickListings")}</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-2xl font-bold">{activeQuickListings}/{totalQuickListings}</span>
+                  </div>
+                  <span className="text-xs text-white/50">{t("active")}</span>
+                </div>
+              )}
             </div>
-            {(unusedExtraJobSlots + usedExtraJobSlots) > 0 && (
-              <div className="border-l border-white/20 pl-4">
-                <p className="text-[10px] text-white/60 mb-0.5">{t("extraSlots")}</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-2xl font-bold">{usedExtraJobSlots}/{usedExtraJobSlots + unusedExtraJobSlots}</span>
-                </div>
-                <span className="text-xs text-white/50">{t("used")}</span>
-              </div>
-            )}
-            {totalQuickListings > 0 && (
-              <div className="border-l border-white/20 pl-4">
-                <p className="text-[10px] text-white/60 mb-0.5">{t("quickListings")}</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-2xl font-bold">{activeQuickListings}/{totalQuickListings}</span>
-                </div>
-                <span className="text-xs text-white/50">{t("used")}</span>
-              </div>
-            )}
-          </div>
+          )}
+          {/* Expiry warning */}
+          {activePlan && activePlan.daysLeft <= 7 && !activePlan.cancelAtPeriodEnd && (
+            <div className="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-300/30">
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-200 shrink-0" />
+              <span className="text-[10px] text-amber-100 font-medium">
+                {t("renewalSoonHint", { days: activePlan.daysLeft })}
+              </span>
+            </div>
+          )}
           {/* Buttons */}
           <div className="flex flex-col gap-2">
             {unusedShortListingPaymentId && (
@@ -143,6 +208,24 @@ export default function EmployerDashboardContent({
               >
                 {!activePlan ? t("getStarted") : t("upgradeToPro")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
+            )}
+            {activePlan && !activePlan.cancelAtPeriodEnd && (
+              <button
+                onClick={handleCancelSubscription}
+                disabled={cancelLoading}
+                className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-[11px] font-semibold transition-colors disabled:opacity-50"
+              >
+                {cancelLoading ? "…" : t("cancelSubscription")}
+              </button>
+            )}
+            {activePlan?.cancelAtPeriodEnd && (
+              <button
+                onClick={handleReactivateSubscription}
+                disabled={cancelLoading}
+                className="w-full py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-[11px] font-bold transition-colors disabled:opacity-50"
+              >
+                {cancelLoading ? "…" : t("reactivateSubscription")}
+              </button>
             )}
             <Link
               href="/dashboard/billing"
@@ -205,7 +288,7 @@ export default function EmployerDashboardContent({
           <MiniStat icon={FileText} value={totalJobs} label={t("totalJobs")} colorClass="text-blue-500" />
           <MiniStat icon={CheckCircle} value={publishedJobs} label={t("published")} colorClass="text-green-500" />
           <MiniStat icon={Send} value={totalApplications} label={t("applications")} colorClass="text-emerald-500" />
-          <MiniStat icon={Eye} value={draftJobs} label="Drafts" colorClass="text-amber-500" />
+          <MiniStat icon={Eye} value={draftJobs} label={t("drafts")} colorClass="text-amber-500" />
         </div>
       </div>
 

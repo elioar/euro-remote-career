@@ -20,17 +20,19 @@ model User {
 }
 
 model EmployerProfile {
-  id          String    @id @default(cuid())
-  userId      String    @unique @db.Uuid
-  companyName String
-  logoUrl     String?
-  website     String?
-  description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  jobs        Job[]
-  payments    Payment[]
+  id               String         @id @default(cuid())
+  userId           String         @unique @db.Uuid
+  companyName      String
+  logoUrl          String?
+  website          String?
+  description      String?
+  stripeCustomerId String?        @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs             Job[]
+  payments         Payment[]
+  subscriptions    Subscription[]
 }
 
 model CandidateProfile {
@@ -147,20 +149,22 @@ enum ApplicationStatus {
 }
 
 model Plan {
-  id                   String    @id @default(cuid())
-  slug                 String    @unique
+  id                   String         @id @default(cuid())
+  slug                 String         @unique
   name                 String
   description          String?
   priceInCents         Int
   originalPriceInCents Int?
   durationDays         Int
   jobSlots             Int
-  isAddon              Boolean   @default(false)
-  isActive             Boolean   @default(true)
-  sortOrder            Int       @default(0)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  isAddon              Boolean        @default(false)
+  isActive             Boolean        @default(true)
+  isSubscription       Boolean        @default(false)
+  sortOrder            Int            @default(0)
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
   payments             Payment[]
+  subscriptions        Subscription[]
 }
 
 model Payment {
@@ -168,8 +172,10 @@ model Payment {
   employerId            String
   jobId                 String?
   planId                String
-  stripeSessionId       String          @unique
+  subscriptionId        String?
+  stripeSessionId       String?
   stripePaymentIntentId String?
+  stripeInvoiceId       String?         @unique
   amountInCents         Int
   currency              String          @default("eur")
   status                PaymentStatus   @default(PENDING)
@@ -180,10 +186,34 @@ model Payment {
   employer              EmployerProfile @relation(fields: [employerId], references: [id], onDelete: Cascade)
   job                   Job?            @relation(fields: [jobId], references: [id], onDelete: SetNull)
   plan                  Plan            @relation(fields: [planId], references: [id])
+  subscription          Subscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   @@index([employerId])
   @@index([jobId])
   @@index([stripeSessionId])
+  @@index([subscriptionId])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  employerId           String
+  planId               String
+  stripeSubscriptionId String             @unique
+  stripeCustomerId     String
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  employer             EmployerProfile    @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  plan                 Plan               @relation(fields: [planId], references: [id])
+  payments             Payment[]
+
+  @@index([employerId])
+  @@index([status])
 }
 
 enum PaymentStatus {
@@ -191,4 +221,12 @@ enum PaymentStatus {
   SUCCEEDED
   FAILED
   REFUNDED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  TRIALING
 }
