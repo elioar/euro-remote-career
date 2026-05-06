@@ -6,13 +6,9 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  try {
-    await prisma.job.update({
-      where: { id, status: "PUBLISHED" },
-      data: { viewCount: { increment: 1 } },
-    });
-  } catch {
-    // Job not found or not published — silently ignore
-  }
+  await prisma.job.updateMany({
+    where: { id, status: "PUBLISHED" },
+    data: { viewCount: { increment: 1 } },
+  });
   return NextResponse.json({ ok: true });
 }
