@@ -9,6 +9,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Clock, Users, MapPin, Banknote, CalendarDays, ExternalLink, X } from "lucide-react";
 import { DEMO_JOBS, type DemoJob, type JobCategory } from "../../../lib/demo-jobs";
 
+const trackedViews = new Set<string>();
+
+function trackView(jobDbId: string) {
+  if (trackedViews.has(jobDbId)) return;
+  trackedViews.add(jobDbId);
+  fetch(`/api/jobs/${jobDbId}/view`, { method: "POST" }).catch(() => {});
+}
+
 type JobsPageContentProps = {
   dbJobs?: DemoJob[];
 };
@@ -244,9 +252,7 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
 // Desktop panel
 function JobDetailPanel({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typeof useTranslations>; onClose: () => void }) {
   useEffect(() => {
-    if (job.isInternalJob && job.jobDbId) {
-      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
-    }
+    if (job.isInternalJob && job.jobDbId) trackView(job.jobDbId);
   }, [job.jobDbId]);
 
   return (
@@ -293,11 +299,8 @@ function MobileBottomSheet({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<
   const scrollRef = useRef<HTMLDivElement>(null);
   const dragY = useRef(0);
 
-  // Track view for internal jobs
   useEffect(() => {
-    if (job.isInternalJob && job.jobDbId) {
-      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
-    }
+    if (job.isInternalJob && job.jobDbId) trackView(job.jobDbId);
   }, [job.jobDbId]);
 
   // Lock body scroll while open

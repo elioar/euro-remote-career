@@ -31,6 +31,13 @@ import { ApplyModal } from "@/app/[locale]/jobs/[slug]/ApplyModal";
 type CandidateCV = { id: string; fileName: string; storagePath: string };
 
 const easeCubic = [0.22, 1, 0.36, 1] as [number, number, number, number];
+
+const trackedViews = new Set<string>();
+function trackView(jobDbId: string) {
+  if (trackedViews.has(jobDbId)) return;
+  trackedViews.add(jobDbId);
+  fetch(`/api/jobs/${jobDbId}/view`, { method: "POST" }).catch(() => {});
+}
 const cardVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: easeCubic } },
@@ -458,9 +465,7 @@ function MobileJobSheet({
   onToggleSave?: (e: React.MouseEvent) => void;
 }) {
   useEffect(() => {
-    if (job.isInternalJob && job.jobDbId) {
-      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
-    }
+    if (job.isInternalJob && job.jobDbId) trackView(job.jobDbId);
   }, [job.jobDbId]);
 
   useEffect(() => {
@@ -687,11 +692,8 @@ export function CandidateDashboardContent({
     return visibleJobs[0];
   }, [visibleJobs, selectedJob, isDesktop]);
 
-  // Track view when desktop panel changes to a new internal job
   useEffect(() => {
-    if (activeDesktopJob?.isInternalJob && activeDesktopJob.jobDbId) {
-      fetch(`/api/jobs/${activeDesktopJob.jobDbId}/view`, { method: "POST" }).catch(() => {});
-    }
+    if (activeDesktopJob?.isInternalJob && activeDesktopJob.jobDbId) trackView(activeDesktopJob.jobDbId);
   }, [activeDesktopJob?.jobDbId]);
 
   const searchSectionRef = useRef<HTMLDivElement>(null);
