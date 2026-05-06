@@ -6,6 +6,7 @@ import { Footer } from "../../../components/Footer";
 import { getJobBySlug, type DemoJob } from "../../../../lib/demo-jobs";
 import { getPublishedJobBySlug } from "@/lib/jobs/queries";
 import { JobDetailContent } from "./JobDetailContent";
+import { ViewTracker } from "./ViewTracker";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 
@@ -144,6 +145,7 @@ export default async function JobPage({ params }: Props) {
       />
       <Header />
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+        {job.isInternalJob && job.jobDbId && <ViewTracker jobId={job.jobDbId} />}
         <JobDetailContent job={job} candidateApplyData={candidateApplyData} isLoggedIn={isLoggedIn} isEmployer={isEmployer} />
       </main>
       <Footer />

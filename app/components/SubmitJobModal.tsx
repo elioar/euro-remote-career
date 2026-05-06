@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { X, Layers, Clock, Loader2, ArrowRight, CheckCircle2, ShoppingCart, Plus } from "lucide-react";
 
 type UsablePlan = {
-  paymentId: string;
+  id: string;
+  type: "subscription" | "payment";
+  paymentId?: string;
   name: string;
   slug: string;
   totalSlots: number;
@@ -39,7 +41,7 @@ export function SubmitJobModal({
   const router = useRouter();
   const [status, setStatus] = useState<PlanStatus | null>(null);
   const [fetching, setFetching] = useState(false);
-  const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [loading, setLoading] = useState<"slot" | "quick" | "extra" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,13 +49,13 @@ export function SubmitJobModal({
     if (!isOpen) return;
     setStatus(null);
     setError(null);
-    setSelectedPaymentId(null);
+    setSelectedPlanId(null);
     setFetching(true);
     fetch("/api/employer/plan-status")
       .then((r) => r.json())
       .then((d: PlanStatus) => {
         setStatus(d);
-        if (d.usablePlans.length === 1) setSelectedPaymentId(d.usablePlans[0].paymentId);
+        if (d.usablePlans.length === 1) setSelectedPlanId(d.usablePlans[0].id);
       })
       .catch(() => setError(t("errorGeneric")))
       .finally(() => setFetching(false));
@@ -62,16 +64,20 @@ export function SubmitJobModal({
   if (!isOpen) return null;
 
   const hasPlans = (status?.usablePlans.length ?? 0) > 0;
+  const selectedPlan = status?.usablePlans.find((p) => p.id === selectedPlanId);
 
   async function handleUseSlot() {
-    if (!jobId || !selectedPaymentId) return;
+    if (!jobId || !selectedPlanId) return;
     setLoading("slot");
     setError(null);
+    const selectedPlan = status?.usablePlans.find((p) => p.id === selectedPlanId);
     try {
       const res = await fetch(`/api/jobs/${jobId}/use-slot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId: selectedPaymentId }),
+        body: JSON.stringify(
+          selectedPlan?.type === "payment" ? { paymentId: selectedPlan.paymentId } : {}
+        ),
       });
       if (!res.ok) {
         setError((await res.json()).error ?? t("errorGeneric"));
@@ -158,11 +164,11 @@ export function SubmitJobModal({
           /* ── User has plan slots ── */
           <div className="space-y-3">
             {status!.usablePlans.map((plan) => {
-              const selected = selectedPaymentId === plan.paymentId;
+              const selected = selectedPlanId === plan.id;
               return (
                 <button
                   key={plan.paymentId}
-                  onClick={() => setSelectedPaymentId(plan.paymentId)}
+                  onClick={() => setSelectedPlanId(plan.id)}
                   disabled={anyLoading}
                   className={`w-full flex items-center gap-4 rounded-[18px] border-2 p-4 text-left transition-all disabled:opacity-60 ${
                     selected
@@ -186,7 +192,7 @@ export function SubmitJobModal({
 
             <button
               onClick={handleUseSlot}
-              disabled={anyLoading || !selectedPaymentId}
+              disabled={anyLoading || !selectedPlanId}
               className="w-full flex items-center justify-center gap-2 rounded-[14px] bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm py-3 transition-colors disabled:opacity-50"
             >
               {loading === "slot" ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

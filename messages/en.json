@@ -779,8 +779,15 @@
     "goToDashboard": "Go to Dashboard"
   },
   "Billing": {
-    "title": "Billing History",
-    "subtitle": "Your payment history and invoices.",
+    "title": "Billing",
+    "subtitle": "Your active subscription and payment history.",
+    "activeSubscription": "Active Subscription",
+    "noSubscription": "No active subscription",
+    "noSubscriptionHint": "Purchase a plan to start posting jobs.",
+    "renewsOn": "Renews on",
+    "endsOn": "Ends on",
+    "cancelingBadge": "Canceling",
+    "paymentHistory": "Payment History",
     "date": "Date",
     "plan": "Plan",
     "job": "Job",

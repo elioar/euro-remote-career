@@ -458,6 +458,12 @@ function MobileJobSheet({
   onToggleSave?: (e: React.MouseEvent) => void;
 }) {
   useEffect(() => {
+    if (job.isInternalJob && job.jobDbId) {
+      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
+    }
+  }, [job.jobDbId]);
+
+  useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
@@ -680,6 +686,13 @@ export function CandidateDashboardContent({
     }
     return visibleJobs[0];
   }, [visibleJobs, selectedJob, isDesktop]);
+
+  // Track view when desktop panel changes to a new internal job
+  useEffect(() => {
+    if (activeDesktopJob?.isInternalJob && activeDesktopJob.jobDbId) {
+      fetch(`/api/jobs/${activeDesktopJob.jobDbId}/view`, { method: "POST" }).catch(() => {});
+    }
+  }, [activeDesktopJob?.jobDbId]);
 
   const searchSectionRef = useRef<HTMLDivElement>(null);
 

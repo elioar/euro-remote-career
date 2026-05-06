@@ -243,6 +243,12 @@ function JobDetailInner({ job, tc, onClose, showCloseOnDesktop, hideHeader }: { 
 
 // Desktop panel
 function JobDetailPanel({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<typeof useTranslations>; onClose: () => void }) {
+  useEffect(() => {
+    if (job.isInternalJob && job.jobDbId) {
+      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
+    }
+  }, [job.jobDbId]);
+
   return (
     <motion.div
       key={job.id}
@@ -286,6 +292,13 @@ function MobileBottomSheet({ job, tc, onClose }: { job: DemoJob; tc: ReturnType<
   const [expanded, setExpanded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dragY = useRef(0);
+
+  // Track view for internal jobs
+  useEffect(() => {
+    if (job.isInternalJob && job.jobDbId) {
+      fetch(`/api/jobs/${job.jobDbId}/view`, { method: "POST" }).catch(() => {});
+    }
+  }, [job.jobDbId]);
 
   // Lock body scroll while open
   useEffect(() => {

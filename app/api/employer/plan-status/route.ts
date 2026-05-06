@@ -12,8 +12,9 @@ export async function GET() {
   const now = new Date();
 
   const usablePlans: {
+    id: string;
+    type: "subscription" | "payment";
     paymentId?: string;
-    subscriptionId?: string;
     name: string;
     slug: string;
     totalSlots: number;
@@ -29,7 +30,8 @@ export async function GET() {
     const availableSlots = Math.max(0, activePlan.totalSlots - activePlan.slotsUsed);
     if (availableSlots > 0) {
       usablePlans.push({
-        subscriptionId: activePlan.subscriptionId,
+        id: activePlan.subscriptionId,
+        type: "subscription",
         name: activePlan.name,
         slug: activePlan.slug,
         totalSlots: activePlan.totalSlots,
@@ -60,6 +62,8 @@ export async function GET() {
       if (now > expiresAt) continue;
       const daysLeft = Math.ceil((expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       usablePlans.push({
+        id: payment.id,
+        type: "payment",
         paymentId: payment.id,
         name: payment.plan.name,
         slug: payment.plan.slug,

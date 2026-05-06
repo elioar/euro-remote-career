@@ -22,6 +22,7 @@ type Job = {
   rejectionReason: string | null;
   createdAt: string;
   expiresAt: string | null;
+  viewCount?: number;
   _count?: {
     applications: number;
   };
@@ -426,7 +427,7 @@ export default function MyJobsList({ initialJobs, locale }: { initialJobs: Job[]
                     )}
                     {job.status === "PUBLISHED" && (
                       <span className="flex items-center gap-1.5 bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-2.5 py-1 rounded-lg whitespace-nowrap">
-                        <Eye className="w-3.5 h-3.5" /> {(job.id.charCodeAt(0) * 17) % 500 + 40} {t("views")}
+                        <Eye className="w-3.5 h-3.5" /> {job.viewCount ?? 0} {t("views")}
                       </span>
                     )}
                   </div>

@@ -99,7 +99,7 @@ export default function EmployerDashboardContent({
   const strengthPercentage = Math.round((completedSteps / profileSteps.length) * 100);
 
   // Total Views across all jobs (simulated for now, like in MyJobsList)
-  const totalViews = employerJobs.reduce((sum, job) => sum + ((job.id.charCodeAt(0) * 17) % 500 + 40), 0);
+  const totalViews = employerJobs.reduce((sum, job) => sum + (job.viewCount ?? 0), 0);
 
   // Stats Card Component for reuse
   const MiniStat = ({ icon: Icon, value, label, colorClass }: any) => (
