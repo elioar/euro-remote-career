@@ -809,6 +809,11 @@
     "status": "Status",
     "filterAll": "All",
     "noPayments": "No transactions found.",
+    "customers": "Customers",
+    "activePlan": "Active Plan",
+    "extras": "Extras",
+    "renewsEnds": "Renews / Ends",
+    "transactionsTitle": "Transactions",
     "statusLabels": {
       "succeeded": "Paid",
       "pending": "Pending",

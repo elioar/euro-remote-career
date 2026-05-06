@@ -809,6 +809,11 @@
     "status": "Κατάσταση",
     "filterAll": "Όλες",
     "noPayments": "Δεν βρέθηκαν συναλλαγές.",
+    "customers": "Πελάτες",
+    "activePlan": "Ενεργό Πλάνο",
+    "extras": "Extras",
+    "renewsEnds": "Ανανέωση / Λήξη",
+    "transactionsTitle": "Συναλλαγές",
     "statusLabels": {
       "succeeded": "Πληρώθηκε",
       "pending": "Σε αναμονή",
