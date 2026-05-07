@@ -46,7 +46,8 @@
       "Bash(rmdir \"c:\\\\Users\\\\elioa\\\\Desktop\\\\euro-remote-career\\\\app\\\\api\\\\admin\\\\payments\\\\[id]\")",
       "Bash(tee /tmp/tsc.log)",
       "Read(//tmp/**)",
-      "Bash(echo \"EXIT_CODE: $?\")"
+      "Bash(echo \"EXIT_CODE: $?\")",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "c:\\Users\\elioa\\Desktop\\euro-remote-career\\app\\[locale]\\jobs",
