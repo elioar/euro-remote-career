@@ -33,12 +33,12 @@ export async function upsertSubscription(sub: Stripe.Subscription, metadata: Rec
   const periodEnd = new Date(item.current_period_end * 1000);
 
   // Resolve planId: prefer metadata, otherwise look up by stripePriceId
-  let planId = metadata.planId ?? sub.metadata?.planId;
+  let planId: string | undefined = metadata.planId ?? sub.metadata?.planId;
   if (!planId) {
     const priceId = typeof item.price === "string" ? item.price : item.price?.id;
     if (priceId) {
       const plan = await prisma.plan.findFirst({ where: { stripePriceId: priceId } });
-      planId = plan?.id ?? undefined;
+      if (plan) planId = plan.id;
     }
   }
 
