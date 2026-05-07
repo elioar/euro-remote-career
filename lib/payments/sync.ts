@@ -43,10 +43,10 @@ export async function upsertSubscription(sub: Stripe.Subscription, metadata: Rec
   }
 
   // Resolve employerId from stripeCustomerId if missing
-  let resolvedEmployerId = employerId;
+  let resolvedEmployerId: string | undefined = employerId;
   if (!resolvedEmployerId) {
     const employer = await prisma.employerProfile.findFirst({ where: { stripeCustomerId: customerId } });
-    resolvedEmployerId = employer?.id;
+    if (employer) resolvedEmployerId = employer.id;
   }
 
   if (!resolvedEmployerId || !planId) {
