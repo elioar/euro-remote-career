@@ -32,14 +32,16 @@ export async function upsertSubscription(sub: Stripe.Subscription, metadata: Rec
   const periodStart = new Date(item.current_period_start * 1000);
   const periodEnd = new Date(item.current_period_end * 1000);
 
-  // Resolve planId: prefer metadata, otherwise look up by stripePriceId
-  let planId: string | undefined = metadata.planId ?? sub.metadata?.planId;
+  // Always resolve planId from current price ID (covers plan upgrades/downgrades)
+  // Fall back to metadata only if price lookup fails
+  let planId: string | undefined;
+  const priceId = typeof item.price === "string" ? item.price : item.price?.id;
+  if (priceId) {
+    const plan = await prisma.plan.findFirst({ where: { stripePriceId: priceId } });
+    if (plan) planId = plan.id;
+  }
   if (!planId) {
-    const priceId = typeof item.price === "string" ? item.price : item.price?.id;
-    if (priceId) {
-      const plan = await prisma.plan.findFirst({ where: { stripePriceId: priceId } });
-      if (plan) planId = plan.id;
-    }
+    planId = metadata.planId ?? sub.metadata?.planId;
   }
 
   // Resolve employerId from stripeCustomerId if missing
