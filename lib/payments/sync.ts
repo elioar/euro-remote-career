@@ -27,21 +27,37 @@ export function mapStripeStatus(status: Stripe.Subscription.Status): SubStatus {
 
 export async function upsertSubscription(sub: Stripe.Subscription, metadata: Record<string, string>) {
   const employerId = metadata.employerId ?? sub.metadata?.employerId;
-  const planId = metadata.planId ?? sub.metadata?.planId;
-  if (!employerId || !planId) {
-    console.warn("Subscription missing metadata", sub.id);
-    return;
-  }
-
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   const item = sub.items.data[0];
   const periodStart = new Date(item.current_period_start * 1000);
   const periodEnd = new Date(item.current_period_end * 1000);
 
+  // Resolve planId: prefer metadata, otherwise look up by stripePriceId
+  let planId = metadata.planId ?? sub.metadata?.planId;
+  if (!planId) {
+    const priceId = typeof item.price === "string" ? item.price : item.price?.id;
+    if (priceId) {
+      const plan = await prisma.plan.findFirst({ where: { stripePriceId: priceId } });
+      planId = plan?.id ?? undefined;
+    }
+  }
+
+  // Resolve employerId from stripeCustomerId if missing
+  let resolvedEmployerId = employerId;
+  if (!resolvedEmployerId) {
+    const employer = await prisma.employerProfile.findFirst({ where: { stripeCustomerId: customerId } });
+    resolvedEmployerId = employer?.id;
+  }
+
+  if (!resolvedEmployerId || !planId) {
+    console.warn("Subscription missing employerId or planId", sub.id, { resolvedEmployerId, planId });
+    return;
+  }
+
   await prisma.subscription.upsert({
     where: { stripeSubscriptionId: sub.id },
     create: {
-      employerId,
+      employerId: resolvedEmployerId,
       planId,
       stripeSubscriptionId: sub.id,
       stripeCustomerId: customerId,
@@ -53,6 +69,7 @@ export async function upsertSubscription(sub: Stripe.Subscription, metadata: Rec
       endedAt: sub.ended_at ? new Date(sub.ended_at * 1000) : null,
     },
     update: {
+      planId,
       status: mapStripeStatus(sub.status),
       currentPeriodStart: periodStart,
       currentPeriodEnd: periodEnd,

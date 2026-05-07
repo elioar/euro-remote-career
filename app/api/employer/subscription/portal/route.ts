@@ -21,10 +21,23 @@ export async function POST(req: Request) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: employer.stripeCustomerId,
-    return_url: `${siteUrl}/${locale}/dashboard`,
-  });
+  let session;
+  try {
+    session = await stripe.billingPortal.sessions.create({
+      customer: employer.stripeCustomerId,
+      return_url: `${siteUrl}/${locale}/dashboard`,
+    });
+  } catch (err: unknown) {
+    const stripeErr = err as { code?: string };
+    if (stripeErr?.code === "resource_missing") {
+      await prisma.employerProfile.update({
+        where: { id: auth.profile.id },
+        data: { stripeCustomerId: null },
+      });
+      return NextResponse.json({ error: "Billing account not found. Please contact support." }, { status: 404 });
+    }
+    throw err;
+  }
 
   return NextResponse.json({ url: session.url });
 }
