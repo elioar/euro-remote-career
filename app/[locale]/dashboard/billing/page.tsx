@@ -4,9 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { Header } from "@/app/components/Header";
 import { BillingHistory } from "./BillingHistory";
+import { BillingPortalButton } from "./BillingPortalButton";
 import { getEmployerPayments, getActivePlanForEmployer } from "@/lib/payments/queries";
 
-export default async function BillingPage() {
+export default async function BillingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const t = await getTranslations("Billing");
   const supabase = await createClient();
   const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -62,9 +68,12 @@ export default async function BillingPage() {
                   {activePlan.cancelAtPeriodEnd ? t("endsOn") : t("renewsOn")} {periodEndStr}
                 </p>
               </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-foreground">{activePlan.daysLeft}d</span>
-                <p className="text-xs text-slate-400 dark:text-foreground/40">left</p>
+              <div className="flex flex-col items-end gap-2">
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-foreground">{activePlan.daysLeft}d</span>
+                  <p className="text-xs text-slate-400 dark:text-foreground/40">left</p>
+                </div>
+                <BillingPortalButton locale={locale} />
               </div>
             </div>
           ) : (

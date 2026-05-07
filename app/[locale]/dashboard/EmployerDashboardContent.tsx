@@ -64,27 +64,21 @@ export default function EmployerDashboardContent({
   const locale = useLocale();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"applications" | "jobs">("applications");
-  const [cancelLoading, setCancelLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
   void _unusedShortListingsCount;
 
-  async function handleCancelSubscription() {
-    if (!confirm(t("confirmCancelSubscription"))) return;
-    setCancelLoading(true);
+  async function handleManageSubscription() {
+    setPortalLoading(true);
     try {
-      const res = await fetch("/api/employer/subscription/cancel", { method: "POST" });
-      if (res.ok) router.refresh();
+      const res = await fetch("/api/employer/subscription/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
     } finally {
-      setCancelLoading(false);
-    }
-  }
-
-  async function handleReactivateSubscription() {
-    setCancelLoading(true);
-    try {
-      const res = await fetch("/api/employer/subscription/reactivate", { method: "POST" });
-      if (res.ok) router.refresh();
-    } finally {
-      setCancelLoading(false);
+      setPortalLoading(false);
     }
   }
 
@@ -201,30 +195,21 @@ export default function EmployerDashboardContent({
                 {t("postShortListingJob")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             )}
-            {(!activePlan || activePlan.slug === "basic") && (
+            {!activePlan && (
               <Link
                 href="/checkout"
                 className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10"
               >
-                {!activePlan ? t("getStarted") : t("upgradeToPro")} <ArrowRight className="w-3.5 h-3.5" />
+                {t("getStarted")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             )}
-            {activePlan && !activePlan.cancelAtPeriodEnd && (
+            {activePlan && (
               <button
-                onClick={handleCancelSubscription}
-                disabled={cancelLoading}
-                className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-[11px] font-semibold transition-colors disabled:opacity-50"
+                onClick={handleManageSubscription}
+                disabled={portalLoading}
+                className="w-full py-2.5 rounded-xl bg-white text-indigo-700 text-xs font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-black/10 disabled:opacity-60"
               >
-                {cancelLoading ? "…" : t("cancelSubscription")}
-              </button>
-            )}
-            {activePlan?.cancelAtPeriodEnd && (
-              <button
-                onClick={handleReactivateSubscription}
-                disabled={cancelLoading}
-                className="w-full py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-100 text-[11px] font-bold transition-colors disabled:opacity-50"
-              >
-                {cancelLoading ? "…" : t("reactivateSubscription")}
+                {portalLoading ? "…" : t("manageSubscription")}
               </button>
             )}
             <Link
